@@ -35,7 +35,7 @@ namespace Basecode.WebApp.Controllers
 
                 if (data.IsNullOrEmpty())
                 {
-                    _logger.Error("No users found.");
+                    _logger.Info("No users found.");
                     return View(new List<UserViewModel>());
                 }
 
@@ -82,6 +82,7 @@ namespace Basecode.WebApp.Controllers
                 // Validate through data annotations
                 if (!ModelState.IsValid)
                 {
+                    _logger.Warn("Submitted User failed at least one data annotation validation.");
                     return BadRequest(ModelState);
                 }
 
@@ -94,7 +95,7 @@ namespace Basecode.WebApp.Controllers
                     return Ok();
                 }
 
-                _logger.Trace(ErrorHandling.SetLog(data));
+                _logger.Warn(ErrorHandling.SetLog(data));
                 ModelState.AddModelError("Email", "The Email Address format is invalid.");
 
                 // Call the service method to get the validation errors
@@ -123,7 +124,7 @@ namespace Basecode.WebApp.Controllers
 
                 if (data == null)
                 {
-                    _logger.Trace("User [" + id + "] not found.");
+                    _logger.Error("User [" + id + "] not found.");
                     return NotFound();
                 }
 
@@ -151,6 +152,7 @@ namespace Basecode.WebApp.Controllers
                 // Validate through data annotations
                 if (!ModelState.IsValid)
                 {
+                    _logger.Warn("Submitted User failed at least one data annotation validation.");
                     return BadRequest(ModelState);
                 }
 
@@ -163,7 +165,7 @@ namespace Basecode.WebApp.Controllers
                     return Ok();
                 }
 
-                _logger.Trace(ErrorHandling.SetLog(data));
+                _logger.Warn(ErrorHandling.SetLog(data));
                 ModelState.AddModelError("Email", "The Email Address format is invalid.");
 
                 // Call the service method to get the validation errors
@@ -192,7 +194,7 @@ namespace Basecode.WebApp.Controllers
 
                 if (data == null)
                 {
-                    _logger.Trace("User [" + id + "] not found.");
+                    _logger.Error("User [" + id + "] not found.");
                     return NotFound();
                 }
 
@@ -221,7 +223,7 @@ namespace Basecode.WebApp.Controllers
 
                 if (user == null)
                 {
-                    _logger.Trace("User [" + id + "] not found.");
+                    _logger.Error("User [" + id + "] not found.");
                     return NotFound();
                 }
 
