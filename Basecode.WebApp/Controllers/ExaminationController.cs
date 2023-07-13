@@ -15,7 +15,7 @@ namespace Basecode.WebApp.Controllers
             _service = service;
         }
 
-        public void Shortlist()
+        public List<Examination> Shortlist()
         {
             List<Examination> exams = new List<Examination>()
             { 
@@ -25,7 +25,7 @@ namespace Basecode.WebApp.Controllers
                     UserId_HR = 1,
                     Date = new DateOnly(2023,1,1),
                     TeamsLink = "link.test",
-                    Score = 100,
+                    Score = 79,
                     Result = "PASS",
                     ApplicationId = 1
                 },
@@ -35,7 +35,7 @@ namespace Basecode.WebApp.Controllers
                     UserId_HR = 2,
                     Date = new DateOnly(2023,1,1),
                     TeamsLink = "link.test",
-                    Score = 95,
+                    Score = 75,
                     Result = "PASS",
                     ApplicationId = 2
                 },
@@ -45,7 +45,7 @@ namespace Basecode.WebApp.Controllers
                     UserId_HR = 3,
                     Date = new DateOnly(2023,1,1),
                     TeamsLink = "link.test",
-                    Score = 75,
+                    Score = 95,
                     Result = "PASS",
                     ApplicationId = 3
                 },
@@ -55,7 +55,7 @@ namespace Basecode.WebApp.Controllers
                     UserId_HR = 4,
                     Date = new DateOnly(2023,1,1),
                     TeamsLink = "link.test",
-                    Score = 90,
+                    Score = 89,
                     Result = "PASS",
                     ApplicationId = 4
                 },
@@ -63,6 +63,7 @@ namespace Basecode.WebApp.Controllers
 
             exams = exams.OrderByDescending(a => a.Score).ToList();
             List<Examination> shortlistedExams = exams.Take(2).ToList();
+            return shortlistedExams;
         }
     }
 }
