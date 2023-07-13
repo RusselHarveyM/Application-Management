@@ -1,4 +1,5 @@
 ﻿using Basecode.Data.Interfaces;
+using Basecode.Data.Models;
 using Basecode.Services.Interfaces;
 
 namespace Basecode.Services.Services
@@ -11,5 +12,11 @@ namespace Basecode.Services.Services
         {
             _repository = repository;
         }
+
+        public List<Examination> GetAllExaminations()
+        {
+            return _repository.GetAllExaminations().ToList();
+        }
+
     }
 }

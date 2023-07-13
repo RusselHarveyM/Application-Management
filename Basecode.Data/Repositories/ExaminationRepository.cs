@@ -1,4 +1,5 @@
 ﻿using Basecode.Data.Interfaces;
+using Basecode.Data.Models;
 
 namespace Basecode.Data.Repositories
 {
@@ -9,6 +10,11 @@ namespace Basecode.Data.Repositories
         public ExaminationRepository(IUnitOfWork unitOfWork, BasecodeContext context) : base(unitOfWork)
         {
             _context = context;
+        }
+
+        public IQueryable<Examination> GetAllExaminations()
+        {
+            return this.GetDbSet<Examination>();
         }
     }
 }
