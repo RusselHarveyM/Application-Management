@@ -1,6 +1,7 @@
 ﻿using Basecode.Data.Models;
 using Basecode.Services.Interfaces;
 using Basecode.WebApp.Controllers;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 
 namespace Basecode.Tests.Controllers
@@ -29,8 +30,8 @@ namespace Basecode.Tests.Controllers
                     Date = new DateOnly(2023,1,1),
                     TeamsLink = "link.test",
                     Score = 95,
-                    Result = "PASS",
-                    ApplicationId = 3
+                    Result = "For Technical Exam",
+                    ApplicationId = Guid.NewGuid(),
                 },
                 new Examination
                 {
@@ -39,24 +40,41 @@ namespace Basecode.Tests.Controllers
                     Date = new DateOnly(2023,1,1),
                     TeamsLink = "link.test",
                     Score = 89,
-                    Result = "PASS",
-                    ApplicationId = 4
+                    Result = "For Technical Exam",
+                    ApplicationId = Guid.NewGuid(),
                 },
             };
+            int jobOpeningId = 1;
+            _fakeExaminationService.Setup(service => service.ShortlistExaminations(jobOpeningId)).Returns(expectedExams);
 
             // Act
-            var result = _controller.Shortlist();
+            var result = _controller.Shortlist(1);
 
             // Assert
-            Assert.IsType<List<Examination>>(result);
-            Assert.Equal(2, result.Count);
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var shortlistedExams = Assert.IsType<List<Examination>>(okResult.Value);
             for (int i = 0; i < expectedExams.Count; i++)
             {
-                Assert.Equal(expectedExams[i].Id, result[i].Id);
-                Assert.Equal(expectedExams[i].UserId_HR, result[i].UserId_HR);
-                Assert.Equal(expectedExams[i].Score, result[i].Score);
+                Assert.Equal(expectedExams[i].Id, shortlistedExams[i].Id);
+                Assert.Equal(expectedExams[i].UserId_HR, shortlistedExams[i].UserId_HR);
+                Assert.Equal(expectedExams[i].Score, shortlistedExams[i].Score);
             }
         }
 
+        [Fact]
+        public void Shortlist_ExceptionThrown_ReturnsStatusCode500()
+        {
+            // Arrange
+            List<Examination> expectedNoExams = new List<Examination>();
+            int jobOpeningId = 1;
+            _fakeExaminationService.Setup(service => service.ShortlistExaminations(jobOpeningId)).Throws(new Exception());
+
+            // Act
+            var result = _controller.Shortlist(1);
+
+            // Assert
+            var objectResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(500, objectResult.StatusCode);
+        }
     }
 }
