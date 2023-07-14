@@ -14,7 +14,7 @@ namespace Basecode.Data.Models
         public string Result { get; set; }
 
         [ForeignKey("Application")]
-        public int ApplicationId { get; set; }
+        public Guid ApplicationId { get; set; }
 
         public virtual Application Application { get; set; }
     }
