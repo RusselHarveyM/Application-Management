@@ -12,9 +12,10 @@ namespace Basecode.Data.Repositories
             _context = context;
         }
 
-        public IQueryable<Examination> GetAllExaminations()
+        public IQueryable<Examination> GetExaminationsByJobOpeningId(int jobOpeningId)
         {
-            return this.GetDbSet<Examination>();
+            return this.GetDbSet<Examination>()
+                .Where(exam => exam.Application.JobOpeningId == jobOpeningId);
         }
     }
 }
