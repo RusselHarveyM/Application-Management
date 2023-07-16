@@ -16,9 +16,12 @@ namespace Basecode.WebApp
                 )
             );
 
+            services.AddDatabaseDeveloperPageExceptionFilter();
+
             services.AddIdentity<IdentityUser, IdentityRole>()
                     .AddRoles<IdentityRole>()
                     .AddEntityFrameworkStores<BasecodeContext>()
+                    .AddDefaultUI()
                     .AddDefaultTokenProviders();      
         }
     }
