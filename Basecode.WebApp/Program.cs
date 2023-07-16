@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Basecode.Data;
 
 namespace Basecode.WebApp
 {
