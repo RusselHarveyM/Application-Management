@@ -127,7 +127,7 @@ namespace Basecode.Services.Services
                             .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
                             .Replace("{{HEADLINE}}", "Applicant Status Changed")
                             .Replace("{{BODY}}", $"Dear {applicant.Firstname},")
-                            .Replace("{{BODY2}}", $"Your application with an ID of: [{applicant.Id}] has changed its status. <br>{msgBody} <br><br> <b>Current Status: {newStatus}</b>")
+                            .Replace("{{BODY2}}", $"Your application with an ID of: <b>[{applicant.Id}]</b> has changed its status. <br>{msgBody} <br><br> <b>Current Status: {newStatus}</b>")
                             .Replace("{{BODY3}}", "This is an automated messsage. Do not reply");
 
                         await _emailService.SendEmail(applicant.Email, "Applicant Status Update for Applicant", body);
@@ -140,7 +140,7 @@ namespace Basecode.Services.Services
                             .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
                             .Replace("{{HEADLINE}}", "Applicant Status Changed")
                             .Replace("{{BODY}}", $"Dear {applicant.Firstname},")
-                            .Replace("{{BODY2}}", $"Your application with an ID of: [{applicant.Id}] has changed its status. <br>{msgBody} <br><br> <b>Current Status: {newStatus}</b>")
+                            .Replace("{{BODY2}}", $"Your application with an ID of: <b>[{applicant.Id}]</b> has changed its status. <br>{msgBody} <br><br> <b>Current Status: {newStatus}</b>")
                             .Replace("{{BODY3}}", "This is an automated messsage. Do not reply");
 
                         await _emailService.SendEmail(applicant.Email, "Alliance Software Inc. Applicant Status Update", body);
