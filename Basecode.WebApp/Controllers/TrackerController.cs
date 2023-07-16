@@ -57,5 +57,21 @@ namespace Basecode.WebApp.Controllers
                 return StatusCode(500, "Something went wrong.");
             }
         }
+
+        [HttpPost]
+        public IActionResult ChangeStatus(string status)
+        {
+            // Perform the necessary logic to update the applicant's status in your data store
+            // using the provided ID and status value.
+
+            // Redirect the user back to the original page or display a success message.
+            return RedirectToAction("ChangeStatusView");
+        }
+
+
+        public IActionResult ChangeStatusView()
+        {
+            return View();
+        }
     }
 }

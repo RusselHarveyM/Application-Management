@@ -17,17 +17,19 @@ namespace Basecode.Services.Services
     {
         private readonly IApplicantRepository _repository;
         private readonly IApplicationRepository _applicationRepository;
+        private readonly ITrackService _trackService;
         private readonly IMapper _mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicantService"/> class.
         /// </summary>
         /// <param name="repository">The repository.</param>
-        public ApplicantService(IApplicantRepository repository, IApplicationRepository applicationRepository, IMapper mapper)
+        public ApplicantService(IApplicantRepository repository, IApplicationRepository applicationRepository, IMapper mapper, ITrackService trackService)
         {
             _repository = repository;
             _applicationRepository = applicationRepository;
             _mapper = mapper;
+            _trackService = trackService;
         }
 
         /// <summary>
@@ -76,6 +78,14 @@ namespace Basecode.Services.Services
                 };
 
                 _applicationRepository.CreateApplication(application);
+
+                var newStatus = "Success";
+                _trackService.UpdateTrackStatus(
+                            applicantModel,
+                            -1,
+                            newStatus,
+                            "Notify01"
+                            );
             }
 
             return (logContent, createdApplicantId);

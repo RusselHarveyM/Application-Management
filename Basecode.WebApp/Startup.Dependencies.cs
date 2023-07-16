@@ -26,6 +26,7 @@ namespace Basecode.WebApp
             services.AddScoped<ICharacterReferenceService, CharacterReferenceService>();
             services.AddScoped<IExaminationService, ExaminationService>();
             services.AddScoped<IShortlistingService, ShortlistingService>();
+            services.AddScoped<ITrackService, TrackService>();
 
             // Repositories
             services.AddScoped<IUserRepository, UserRepository>();

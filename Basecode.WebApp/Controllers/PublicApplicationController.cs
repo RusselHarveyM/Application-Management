@@ -125,7 +125,6 @@ namespace Basecode.WebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(ApplicantViewModel applicant, string fileName, int applicantId, string newStatus)
         {
-            newStatus = "Success";
             try
             {
                 var isJobOpening = _jobOpeningService.GetById(applicant.JobOpeningId);
@@ -135,13 +134,6 @@ namespace Basecode.WebApp.Controllers
                     if (!logContent.Result)
                     {
                         _logger.Trace("Create Applicant successfully.");
-
-                        // Send email notifications
-                        await _applicationService.UpdateApplicationStatus(
-                            createdApplicantId, 
-                            newStatus, 
-                            "Thank you for submitting your application. We have received it successfully and " +
-                            "appreciate your interest in joining our team.");
 
                         return RedirectToAction("Index", "Job");
                     }

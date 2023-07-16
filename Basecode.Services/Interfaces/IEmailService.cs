@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Basecode.Data.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,12 @@ namespace Basecode.Services.Interfaces
 {
     public interface IEmailService
     {
-        Task SendEmail(string recipient, string subject, string body);
+        Task SendNotifyEmail(Applicant applicant, string newStatus);
+
+        Task SendNotifyHREmail(Applicant applicant, string newStatus);
+
+        Task SendApprovalEmail(User user, Applicant applicant);
+
+        Task SendRejectedEmail(Applicant applicant, string newStatus);
     }
 }

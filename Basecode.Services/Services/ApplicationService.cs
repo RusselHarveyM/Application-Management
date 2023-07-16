@@ -17,7 +17,6 @@ namespace Basecode.Services.Services
         private readonly IJobOpeningService _jobOpeningService;
         private readonly IApplicantService _applicantService;
         private readonly IMapper _mapper;
-        private readonly IEmailService _emailService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationService" /> class.
@@ -27,13 +26,12 @@ namespace Basecode.Services.Services
         /// <param name="jobOpeningService">The job opening service.</param>
         /// <param name="applicantService">The applicant service.</param>
         /// <param name="emailService">The Email Service</param>
-        public ApplicationService(IApplicationRepository repository, IMapper mapper, IJobOpeningService jobOpeningService, IApplicantService applicantService, IEmailService emailService)
+        public ApplicationService(IApplicationRepository repository, IMapper mapper, IJobOpeningService jobOpeningService, IApplicantService applicantService)
         {
             _repository = repository;
             _jobOpeningService = jobOpeningService;
             _applicantService = applicantService;
             _mapper = mapper;
-            _emailService = emailService;
         }
 
         /// <summary>
