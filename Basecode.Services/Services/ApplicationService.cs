@@ -109,9 +109,9 @@ namespace Basecode.Services.Services
             // Get applicant details from the database
             Applicant applicant = _applicantService.GetApplicantById(applicantId);
 
-            // Notify HR
-            await _emailService.SendEmail("hrautomatesystem@outlook.com", "Applicant Status Update for HR",
-            $"Applicant {applicant.Firstname} (ID: {applicant.Id}) has changeds status to {newStatus}.");
+            var templatePath = Path.Combine("wwwroot", "template", "mailtemplate.html");
+            var templateContent = System.IO.File.ReadAllText(templatePath);
+
 
             var redirectLink = "https://localhost:50991/Home";
             var templatePath = Path.Combine("wwwroot", "template", "mailtemplate.html");
@@ -149,6 +149,10 @@ namespace Basecode.Services.Services
                 default:
                     break;
             }
+
+            // Notify HR
+            await _emailService.SendEmail("hrautomatesystem@outlook.com", "Applicant Status Update for HR",
+            $"Applicant {applicant.Firstname} (ID: {applicant.Id}) has changeds status to {newStatus}.");
 
         }
 
