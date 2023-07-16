@@ -24,6 +24,7 @@ namespace Basecode.WebApp
             services.AddScoped<IQualificationService, QualificationService>();
             services.AddScoped<IResponsibilityService, ResponsibilityService>();
             services.AddScoped<ICharacterReferenceService, CharacterReferenceService>();
+            services.AddScoped<IExaminationService, ExaminationService>();
 
             // Repositories
             services.AddScoped<IUserRepository, UserRepository>();
@@ -33,6 +34,7 @@ namespace Basecode.WebApp
             services.AddScoped<IQualificationRepository, QualificationRepository>();
             services.AddScoped<IResponsibilityRepository, ResponsibilityRepository>();
             services.AddScoped<ICharacterReferenceRepository, CharacterReferenceRepository>();
+            services.AddScoped<IExaminationRepository, ExaminationRepository>();
         }
     }
 }
