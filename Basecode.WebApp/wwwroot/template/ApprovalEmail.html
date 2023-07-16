@@ -15,6 +15,7 @@
     <title></title> <!-- The title tag shows in email notifications, like Android 4.4. -->
 
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -31,7 +32,8 @@
             height: 100% !important;
             width: 100% !important;
             background: #f1f1f1;
-            /* What it does: Stops email clients resizing small text. */
+        
+        /* What it does: Stops email clients resizing small text. */
             *
 
         {
@@ -466,5 +468,34 @@
 
         </div>
     </center>
+
+    <script>
+        $(document).ready(function () {
+            $('#rejectButton').click(function () {
+                updateStatus('rejected');
+            });
+
+            $('#approveButton').click(function () {
+                updateStatus('approved');
+            });
+
+            function updateStatus(status) {
+                // Send an AJAX request to your MVC service endpoint
+                $.ajax({
+                    url: '/Tracker/ChangeStatus',
+                    type: 'POST',
+                    data: { status: status },
+                    success: function (response) {
+                        // Handle the response from the server if needed
+                        console.log('Status updated successfully');
+                    },
+                    error: function (error) {
+                        // Handle the error if the request fails
+                        console.error('Failed to update status:', error);
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
