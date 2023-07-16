@@ -14,7 +14,7 @@ namespace Basecode.WebApp
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .ConfigureAppConfiguration(SetUpConfiguration)
-                .UseStartup<Startup>();
+                .UseStartup<Startup1>();
 
         private static void SetUpConfiguration(WebHostBuilderContext builderCtx, IConfigurationBuilder config)
         {

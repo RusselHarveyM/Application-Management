@@ -2,7 +2,7 @@
 
 namespace Basecode.WebApp
 {
-    public partial class Startup
+    public partial class Startup1
     {
         private void ConfigureRoutes(IApplicationBuilder app)
         {            
