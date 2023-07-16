@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Basecode.WebApp
 {
-    public partial class Startup1
+    public partial class StartupWebApp
     {
         private void ConfigureDatabase(IServiceCollection services)
         {

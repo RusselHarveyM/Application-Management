@@ -5,9 +5,9 @@ using Hangfire.SqlServer;
 
 namespace Basecode.WebApp
 {
-    public partial class Startup1
+    public partial class StartupWebApp
     {
-        public Startup1(IConfiguration configuration)
+        public StartupWebApp(IConfiguration configuration)
         {
             Configuration = configuration;
         }
