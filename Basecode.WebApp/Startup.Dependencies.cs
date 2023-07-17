@@ -27,6 +27,7 @@ namespace Basecode.WebApp
             services.AddScoped<IExaminationService, ExaminationService>();
             services.AddScoped<IShortlistingService, ShortlistingService>();
             services.AddScoped<ITrackService, TrackService>();
+            services.AddScoped<IShortlistingService, ShortlistingService>();
 
             // Repositories
             services.AddScoped<IUserRepository, UserRepository>();
