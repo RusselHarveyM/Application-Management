@@ -54,7 +54,7 @@
         </div>
     </div>
     <form asp-controller="PublicApplication" asp-action="Reference" method="post" enctype="multipart/form-data" onsubmit="return validateForm();">
-        <input type="hidden" name="jobId" value="@TempData["JobOpeningId"]" />
+        <input type="hidden" asp-for="JobOpeningId" value="@TempData["JobOpeningId"]" />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="container d-flex flex-column align-items-center justify-content-center">
             <div class="container">

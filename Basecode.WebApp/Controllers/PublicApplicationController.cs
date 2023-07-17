@@ -12,7 +12,6 @@ namespace Basecode.WebApp.Controllers
     {
         private readonly IApplicantService _applicantService;
         private readonly IJobOpeningService _jobOpeningService;
-        private readonly ICharacterReferenceService _characterReferenceService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly IApplicationService _applicationService;
 
@@ -23,10 +22,9 @@ namespace Basecode.WebApp.Controllers
         /// <param name="jobOpeningService">An instance of the job opening service.</param>
         /// <param name="characterReferenceService">An instance of the character reference service.</param>
         /// <param name="applicationService">An instance of the application serice </param>
-        public PublicApplicationController(IApplicantService applicantService, IJobOpeningService jobOpeningService, ICharacterReferenceService characterReferenceService, IApplicationService applicationService)
+        public PublicApplicationController(IApplicantService applicantService, IJobOpeningService jobOpeningService, IApplicationService applicationService)
         {
             _applicantService = applicantService;
-            _characterReferenceService = characterReferenceService;
             _jobOpeningService = jobOpeningService;
             _applicationService = applicationService;
         }
@@ -41,7 +39,6 @@ namespace Basecode.WebApp.Controllers
         {
             try
             {
-                _logger.Trace("jobId: " + jobOpeningId);
                 TempData["jobOpeningId"] = jobOpeningId;
                 var model = new ApplicantViewModel();
                 _logger.Trace("Successfuly renders form.");
@@ -55,50 +52,22 @@ namespace Basecode.WebApp.Controllers
         }
 
         /// <summary>
-        /// Submits a reference form for a job application.
+        /// Displays the reference page for an applicant.
         /// </summary>
-        /// <param name="firstname"></param>
-        /// <param name="middlename"></param>
-        /// <param name="lastname"></param>
-        /// <param name="age"></param>
-        /// <param name="birthdate"></param>
-        /// <param name="gender"></param>
-        /// <param name="nationality"></param>
-        /// <param name="street"></param>
-        /// <param name="city"></param>
-        /// <param name="province"></param>
-        /// <param name="zip"></param>
-        /// <param name="phone"></param>
-        /// <param name="email"></param>
-        /// <param name="jobId"></param>
-        /// <param name="fileUpload"></param>
-        /// <returns>Returns a view with the reference form.</returns>
-        public IActionResult Reference(string firstname,
-                                       string middlename,
-                                       string lastname,
-                                       string age,
-                                       string birthdate,
-                                       string gender,
-                                       string nationality,
-                                       string street,
-                                       string city,
-                                       string province,
-                                       string zip,
-                                       string phone,
-                                       string email,
-                                       int jobId,
-                                       IFormFile fileUpload)
+        /// <param name="applicant">The applicant's information.</param>
+        /// <param name="fileUpload">The CV file.</param>
+        /// <returns>Returns a view displaying the applicant's information and the uploaded file.</returns>
+        public IActionResult Reference(ApplicantViewModel applicant, IFormFile fileUpload)
         {
             try
             {
-                _logger.Trace("jobId: " + jobId);
                 if (fileUpload != null)
                 {
                     string fileExtension = Path.GetExtension(fileUpload.FileName);
                     if (fileExtension != ".pdf")
                     {
                         TempData["ErrorMessage"] = "Only PDF files are allowed.";
-                        return RedirectToAction("Index", new { jobOpeningId = jobId });
+                        return RedirectToAction("Index", new { jobOpeningId = applicant.JobOpeningId });
                     }
 
                     using (var memoryStream = new MemoryStream())
@@ -106,36 +75,16 @@ namespace Basecode.WebApp.Controllers
                         fileUpload.CopyTo(memoryStream);
                         byte[] fileData = memoryStream.ToArray();
                         TempData["FileData"] = fileData;
-                        
                     }
                 }
                 else
                 {
                     TempData["ErrorMessage"] = "Please select a file.";
-                    return RedirectToAction("Index", new { jobOpeningId = jobId });
+                    return RedirectToAction("Index", new { jobOpeningId = applicant.JobOpeningId });
                 }
-                TempData["jobOpeningId"] = jobId;
                 TempData["FileName"] = Path.GetFileName(fileUpload.FileName);
-                var model = new ApplicantViewModel
-                {
-                    Firstname = firstname,
-                    Middlename = middlename,
-                    Lastname = lastname,
-                    Age = Convert.ToInt32(age),
-                    Birthdate = DateTime.Parse(birthdate),
-                    Gender = gender,
-                    Nationality = nationality,
-                    Street = street,
-                    City = city,
-                    Province = province,
-                    Zip = zip,
-                    Phone = phone,
-                    Email = email,
-                    JobOpeningId = jobId
-                };
-
                 _logger.Trace("Successfuly renders form.");
-                return View(model);
+                return View(applicant);
             }
             catch (Exception e)
             {
@@ -145,71 +94,18 @@ namespace Basecode.WebApp.Controllers
         }
 
         /// <summary>
-        /// Displays the confirmation page for the submitted application.
+        /// Displays the confirmation page for a submitted application.
         /// </summary>
-        /// <param name="firstname"></param>
-        /// <param name="middlename"></param>
-        /// <param name="lastname"></param>
-        /// <param name="age"></param>
-        /// <param name="birthdate"></param>
-        /// <param name="gender"></param>
-        /// <param name="nationality"></param>
-        /// <param name="street"></param>
-        /// <param name="city"></param>
-        /// <param name="province"></param>
-        /// <param name="zip"></param>
-        /// <param name="phone"></param>
-        /// <param name="email"></param>
-        /// <param name="fileName"></param>
-        /// <param name="fileData"></param>
-        /// <param name="jobId"></param>
-        /// <param name="characterReferences"></param>
-        /// <returns>Returns a view with the confirmation page.</returns>
-        public IActionResult Confirmation(string firstname,
-                                          string middlename,
-                                          string lastname,
-                                          string age,
-                                          string birthdate,
-                                          string gender,
-                                          string nationality,
-                                          string street,
-                                          string city,
-                                          string province,
-                                          string zip,
-                                          string phone,
-                                          string email,
-                                          string fileName,
-                                          byte[] fileData,
-                                          int jobId,
-                                          List<CharacterReferenceViewModel> characterReferences)
+        /// <param name="applicant">The applicant's information.</param>
+        /// <param name="fileName">The name of the uploaded file.</param>
+        /// <returns>Returns a view displaying the applicant's information and the uploaded file name.</returns>
+        public IActionResult Confirmation(ApplicantViewModel applicant, string fileName)
         {
             try
             {
-                _logger.Trace("jobId: " + jobId);
-                TempData["jobOpeningId"] = jobId;
                 TempData["FileName"] = fileName;
-                TempData["FileData"] = fileData;
-                var model = new ApplicantViewModel
-                {
-                    Firstname = firstname,
-                    Middlename = middlename,
-                    Lastname = lastname,
-                    Age = Convert.ToInt32(age),
-                    Birthdate = DateTime.Parse(birthdate),
-                    Gender = gender,
-                    Nationality = nationality,
-                    Street = street,
-                    City = city,
-                    Province = province,
-                    Zip = zip,
-                    Phone = phone,
-                    Email = email,
-                    CV = fileData,
-                    CharacterReferences = characterReferences,
-                    JobOpeningId = jobId
-                };
                 _logger.Trace("Successfuly renders form.");
-                return View(model);
+                return View(applicant);
             }
             catch (Exception e)
             {
@@ -219,70 +115,19 @@ namespace Basecode.WebApp.Controllers
         }
 
         /// <summary>
-        /// Creates a new applicant for a job opening.
+        /// Creates a new applicant and updates the application status.
         /// </summary>
-        /// <param name="firstname"></param>
-        /// <param name="middlename"></param>
-        /// <param name="lastname"></param>
-        /// <param name="age"></param>
-        /// <param name="birthdate"></param>
-        /// <param name="gender"></param>
-        /// <param name="nationality"></param>
-        /// <param name="street"></param>
-        /// <param name="city"></param>
-        /// <param name="province"></param>
-        /// <param name="zip"></param>
-        /// <param name="phone"></param>
-        /// <param name="email"></param>
-        /// <param name="fileName"></param>
-        /// <param name="fileData"></param>
-        /// <param name="jobId"></param>
-        /// <param name="characterReferences"></param>
-        /// <param name="applicantId"></param>
-        /// <param name="newStatus"></param>
-        /// <returns>Returns a view.</returns>
+        /// <param name="applicant">The applicant's information.</param>
+        /// <param name="fileName">The name of the uploaded file.</param>
+        /// <param name="applicantId">The ID of the applicant.</param>
+        /// <param name="newStatus">The new application status.</param>
+        /// <returns>Returns a redirect to the job index page if the applicant is created successfully, otherwise returns the index view.</returns>
         [HttpPost]
-        public async Task<IActionResult> Create(string firstname,
-                                    string middlename,
-                                    string lastname,
-                                    string age,
-                                    string birthdate,
-                                    string gender,
-                                    string nationality,
-                                    string street,
-                                    string city,
-                                    string province,
-                                    string zip,
-                                    string phone,
-                                    string email,
-                                    string fileName,
-                                    byte[] fileData,
-                                    int jobId,
-                                    List<CharacterReferenceViewModel> characterReferences, int applicantId, string newStatus)
+        public async Task<IActionResult> Create(ApplicantViewModel applicant, string fileName, int applicantId, string newStatus)
         {
             newStatus = "Success";
             try
             {
-                _logger.Trace("jobId: " + jobId);
-                var applicant = new ApplicantViewModel
-                {
-                    Firstname = firstname,
-                    Middlename = middlename,
-                    Lastname = lastname,
-                    Age = Convert.ToInt32(age),
-                    Birthdate = DateTime.Parse(birthdate),
-                    Gender = gender,
-                    Nationality = nationality,
-                    Street = street,
-                    City = city,
-                    Province = province,
-                    Zip = zip,
-                    Phone = phone,
-                    Email = email,
-                    CV = fileData,
-                    CharacterReferences = characterReferences,
-                    JobOpeningId = jobId
-                };
                 var isJobOpening = _jobOpeningService.GetById(applicant.JobOpeningId);
                 if (isJobOpening != null)
                 {
