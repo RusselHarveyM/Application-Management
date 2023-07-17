@@ -9,7 +9,6 @@ namespace Basecode.WebApp.Controllers
     {
         private readonly IApplicationService _applicationService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
-        private readonly ITrackService _trackService;
         private readonly IApplicantService _applicantService;
         private readonly IUserService _userService;
 
@@ -17,10 +16,9 @@ namespace Basecode.WebApp.Controllers
         /// Initializes a new instance of the <see cref="TrackerController"/> class.
         /// </summary>
         /// <param name="applicationService">The application service.</param>
-        public TrackerController(IApplicationService applicationService, ITrackService trackService, IApplicantService applicantService, IUserService userService)
+        public TrackerController(IApplicationService applicationService, IApplicantService applicantService, IUserService userService)
         {
             _applicationService = applicationService;
-            _trackService = trackService;
             _applicantService = applicantService;
             _userService = userService;
         }

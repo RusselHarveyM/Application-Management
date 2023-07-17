@@ -14,12 +14,16 @@ namespace Basecode.Tests.Controllers
     public class TrackerControllerTestsface
     {
         private readonly Mock<IApplicationService> _fakeApplicationService;
+        private readonly Mock<IApplicantService> _fakeApplicantService;
+        private readonly Mock<IUserService> _fakeUserService;
         private readonly TrackerController _controller;
 
         public TrackerControllerTestsface()
         {
             _fakeApplicationService = new Mock<IApplicationService>();
-            _controller = new TrackerController(_fakeApplicationService.Object);
+            _fakeApplicantService = new Mock<IApplicantService>();
+            _fakeUserService = new Mock<IUserService>();
+            _controller = new TrackerController(_fakeApplicationService.Object, _fakeApplicantService.Object, _fakeUserService.Object);
         }
 
         [Fact]
