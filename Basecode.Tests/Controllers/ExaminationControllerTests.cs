@@ -27,7 +27,7 @@ namespace Basecode.Tests.Controllers
                 {
                     Id = 3,
                     UserId_HR = 3,
-                    Date = new DateOnly(2023,1,1),
+                    Date = new DateTime(2023,1,1),
                     TeamsLink = "link.test",
                     Score = 95,
                     Result = "For Technical Exam",
@@ -37,7 +37,7 @@ namespace Basecode.Tests.Controllers
                 {
                     Id = 4,
                     UserId_HR = 4,
-                    Date = new DateOnly(2023,1,1),
+                    Date = new DateTime(2023,1,1),
                     TeamsLink = "link.test",
                     Score = 89,
                     Result = "For Technical Exam",

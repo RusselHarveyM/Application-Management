@@ -32,7 +32,7 @@ namespace Basecode.Services.Services
                     {
                         Id = 1,
                         UserId_HR = 1,
-                        Date = new DateOnly(2023,1,1),
+                        Date = new DateTime(2023,1,1),
                         TeamsLink = "link.test",
                         Score = 79,
                         Result = "For Technical Exam",
@@ -42,7 +42,7 @@ namespace Basecode.Services.Services
                     {
                         Id = 2,
                         UserId_HR = 2,
-                        Date = new DateOnly(2023,1,1),
+                        Date = new DateTime(2023,1,1),
                         TeamsLink = "link.test",
                         Score = 75,
                         Result = "For Technical Exam",
@@ -52,7 +52,7 @@ namespace Basecode.Services.Services
                     {
                         Id = 3,
                         UserId_HR = 3,
-                        Date = new DateOnly(2023,1,1),
+                        Date = new DateTime(2023,1,1),
                         TeamsLink = "link.test",
                         Score = 95,
                         Result = "For Technical Exam",
@@ -62,7 +62,7 @@ namespace Basecode.Services.Services
                     {
                         Id = 4,
                         UserId_HR = 4,
-                        Date = new DateOnly(2023,1,1),
+                        Date = new DateTime(2023,1,1),
                         TeamsLink = "link.test",
                         Score = 89,
                         Result = "For Technical Exam",
