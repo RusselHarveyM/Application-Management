@@ -113,23 +113,37 @@ namespace Basecode.Services.Services
             await _emailService.SendEmail("hrautomatesystem@outlook.com", "Applicant Status Update for HR",
             $"Applicant {applicant.Firstname} (ID: {applicant.Id}) has changeds status to {newStatus}.");
 
+            var redirectLink = "https://localhost:50991/Home";
+            var templatePath = Path.Combine("wwwroot", "template", "mailtemplate.html");
+            var templateContent = System.IO.File.ReadAllText(templatePath);
+
             // Notify the applicant
             switch (newStatus)
             {
                 case "Success":
                     {
-                        await _emailService.SendEmail(applicant.Email, "Applicant Status Update for Applicant",
-                        $"Dear {applicant.Firstname} <br> (ID: {applicant.Id}) <br><br> {msgBody} <br><br> status: {newStatus}.");
+                        var body = templateContent
+                            .Replace("{{HEADER_LINK}}", redirectLink)
+                            .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+                            .Replace("{{HEADLINE}}", "Applicant Status Changed")
+                            .Replace("{{BODY}}", $"Dear {applicant.Firstname},")
+                            .Replace("{{BODY2}}", $"Your application with an ID of: <b>[{applicant.Id}]</b> has changed its status. <br>{msgBody} <br><br> <b>Current Status: {newStatus}</b>")
+                            .Replace("{{BODY3}}", "This is an automated messsage. Do not reply");
+
+                        await _emailService.SendEmail(applicant.Email, "Applicant Status Update for Applicant", body);
                     }
                     break;
                 case "Rejected":
                     {
-                        var redirectLink = "https://localhost:50991/Home";
-                        await _emailService.SendEmail(applicant.Email, "Applicant Status Update for Applicant",
-                        $"<b>Dear {applicant.Firstname},</b> <br><br> {msgBody} <br><br> <b>Status:</b> {newStatus}. " +
-                        $"<br><br> <em>This is an automated messsage. Do not reply</em> <br><br> <a href=\"{redirectLink}\" " +
-                        $"style=\"background-color: #FF0000; border: none; color: white; padding: 10px 24px; text-align: center; text-decoration: underline; " +
-                        $"display: inline-block; font-size: 14px; margin: 4px 2px; cursor: pointer;\">Visit Alliance</a>");
+                        var body = templateContent
+                            .Replace("{{HEADER_LINK}}", redirectLink)
+                            .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+                            .Replace("{{HEADLINE}}", "Applicant Status Changed")
+                            .Replace("{{BODY}}", $"Dear {applicant.Firstname},")
+                            .Replace("{{BODY2}}", $"Your application with an ID of: <b>[{applicant.Id}]</b> has changed its status. <br>{msgBody} <br><br> <b>Current Status: {newStatus}</b>")
+                            .Replace("{{BODY3}}", "This is an automated messsage. Do not reply");
+
+                        await _emailService.SendEmail(applicant.Email, "Alliance Software Inc. Applicant Status Update", body);
                     }
                     break;
                 default:
