@@ -8,7 +8,7 @@ namespace Basecode.Data.Models
         [Key]
         public int Id { get; set; }
         public int UserId_HR { get; set; }
-        public DateOnly Date { get; set; }
+        public DateTime Date { get; set; }
         public string TeamsLink { get; set; }
         public int Score { get; set; }
         public string Result { get; set; }
