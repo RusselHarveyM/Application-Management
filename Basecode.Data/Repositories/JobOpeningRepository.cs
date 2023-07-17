@@ -1,5 +1,6 @@
 ﻿using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,6 +44,11 @@ namespace Basecode.Data.Repositories
         {
             _context.JobOpening.Remove(jobOpening);
             _context.SaveChanges();
+        }
+
+        public List<int> GetAllJobOpeningIds()
+        {
+            return _context.JobOpening.Select(j => j.Id).ToList();
         }
     }
 }
