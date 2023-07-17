@@ -43,7 +43,7 @@
         </div>
     </div>
     <form asp-controller="PublicApplication" asp-action="Confirmation" method="post" enctype="multipart/form-data" onsubmit="return validateForm();">
-        <input type="hidden" name="jobId" value="@TempData["JobOpeningId"]" />
+        <input type="hidden" asp-for="JobOpeningId" value="@Model.JobOpeningId" />
         <input type="hidden" asp-for="Firstname" value="@Model.Firstname" />
         <input type="hidden" asp-for="Middlename" value="@Model.Middlename" />
         <input type="hidden" asp-for="Lastname" value="@Model.Lastname" />

@@ -41,7 +41,7 @@
     </div>
     <form asp-controller="PublicApplication" asp-action="Create" method="post" enctype="multipart/form-data">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <input type="hidden" name="jobId" value="@TempData["JobOpeningId"]" />
+        <input type="hidden" asp-for="JobOpeningId" value="@Model.JobOpeningId" />
         <div class="container d-flex flex-column align-items-center justify-content-center mb-2" style="width: 800px;">
             <h5 class="mb-3">
                 Personal Information
@@ -125,7 +125,7 @@
                     <div class="col-sm-10">
                         <div class="d-flex column-gap-2">
                             <input type="text" class="form-control" style="background-color: #F3F4F6; color: #BDC1CA; border: dashed;" value="@TempData["FileName"]" readonly>
-                            <input type="hidden" asp-for="CV" value="@TempData["FileData"]" />
+                            <input type="hidden" asp-for="CV" value="@Model.CV" />
                         </div>
                     </div>
                 </div>

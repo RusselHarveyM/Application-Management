@@ -204,3 +204,4 @@ CoverageReport/
 # Ignore TestResults directory
 TestResults/
 /Basecode.Tests/script.bat
+/Basecode.Tests/UnitTests.bat
