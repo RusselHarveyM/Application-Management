@@ -21,6 +21,8 @@ namespace Basecode.Services.Interfaces
         /// <returns>The application with the specified ID, or null if not found.</returns>
         ApplicationViewModel GetById(Guid id);
 
+        Application GetApplicationById(Guid id);
+
         /// <summary>
         /// Creates the specified application.
         /// </summary>

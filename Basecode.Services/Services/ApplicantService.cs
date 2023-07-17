@@ -51,6 +51,30 @@ namespace Basecode.Services.Services
             return _repository.GetById(id);
         }
 
+
+        /// <summary>Updates the application.</summary>
+        /// <param name="applicant">The applicant.</param>
+        /// <param name="newStatus">The new status.</param>
+        public void UpdateApplication(Application application,User user, string choice, string newStatus)
+        {
+
+            var applicant = _repository.GetById(application.ApplicantId);
+
+            application.UpdateTime = DateTime.Now;
+            application.Status = newStatus;
+
+            if (choice.Equals("approved"))
+            {
+                _applicationRepository.UpdateApplication(application);
+                _trackService.StatusNotification(applicant, user, newStatus);
+            }
+            else 
+            {
+                //send automated email of regrets
+                _trackService.UpdateTrackStatusEmail(applicant, application.Id, user.Id, "Rejected", "Rejected");
+            }
+        }
+
         /// <summary>
         /// Creates a new applicant based on the provided applicant data.
         /// </summary>
@@ -77,14 +101,14 @@ namespace Basecode.Services.Services
                     UpdateTime = DateTime.Now
                 };
 
-                _applicationRepository.CreateApplication(application);
+                var createdApplicationId = _applicationRepository.CreateApplication(application);
 
-                var newStatus = "Success";
-                _trackService.UpdateTrackStatus(
+                _trackService.UpdateTrackStatusEmail(
                             applicantModel,
-                            -1,
-                            newStatus,
-                            "Notify01"
+                            createdApplicationId,
+                            - 1,
+                            "For Screening",
+                            "GUID"
                             );
             }
 

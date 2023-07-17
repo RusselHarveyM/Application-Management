@@ -13,14 +13,20 @@ namespace Basecode.Main.Controllers
     {
         private readonly IJobOpeningService _jobOpeningService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly IApplicationService _applicationService;
+        private readonly ITrackService _trackService;
+        private readonly IApplicantService _applicantService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController" /> class.
         /// </summary>
         /// <param name="jobOpeningService">The job opening service.</param>
-        public HomeController(IJobOpeningService jobOpeningService)
+        public HomeController(IJobOpeningService jobOpeningService, IApplicationService applicationService, ITrackService trackService,IApplicantService applicantService)
         {
             _jobOpeningService = jobOpeningService;
+            _applicationService = applicationService;
+            _trackService = trackService;
+            _applicantService = applicantService;
         }
 
         /// <summary>
@@ -29,12 +35,20 @@ namespace Basecode.Main.Controllers
         /// <returns>
         /// A view with a list of job openings and category of job.
         /// </returns>
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             try
             {
                 // Get all jobs currently available.
                 var jobOpenings = _jobOpeningService.GetJobs();
+                var applicant = _applicantService.GetApplicantById(5003);
+
+                await _trackService.UpdateTrackStatusEmail(
+                            applicant,
+                            new Guid("dc061db4-83bd-4d29-6b07-08db864fdfa7"),
+                            5002,
+                            "For Technical Interview",
+                            "Approval");
 
                 if (jobOpenings.IsNullOrEmpty())
                 {

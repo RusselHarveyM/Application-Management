@@ -16,24 +16,21 @@ namespace Basecode.Services.Services
             _emailService = emailService;
         }
 
-        public async Task UpdateTrackStatus(Applicant applicant, int userId, string newStatus, string mailType)
+        public async Task UpdateTrackStatusEmail(Applicant applicant,Guid appId, int userId, string newStatus, string mailType)
         {
+            
             if (applicant.Id>= 0 && userId >= -1)
             {
                 var user = _userService.GetById(userId);
 
                 switch (mailType)
                 {
-                    case "Notify01":
+                    case "GUID":
                         //for GUID, method for change.
                         await _emailService.SendNotifyEmail(applicant, newStatus);
                         break;
-                    case "Notify02":
-                        await _emailService.SendNotifyEmail(applicant, newStatus);
-                        await _emailService.SendNotifyHREmail(applicant, newStatus);
-                        break;
                     case "Approval":
-                        await _emailService.SendApprovalEmail(user, applicant);
+                        await _emailService.SendApprovalEmail(user, applicant, appId, newStatus);
                         break;
                     case "Rejected":
                         await _emailService.SendRejectedEmail(applicant, newStatus);
@@ -44,6 +41,14 @@ namespace Basecode.Services.Services
             }
         }
 
-       
+        public async Task StatusNotification(Applicant applicant, User user, string newStatus)
+        {
+            if (applicant.Id >= 0)
+            {
+                //Notify HR and Applicant for every status change.
+                await _emailService.SendStatusNotification(user, applicant, newStatus);
+            }
+        }
+
     }
 }

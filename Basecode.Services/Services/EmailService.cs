@@ -54,13 +54,25 @@ namespace Basecode.Services.Services
             await this.SendEmail(applicant.Email, "Alliance Software Inc. Applicant Status Update", body);
         }
 
-        public async Task SendNotifyHREmail(Applicant applicant, string newStatus)
+        public async Task SendStatusNotification(User user, Applicant applicant, string newStatus)
         {
-            await this.SendEmail("hrautomatesystem@outlook.com", "Applicant Status Update for HR",
-                $"Applicant {applicant.Firstname} (ID: {applicant.Id}) has changed status to {newStatus}.");
+            //Notify Applicant
+            var templatePath = Path.Combine("wwwroot", "template", "mailtemplate.html");
+            var templateContent = File.ReadAllText(templatePath);
+            var body = templateContent
+                .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+                .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+                .Replace("{{HEADLINE}}", "Applicant Status")
+                .Replace("{{BODY}}", $"Dear {applicant.Firstname},<br> Application [{applicant.Id}] has changed its status. <br> Current Status: {newStatus}");
+
+            await this.SendEmail(applicant.Email, "Alliance Software Inc. Applicant Status Update", body);
+
+            //Notify HR
+            await this.SendEmail(user.Email, "Applicant Status Update for HR",
+               $"Applicant {applicant.Firstname} (ID: {applicant.Id}) has changed status to {newStatus}.");
         }
 
-        public async Task SendApprovalEmail(User user, Applicant applicant)
+        public async Task SendApprovalEmail(User user, Applicant applicant, Guid appId, string newStatus)
         {
             var templatePath = Path.Combine("wwwroot", "template", "ApprovalEmail.html");
             var templateContent = File.ReadAllText(templatePath);
@@ -70,7 +82,9 @@ namespace Basecode.Services.Services
                 .Replace("{{HEADLINE}}", "Approval Email")
                 .Replace("{{BODY}}", $"Dear {user.Fullname},<br> Application [{applicant.Id}] has just finished their interview, please provide your feedback to" +
                     $" proceed to the next phase. Thank you.")
-                .Replace("{{APPLICANT_ID}}", $"{applicant.Id}");
+                .Replace("{{APPLICATION_ID}}", $"{ appId }")
+                .Replace("{{USER_ID}}", $"{user.Id}")
+                .Replace("{{STATUS}}", $"{newStatus}");
 
             await this.SendEmail(user.Email, "Alliance Software Inc. Applicant Status Update", body);
         }

@@ -18,10 +18,11 @@ namespace Basecode.Data.Repositories
             _context = context;
         }
 
-        public void CreateApplication(Application application)
+        public Guid CreateApplication(Application application)
         {
             _context.Application.Add(application);
             _context.SaveChanges();
+            return application.Id;
         }
 
         public Application GetById(Guid id)

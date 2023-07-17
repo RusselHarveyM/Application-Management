@@ -11,9 +11,9 @@ namespace Basecode.Services.Interfaces
     {
         Task SendNotifyEmail(Applicant applicant, string newStatus);
 
-        Task SendNotifyHREmail(Applicant applicant, string newStatus);
+        Task SendStatusNotification(User user, Applicant applicant, string newStatus);
 
-        Task SendApprovalEmail(User user, Applicant applicant);
+        Task SendApprovalEmail(User user, Applicant applicant, Guid appId, string newStatus);
 
         Task SendRejectedEmail(Applicant applicant, string newStatus);
     }

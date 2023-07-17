@@ -69,6 +69,19 @@ namespace Basecode.Services.Services
             return applicationViewModel;
         }
 
+
+        public Application GetApplicationById(Guid id)
+        {
+            var application = _repository.GetById(id);
+
+            if (application == null)
+            {
+                return null;
+            }
+
+            return application;
+        }
+
         /// <summary>
         /// Updates the specified application.
         /// </summary>

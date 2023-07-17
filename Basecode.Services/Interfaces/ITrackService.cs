@@ -9,6 +9,8 @@ namespace Basecode.Services.Interfaces
 {
     public interface ITrackService
     {
-        Task UpdateTrackStatus(Applicant applicant, int userId, string newStatus, string mailType);
+        Task UpdateTrackStatusEmail(Applicant applicant, Guid appId, int userId, string newStatus, string mailType);
+
+        Task StatusNotification(Applicant applicant, User user, string newStatus);
     }
 }
