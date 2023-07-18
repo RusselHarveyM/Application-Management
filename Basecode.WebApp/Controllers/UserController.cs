@@ -2,6 +2,7 @@
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
 using Basecode.Services.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using NLog;
@@ -9,6 +10,7 @@ using System.Text;
 
 namespace Basecode.WebApp.Controllers
 {
+    [Authorize]
     public class UserController : Controller
     {
         private readonly IUserService _service;
