@@ -1,12 +1,14 @@
 ﻿using Basecode.Data.Models;
 using Basecode.Services.Interfaces;
 using Basecode.Services.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using NLog;
 
 namespace Basecode.WebApp.Controllers
 {
+    [Authorize]
     public class DashboardController : Controller
     {
         private readonly IApplicantService _applicantService;
