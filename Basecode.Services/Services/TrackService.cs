@@ -29,10 +29,6 @@ namespace Basecode.Services.Services
                         //for GUID, method for change.
                         await _emailService.SendNotifyEmail(applicant, newStatus);
                         break;
-                    case "Notify02":
-                        await _emailService.SendNotifyEmail(applicant, newStatus);
-                        await _emailService.SendNotifyHREmail(applicant, newStatus);
-                        break;
                     case "Approval":
                         await _emailService.SendApprovalEmail(user, applicant, appId, newStatus);
                         break;
