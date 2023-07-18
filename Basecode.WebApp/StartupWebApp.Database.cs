@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Basecode.WebApp
 {
-    public partial class Startup
+    public partial class StartupWebApp
     {
         private void ConfigureDatabase(IServiceCollection services)
         {
@@ -16,9 +16,12 @@ namespace Basecode.WebApp
                 )
             );
 
+            services.AddDatabaseDeveloperPageExceptionFilter();
+
             services.AddIdentity<IdentityUser, IdentityRole>()
                     .AddRoles<IdentityRole>()
                     .AddEntityFrameworkStores<BasecodeContext>()
+                    .AddDefaultUI()
                     .AddDefaultTokenProviders();      
         }
     }

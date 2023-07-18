@@ -8,7 +8,7 @@ using Basecode.Data.Models;
 
 namespace Basecode.WebApp
 {
-    public partial class Startup
+    public partial class StartupWebApp
     {
         private void ConfigureDependencies(IServiceCollection services)
         {
@@ -26,6 +26,9 @@ namespace Basecode.WebApp
             services.AddScoped<ICharacterReferenceService, CharacterReferenceService>();
             services.AddScoped<IExaminationService, ExaminationService>();
             services.AddScoped<IShortlistingService, ShortlistingService>();
+            services.AddScoped<ITrackService, TrackService>();
+            services.AddScoped<IShortlistingService, ShortlistingService>();
+            services.AddScoped<ITrackService, TrackService>();
 
             // Repositories
             services.AddScoped<IUserRepository, UserRepository>();

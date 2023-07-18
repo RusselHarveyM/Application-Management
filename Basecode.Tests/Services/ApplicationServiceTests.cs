@@ -29,7 +29,7 @@ namespace Basecode.Tests.Services
             _fakeJobOpeningService = new Mock<IJobOpeningService>();
             _fakeApplicantService = new Mock<IApplicantService>();
             _fakeMapper = new Mock<IMapper>();
-            _service = new ApplicationService(_fakeApplicationRepository.Object, _fakeMapper.Object, _fakeJobOpeningService.Object, _fakeApplicantService.Object, _fakeEmailService.Object);
+            _service = new ApplicationService(_fakeApplicationRepository.Object, _fakeMapper.Object, _fakeJobOpeningService.Object, _fakeApplicantService.Object);
         }
 
         [Fact]

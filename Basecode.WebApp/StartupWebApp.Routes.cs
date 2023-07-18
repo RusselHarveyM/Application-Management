@@ -2,7 +2,7 @@
 
 namespace Basecode.WebApp
 {
-    public partial class Startup
+    public partial class StartupWebApp
     {
         private void ConfigureRoutes(IApplicationBuilder app)
         {            
@@ -15,6 +15,8 @@ namespace Basecode.WebApp
                 endpoints.MapControllerRoute(
                     name: "token",
                     pattern: "api/{token}");
+
+                endpoints.MapRazorPages();
             });
         }
     }

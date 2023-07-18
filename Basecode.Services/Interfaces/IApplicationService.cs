@@ -21,6 +21,8 @@ namespace Basecode.Services.Interfaces
         /// <returns>The application with the specified ID, or null if not found.</returns>
         ApplicationViewModel GetById(Guid id);
 
+        Application GetApplicationById(Guid id);
+
         /// <summary>
         /// Creates the specified application.
         /// </summary>
@@ -34,18 +36,9 @@ namespace Basecode.Services.Interfaces
         LogContent Update(Application application);
 
         /// <summary>
-        /// Updates the applicant application status
-        /// </summary>
-        /// <param name="applicantId">The applicant identifier.</param>
-        /// <param name="newStatus">The new status.</param>
-        /// <param name="msgBody">The body message for email.</param>
-        Task UpdateApplicationStatus(int applicantId, string newStatus, string msgBody);
-
-        /// <summary>
         /// Gets the applications by ids.
         /// </summary>
         /// <param name="applicationIds">The application ids.</param>
-        /// <returns></returns>
         List<Application> GetApplicationsByIds(List<Guid> applicationIds);
     }
 }

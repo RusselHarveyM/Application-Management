@@ -1,6 +1,6 @@
 ﻿<!--
     Basic Graph Email Demo by Tobias Zimmergren.
-    Read the blog post: 
+    Read the blog post:
 
     I'm using an e-mail template from Colorlib for the purposes of this demo: https://github.com/ColorlibHQ/email-templates/blob/master/10/index.html
 -->
@@ -15,6 +15,10 @@
     <title></title> <!-- The title tag shows in email notifications, like Android 4.4. -->
 
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 
     <!-- CSS Reset : BEGIN -->
     <style>
@@ -28,10 +32,11 @@
             height: 100% !important;
             width: 100% !important;
             background: #f1f1f1;
-        }
-
+        
         /* What it does: Stops email clients resizing small text. */
-        * {
+            *
+
+        {
             -ms-text-size-adjust: 100%;
             -webkit-text-size-adjust: 100%;
         }
@@ -338,6 +343,26 @@
 
         @media screen and (max-width: 500px) {
         }
+
+        .btn-choices .default {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem !important;
+            margin-top: 1.5rem;
+            cursor: pointer !important;
+        }
+
+        .btn-choices-default {
+            padding: 0.8rem 2.5rem;
+            border-radius: 7px;
+            font-size: 1.1rem;
+        }
+
+        .btn-choices-approve {
+            color: #fff;
+            background-color: red;
+        }
     </style>
 
 
@@ -375,7 +400,10 @@
                                     <div class="text" style="padding: 0 2.5em; text-align: center;">
                                         <h2>{{HEADLINE}}</h2>
                                         <h3>{{BODY}}</h3>
-                                        <p><a href="#" class="btn btn-primary">You are awesome!</a></p>
+                                        <div class="btn-choices default" style="gap:2rem">
+                                            <a id="rejectButton" href="https://localhost:57541/Tracker/ChangeStatus/{{USER_ID}}/{{APPLICATION_ID}}/{{STATUS}}/rejected" class="ms-2 btn-choices-default" style="text-decoration:none">Reject</a>
+                                            <a id="approveButton" href="https://localhost:57541/Tracker/ChangeStatus/{{USER_ID}}/{{APPLICATION_ID}}/{{STATUS}}/approved" class="ms-2 btn-choices-default btn-choices-approve" style="text-decoration:none">Approve</a>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
@@ -440,5 +468,34 @@
 
         </div>
     </center>
+
+    <script>
+        $(document).ready(function () {
+            $('#rejectButton').click(function () {
+                updateStatus('rejected');
+            });
+
+            $('#approveButton').click(function () {
+                updateStatus('approved');
+            });
+
+            function updateStatus(status) {
+                // Send an AJAX request to your MVC service endpoint
+                $.ajax({
+                    url: '/Tracker/ChangeStatus',
+                    type: 'POST',
+                    data: { status: status },
+                    success: function (response) {
+                        // Handle the response from the server if needed
+                        console.log('Status updated successfully');
+                    },
+                    error: function (error) {
+                        // Handle the error if the request fails
+                        console.error('Failed to update status:', error);
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

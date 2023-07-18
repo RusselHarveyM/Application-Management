@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Basecode.WebApp
 {
-    public partial class Startup
+    public partial class StartupWebApp
     {
         private void ConfigureMapper(IServiceCollection services)
         {

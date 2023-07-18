@@ -2,7 +2,7 @@
 
 namespace Basecode.WebApp
 {
-    public partial class Startup
+    public partial class StartupWebApp
     {
         private void ConfigureCors(IServiceCollection services)
         {

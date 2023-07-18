@@ -23,7 +23,7 @@ namespace Basecode.Data.Interfaces
         /// Creates a new application entry.
         /// </summary>
         /// <param name="application">The application to be added.</param>
-        void CreateApplication(Application application);
+        Guid CreateApplication(Application application);
 
         /// <summary>
         /// Updates an existing application.

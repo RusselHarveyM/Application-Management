@@ -5,9 +5,9 @@ using Hangfire.SqlServer;
 
 namespace Basecode.WebApp
 {
-    public partial class Startup
+    public partial class StartupWebApp
     {
-        public Startup(IConfiguration configuration)
+        public StartupWebApp(IConfiguration configuration)
         {
             Configuration = configuration;
         }
@@ -37,6 +37,10 @@ namespace Basecode.WebApp
 
             // Add the processing server as IHostedService
             services.AddHangfireServer();
+            services.AddMvc(options =>
+            {
+                options.EnableEndpointRouting = false;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,13 +58,12 @@ namespace Basecode.WebApp
 
             app.UseStaticFiles();           // Enables the use of static files
             app.UseHttpsRedirection();      // Enables redirection of HTTP to HTTPS requests.
-            app.UseCors("CorsPolicy");      // Enables CORS                              
+            app.UseCors("CorsPolicy");      // Enables CORS
+            app.UseRouting();               
             app.UseAuthentication();        // Enables the ConfigureAuth service.
-
-            app.UseRouting();
-            this.ConfigureRoutes(app);      // Configuration for API controller routing
-
             app.UseAuthorization();
+            
+            this.ConfigureRoutes(app);      // Configuration for API controller routing
             this.ConfigureAuth(app);        // Configuration for Token Authentication
 
             app.UseHangfireDashboard();

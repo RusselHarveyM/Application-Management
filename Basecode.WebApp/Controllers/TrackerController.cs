@@ -9,14 +9,18 @@ namespace Basecode.WebApp.Controllers
     {
         private readonly IApplicationService _applicationService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly IApplicantService _applicantService;
+        private readonly IUserService _userService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TrackerController"/> class.
         /// </summary>
         /// <param name="applicationService">The application service.</param>
-        public TrackerController(IApplicationService applicationService)
+        public TrackerController(IApplicationService applicationService, IApplicantService applicantService, IUserService userService)
         {
             _applicationService = applicationService;
+            _applicantService = applicantService;
+            _userService = userService;
         }
 
         /// <summary>
@@ -56,6 +60,35 @@ namespace Basecode.WebApp.Controllers
                 _logger.Error(ErrorHandling.DefaultException(e.Message));
                 return StatusCode(500, "Something went wrong.");
             }
+        }
+
+        [Route("Tracker/ChangeStatus/{userId}/{appId}/{status}/{choice}")]
+        public IActionResult ChangeStatus(int userId,Guid appId, string status, string choice)
+        {
+            try
+            {
+                //Check if applicant and user exists
+                var application = _applicationService.GetApplicationById(appId);
+                var user = _userService.GetById(userId);
+
+                if(application != null && user != null)
+                {
+                    _applicantService.UpdateApplication(application, user, choice, status);
+                }
+
+                return RedirectToAction("ChangeStatusView");
+            }
+            catch(Exception e)
+            {
+                _logger.Error(ErrorHandling.DefaultException(e.Message));
+                return StatusCode(500, "Something went wrong.");
+            }
+        }
+
+
+        public IActionResult ChangeStatusView()
+        {
+            return View();
         }
     }
 }
