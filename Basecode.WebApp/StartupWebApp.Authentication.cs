@@ -3,6 +3,7 @@ using Basecode.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 namespace Basecode.WebApp
 {
@@ -30,6 +31,11 @@ namespace Basecode.WebApp
                     ValidateAudience = true,            // Validate if the token audience matches our audience value (default true)
                     ValidateLifetime = true,            // Validate the token expiry 
                 };
+            });
+            services.AddMvc();
+            services.Configure<KestrelServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
             });
         }
 
