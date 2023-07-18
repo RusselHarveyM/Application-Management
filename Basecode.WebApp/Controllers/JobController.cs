@@ -6,6 +6,7 @@ using Basecode.Data.ViewModels;
 using NLog;
 using Basecode.Services.Services;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Basecode.WebApp.Controllers
 {
@@ -59,6 +60,7 @@ namespace Basecode.WebApp.Controllers
         /// <returns>
         /// A view for creating a new job opening.
         /// </returns>
+        [Authorize]
         public IActionResult CreateView()
         {
             try
@@ -108,6 +110,7 @@ namespace Basecode.WebApp.Controllers
         /// <param name="jobOpening">The job opening.</param>
         /// <returns></returns>
         [HttpPost]
+        [Authorize]
         public IActionResult Create(JobOpeningViewModel jobOpening)
         {
             try
@@ -139,6 +142,7 @@ namespace Basecode.WebApp.Controllers
         /// <returns>
         /// A view for updating the job opening or NotFound result if no job opening is found.
         /// </returns>
+        [Authorize]
         public IActionResult UpdateView(int id)
         {
             try
@@ -169,6 +173,7 @@ namespace Basecode.WebApp.Controllers
         /// Redirects to the Index action if the model state is valid or returns the same view with the model if not valid.
         /// </returns>
         [HttpPost]
+        [Authorize]
         public IActionResult Update(JobOpeningViewModel jobOpening)
         {
             try
@@ -178,7 +183,7 @@ namespace Basecode.WebApp.Controllers
                 var data = _jobOpeningService.Update(jobOpening, updatedBy);
                 if (!data.Result)
                 {
-                // Update the job opening
+                    // Update the job opening
                     _logger.Trace("Updated [" + jobOpening.Id + "] successfully.");
                     return RedirectToAction("Index");
                 }
@@ -201,6 +206,8 @@ namespace Basecode.WebApp.Controllers
         /// Redirects to the Index action or returns NotFound result if no job opening is found.
         /// </returns>
         [HttpPost]
+        [Authorize]
+
         public IActionResult Delete(int id)
         {
             try
