@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
+using Basecode.Data.Repositories;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -141,6 +143,15 @@ namespace Basecode.Services.Services
         {
             var job = _mapper.Map<JobOpening>(jobOpening);
             _repository.DeleteJobOpening(job);
+        }
+
+        /// <summary>
+        /// Gets all job opening ids.
+        /// </summary>
+        /// <returns></returns>
+        public List<int> GetAllJobOpeningIds()
+        {
+            return _repository.GetAllJobOpeningIds();
         }
     }
 }

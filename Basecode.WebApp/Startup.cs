@@ -1,5 +1,7 @@
 ﻿using Basecode.Services.Interfaces;
 using Basecode.Services.Services;
+using Hangfire;
+using Hangfire.SqlServer;
 
 namespace Basecode.WebApp
 {
@@ -25,6 +27,16 @@ namespace Basecode.WebApp
             // Add services to the container.
             services.AddControllersWithViews();
             services.AddScoped<IEmailService, EmailService>();
+
+            // Add Hangfire services.
+            services.AddHangfire(configuration => configuration
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
+
+            // Add the processing server as IHostedService
+            services.AddHangfireServer();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,6 +62,13 @@ namespace Basecode.WebApp
 
             app.UseAuthorization();
             this.ConfigureAuth(app);        // Configuration for Token Authentication
+
+            app.UseHangfireDashboard();
+
+            // Shortlisting of Applicants that runs every 2 weeks
+            //RecurringJob.AddOrUpdate<IShortlistingService>("shortlisting", service => service.ShortlistApplications(), "0 8 1,15 * *");
+            // FOR TESTING ONLY: run shortlisting method every minute
+            //RecurringJob.AddOrUpdate<IShortlistingService>("shortlisting", service => service.ShortlistApplications(), Cron.Minutely);
         }
     }
 }

@@ -48,5 +48,11 @@ namespace Basecode.Services.Interfaces
         /// </summary>
         /// <param name="jobOpening">The job opening to delete.</param>
         void Delete(JobOpeningViewModel jobOpening);
+
+        /// <summary>
+        /// Gets all job opening ids.
+        /// </summary>
+        /// <returns></returns>
+        List<int> GetAllJobOpeningIds();
     }
 }

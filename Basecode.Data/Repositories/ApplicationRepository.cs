@@ -34,5 +34,12 @@ namespace Basecode.Data.Repositories
             _context.Application.Update(application);
             _context.SaveChanges();
         }
+
+        public List<Application> GetApplicationsByIds(List<Guid> applicationIds)
+        {
+            var applications = _context.Application
+                .Where(a => applicationIds.Contains(a.Id)).ToList();
+            return applications;
+        }
     }
 }
