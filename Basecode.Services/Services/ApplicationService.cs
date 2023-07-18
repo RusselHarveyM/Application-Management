@@ -106,68 +106,6 @@ namespace Basecode.Services.Services
         }
 
         /// <summary>
-        /// Updates the application status of an applicant in the database and notifies the HR and the applicant via email.
-        /// </summary>
-        /// <param name="applicantId">The ID of the applicant.</param>
-        /// <param name="newStatus">The new status to update.</param>
-        /// <param name="msgBody">The body message for email</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task UpdateApplicationStatus(int applicantId, string newStatus, string msgBody)
-        {
-            // Update applicant status in the database
-            // ongoing!!!
-
-            // Get applicant details from the database
-            Applicant applicant = _applicantService.GetApplicantById(applicantId);
-
-            var templatePath = Path.Combine("wwwroot", "template", "mailtemplate.html");
-            var templateContent = System.IO.File.ReadAllText(templatePath);
-
-
-            var redirectLink = "https://localhost:50991/Home";
-            var templatePath = Path.Combine("wwwroot", "template", "mailtemplate.html");
-            var templateContent = System.IO.File.ReadAllText(templatePath);
-
-            // Notify the applicant
-            switch (newStatus)
-            {
-                case "Success":
-                    {
-                        var body = templateContent
-                            .Replace("{{HEADER_LINK}}", redirectLink)
-                            .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
-                            .Replace("{{HEADLINE}}", "Applicant Status Changed")
-                            .Replace("{{BODY}}", $"Dear {applicant.Firstname},")
-                            .Replace("{{BODY2}}", $"Your application with an ID of: <b>[{applicant.Id}]</b> has changed its status. <br>{msgBody} <br><br> <b>Current Status: {newStatus}</b>")
-                            .Replace("{{BODY3}}", "This is an automated messsage. Do not reply");
-
-                        await _emailService.SendEmail(applicant.Email, "Applicant Status Update for Applicant", body);
-                    }
-                    break;
-                case "Rejected":
-                    {
-                        var body = templateContent
-                            .Replace("{{HEADER_LINK}}", redirectLink)
-                            .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
-                            .Replace("{{HEADLINE}}", "Applicant Status Changed")
-                            .Replace("{{BODY}}", $"Dear {applicant.Firstname},")
-                            .Replace("{{BODY2}}", $"Your application with an ID of: <b>[{applicant.Id}]</b> has changed its status. <br>{msgBody} <br><br> <b>Current Status: {newStatus}</b>")
-                            .Replace("{{BODY3}}", "This is an automated messsage. Do not reply");
-
-                        await _emailService.SendEmail(applicant.Email, "Alliance Software Inc. Applicant Status Update", body);
-                    }
-                    break;
-                default:
-                    break;
-            }
-
-            // Notify HR
-            await _emailService.SendEmail("hrautomatesystem@outlook.com", "Applicant Status Update for HR",
-            $"Applicant {applicant.Firstname} (ID: {applicant.Id}) has changeds status to {newStatus}.");
-
-        }
-
-        /// <summary>
         /// Gets the applications by ids.
         /// </summary>
         /// <param name="applicationIds">The application ids.</param>
@@ -176,6 +114,5 @@ namespace Basecode.Services.Services
         {
             return _repository.GetApplicationsByIds(applicationIds);
         }
-
     }
 }

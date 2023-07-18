@@ -34,5 +34,11 @@ namespace Basecode.Services.Interfaces
         /// </summary>
         /// <param name="application">The application.</param>
         LogContent Update(Application application);
+
+        /// <summary>
+        /// Gets the applications by ids.
+        /// </summary>
+        /// <param name="applicationIds">The application ids.</param>
+        List<Application> GetApplicationsByIds(List<Guid> applicationIds);
     }
 }
