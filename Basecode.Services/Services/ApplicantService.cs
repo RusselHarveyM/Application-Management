@@ -114,5 +114,15 @@ namespace Basecode.Services.Services
 
             return (logContent, createdApplicantId);
         }
+
+        /// <summary>
+        /// Gets the applicants by the job opening id.
+        /// </summary>
+        /// <param name="jobOpeningId">The job opening id.</param>
+        /// <returns></returns>
+        public List<ApplicantStatusViewModel> GetApplicantsByJobOpeningId(int jobOpeningId)
+        {
+            return _repository.GetApplicantsByJobOpeningId(jobOpeningId).ToList();
+        }
     }
 }
