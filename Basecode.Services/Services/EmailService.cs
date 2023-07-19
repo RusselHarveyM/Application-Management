@@ -41,8 +41,15 @@ namespace Basecode.Services.Services
             await Task.CompletedTask;
         }
 
-        public async Task SendNotifyEmail(Applicant applicant, string newStatus)
+        /// <summary>
+        /// Sends an email to an applicant containing their Unique Tracking ID.
+        /// </summary>
+        /// <param name="applicant">The applicant.</param>
+        /// <param name="newStatus">The new status.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+/        public async Task SendNotifyEmail(Applicant applicant, string newStatus)
         {
+            //Notify Applicant for their Unique Tracking ID
             var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
             var templateContent = File.ReadAllText(templatePath);
             var body = templateContent
