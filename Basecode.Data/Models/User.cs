@@ -61,5 +61,10 @@ namespace Basecode.Data.Models
         [Required]
         [StringLength(50)]
         public string Role { get; set; }
+
+        /// <summary>
+        /// Collection navigation for related JobOpenings
+        /// </summary>
+        public ICollection<JobOpening> JobOpenings { get; set; } = new List<JobOpening>();
     }
 }
