@@ -74,7 +74,7 @@ namespace Basecode.WebApp.Controllers
                     {
                         fileUpload.CopyTo(memoryStream);
                         byte[] fileData = memoryStream.ToArray();
-                        string base64FileData = Convert.ToBase64String(fileData); // Convert to Base64 string
+                        string base64FileData = Convert.ToBase64String(fileData);
                         TempData["FileData"] = base64FileData;
                     }
                 }
