@@ -50,5 +50,57 @@ namespace Basecode.Data.Repositories
         {
             return _context.JobOpening.Select(j => j.Id).ToList();
         }
+
+        public IQueryable<JobOpening> GetJobsWithApplications()
+        {
+            return _context.JobOpening.Include(j => j.Applications);
+        }
+
+        public string GetJobOpeningTitleById(int id)
+        {
+            var title = _context.JobOpening
+            .Where(j => j.Id == id)
+            .Select(j => j.Title)
+            .FirstOrDefault();
+
+            return title;
+        }
+
+        public IQueryable<int> GetLinkedUserIds(int jobOpeningId)
+        {
+            return _context.JobOpening
+                            .Where(j => j.Id == jobOpeningId)
+                            .SelectMany(j => j.Users.Select(u => u.Id));
+        }
+
+        public void UpdateJobOpeningUsers(int jobOpeningId, List<int> assignedUserIds)
+        {
+            var jobOpening = _context.JobOpening
+                .Include(j => j.Users)
+                .FirstOrDefault(j => j.Id == jobOpeningId);
+
+            if (jobOpening != null)
+            {
+                var existingUserIds = jobOpening.Users.Select(u => u.Id).ToList();
+
+                // Find the users to remove from the junction table
+                var usersToRemove = jobOpening.Users.Where(u => existingUserIds.Contains(u.Id) && !assignedUserIds.Contains(u.Id)).ToList();
+
+                // Remove unassigned users from the junction table
+                foreach (var user in usersToRemove)
+                {
+                    jobOpening.Users.Remove(user);
+                }
+
+                // Link the selected users to the JobOpening
+                var selectedUsersToAdd = _context.User.Where(u => assignedUserIds.Contains(u.Id) && !existingUserIds.Contains(u.Id)).ToList();
+                foreach (var user in selectedUsersToAdd)
+                {
+                    jobOpening.Users.Add(user);
+                }
+
+                _context.SaveChanges();
+            }
+        }
     }
 }
