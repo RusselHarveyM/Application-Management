@@ -54,7 +54,10 @@ namespace Basecode.Data.ViewModels
         [Required(ErrorMessage = "At least one responsibility is required.")]
         public List<Responsibility> Responsibilities { get; set; }
 
-        public List<Application>? Applications { get; set; }
+        /// <summary>
+        /// Collection navigation for related Applications.
+        /// </summary>
+        public ICollection<Application> Applications { get; } = new List<Application>();
 
     }
 }
