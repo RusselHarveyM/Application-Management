@@ -74,7 +74,8 @@ namespace Basecode.WebApp.Controllers
                     {
                         fileUpload.CopyTo(memoryStream);
                         byte[] fileData = memoryStream.ToArray();
-                        TempData["FileData"] = fileData;
+                        string base64FileData = Convert.ToBase64String(fileData);
+                        TempData["FileData"] = base64FileData;
                     }
                 }
                 else
@@ -83,7 +84,7 @@ namespace Basecode.WebApp.Controllers
                     return RedirectToAction("Index", new { jobOpeningId = applicant.JobOpeningId });
                 }
                 TempData["FileName"] = Path.GetFileName(fileUpload.FileName);
-                _logger.Trace("Successfuly renders form.");
+                _logger.Trace("Successfully renders form.");
                 return View(applicant);
             }
             catch (Exception e)
@@ -98,12 +99,14 @@ namespace Basecode.WebApp.Controllers
         /// </summary>
         /// <param name="applicant">The applicant's information.</param>
         /// <param name="fileName">The name of the uploaded file.</param>
+        /// <param name="fileData">The CV of the applicant.</param>
         /// <returns>Returns a view displaying the applicant's information and the uploaded file name.</returns>
-        public IActionResult Confirmation(ApplicantViewModel applicant, string fileName)
+        public IActionResult Confirmation(ApplicantViewModel applicant, string fileName, string fileData)
         {
             try
             {
                 TempData["FileName"] = fileName;
+                TempData["FileData"] = fileData;
                 _logger.Trace("Successfuly renders form.");
                 return View(applicant);
             }
@@ -121,15 +124,18 @@ namespace Basecode.WebApp.Controllers
         /// <param name="fileName">The name of the uploaded file.</param>
         /// <param name="applicantId">The ID of the applicant.</param>
         /// <param name="newStatus">The new application status.</param>
+        /// <param name="fileData">The CV of the applicant.</param>
         /// <returns>Returns a redirect to the job index page if the applicant is created successfully, otherwise returns the index view.</returns>
         [HttpPost]
-        public async Task<IActionResult> Create(ApplicantViewModel applicant, string fileName, int applicantId, string newStatus)
+        public async Task<IActionResult> Create(ApplicantViewModel applicant, string fileName, int applicantId, string newStatus, string fileData)
         {
             try
             {
                 var isJobOpening = _jobOpeningService.GetById(applicant.JobOpeningId);
                 if (isJobOpening != null)
                 {
+                    byte[] cv = Convert.FromBase64String(fileData);
+                    applicant.CV = cv;
                     (LogContent logContent, int createdApplicantId) = _applicantService.Create(applicant);
                     if (!logContent.Result)
                     {

@@ -160,9 +160,10 @@ namespace Basecode.Tests.Controllers
             // Arrange
             var applicant = new ApplicantViewModel();
             var fileName = "document.pdf";
+            var fileData = "0x";
 
             // Act
-            var result = _controller.Confirmation(applicant, fileName);
+            var result = _controller.Confirmation(applicant, fileName, fileData);
 
             // Assert
             Assert.NotNull(result);
@@ -184,10 +185,11 @@ namespace Basecode.Tests.Controllers
             // Arrange
             var applicant = new ApplicantViewModel();
             var fileName = "document.pdf";
+            var fileData = "0x";
             var expectedErrorMessage = "Something went wrong.";
 
             // Act
-            var result = _controller.Confirmation(applicant, fileName);
+            var result = _controller.Confirmation(applicant, fileName, fileData);
 
             // Assert
             Assert.NotNull(result);
@@ -225,6 +227,7 @@ namespace Basecode.Tests.Controllers
             // Arrange
             var applicant = new ApplicantViewModel { JobOpeningId = 123 };
             var fileName = "document.pdf";
+            var fileData = "0x";
             var applicantId = 456;
             var newStatus = "Success";
             var expectedErrorMessage = "Something went wrong.";
@@ -233,7 +236,7 @@ namespace Basecode.Tests.Controllers
             _mockApplicantService.Setup(service => service.Create(applicant)).Throws(new Exception());
 
             // Act
-            var result = await _controller.Create(applicant, fileName, applicantId, newStatus);
+            var result = await _controller.Create(applicant, fileName, applicantId, newStatus, fileData);
 
             // Assert
             Assert.NotNull(result);
