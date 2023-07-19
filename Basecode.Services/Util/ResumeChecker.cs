@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -9,10 +10,22 @@ namespace Basecode.Services.Util
     public class ResumeChecker
     {
         private static readonly HttpClient client = new HttpClient();
-        private const string apiKey = "aff_e9c190c8d4822c5498f275720fff11759f3c13e6";
+        private readonly IConfiguration configuration;
+
+        public ResumeChecker(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+        }
 
         public async Task<string> ParseResume()
         {
+
+            var apiKey = configuration["ApiKeys:Affinda"];
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                throw new ApplicationException("API key not found in configuration.");
+            }
+
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
             var result = "";
             var templatePath = Path.Combine("wwwroot", "template", "resume.pdf");

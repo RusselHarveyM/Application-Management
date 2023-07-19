@@ -5,6 +5,7 @@ using Basecode.Data.Repositories;
 using Basecode.Services.Interfaces;
 using Basecode.Services.Services;
 using Basecode.Data.Models;
+using Basecode.Services.Util;
 
 namespace Basecode.WebApp
 {
@@ -15,6 +16,7 @@ namespace Basecode.WebApp
             // Common
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ClaimsProvider, ClaimsProvider>();
+            services.AddScoped<ResumeChecker>();
 
             // Services 
             services.AddScoped<IUserService, UserService>();

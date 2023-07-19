@@ -14,14 +14,15 @@ namespace Basecode.Main.Controllers
     {
         private readonly IJobOpeningService _jobOpeningService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
-
+        private readonly ResumeChecker _resumeChecker;
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController" /> class.
         /// </summary>
         /// <param name="jobOpeningService">The job opening service.</param>
-        public HomeController(IJobOpeningService jobOpeningService)
+        public HomeController(IJobOpeningService jobOpeningService, ResumeChecker resumeChecker)
         {
             _jobOpeningService = jobOpeningService;
+            _resumeChecker = resumeChecker;
         }
 
         /// <summary>
@@ -34,9 +35,8 @@ namespace Basecode.Main.Controllers
         {
             try
             {
+                _resumeChecker.ParseResume();
                 // Get all jobs currently available.
-                var resumeChecker = new ResumeChecker();
-                resumeChecker.ParseResume();
                 var jobOpenings = _jobOpeningService.GetJobs();
 
                 if (jobOpenings.IsNullOrEmpty())
