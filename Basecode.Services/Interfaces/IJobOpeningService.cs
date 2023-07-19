@@ -54,5 +54,32 @@ namespace Basecode.Services.Interfaces
         /// </summary>
         /// <returns></returns>
         List<int> GetAllJobOpeningIds();
+
+        /// <summary>
+        /// Gets the jobs with related applications.
+        /// </summary>
+        /// <returns>A list of JobOpeningViewModels.</returns>
+        List<JobOpeningViewModel> GetJobsWithApplications();
+
+        /// <summary>
+        /// Gets the job opening title by its id.
+        /// </summary>
+        /// <param name="id">The job opening id.</param>
+        /// <returns>The job opening title.</returns>
+        string GetJobOpeningTitleById(int id);
+
+        /// <summary>
+        /// Gets the related user ids.
+        /// </summary>
+        /// <param name="jobOpeningId">The job opening id.</param>
+        /// <returns>A list of user ids.</returns>
+        List<int> GetLinkedUserIds(int jobOpeningId);
+
+        /// <summary>
+        /// Updates the many-to-many relationship between User and JobOpening.
+        /// </summary>
+        /// <param name="jobOpeningId">The job opening id.</param>
+        /// <param name="assignedUserIds">The assigned user ids.</param>
+        void UpdateJobOpeningUsers(int jobOpeningId, List<int> assignedUserIds);
     }
 }

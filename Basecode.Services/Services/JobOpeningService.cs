@@ -153,5 +153,47 @@ namespace Basecode.Services.Services
         {
             return _repository.GetAllJobOpeningIds();
         }
+
+        /// <summary>
+        /// Gets the jobs with related applications.
+        /// </summary>
+        /// <returns>A list of JobOpeningViewModels.</returns>
+        public List<JobOpeningViewModel> GetJobsWithApplications()
+        {
+            var data = _repository.GetJobsWithApplications()
+                .Select(m => _mapper.Map<JobOpeningViewModel>(m))
+                .ToList();
+            return data;
+        }
+
+        /// <summary>
+        /// Gets the job opening title by its id.
+        /// </summary>
+        /// <param name="id">The job opening id.</param>
+        /// <returns>The job opening title.</returns>
+        public string GetJobOpeningTitleById(int id)
+        {
+            return _repository.GetJobOpeningTitleById(id);
+        }
+
+        /// <summary>
+        /// Gets the related user ids.
+        /// </summary>
+        /// <param name="jobOpeningId">The job opening id.</param>
+        /// <returns>A list of user ids.</returns>
+        public List<int> GetLinkedUserIds(int jobOpeningId)
+        {
+            return _repository.GetLinkedUserIds(jobOpeningId).ToList();
+        }
+
+        /// <summary>
+        /// Updates the many-to-many relationship between User and JobOpening.
+        /// </summary>
+        /// <param name="jobOpeningId">The job opening id.</param>
+        /// <param name="assignedUserIds">The assigned user ids.</param>
+        public void UpdateJobOpeningUsers(int jobOpeningId, List<int> assignedUserIds)
+        {
+            _repository.UpdateJobOpeningUsers(jobOpeningId, assignedUserIds);
+        }
     }
 }
