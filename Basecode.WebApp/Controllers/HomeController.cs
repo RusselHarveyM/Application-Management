@@ -6,6 +6,7 @@ using NLog;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Services;
 using Microsoft.IdentityModel.Tokens;
+using Basecode.Services.Util;
 
 namespace Basecode.Main.Controllers
 {
@@ -34,6 +35,8 @@ namespace Basecode.Main.Controllers
             try
             {
                 // Get all jobs currently available.
+                var resumeChecker = new ResumeChecker();
+                resumeChecker.ParseResume();
                 var jobOpenings = _jobOpeningService.GetJobs();
 
                 if (jobOpenings.IsNullOrEmpty())
