@@ -18,6 +18,7 @@ namespace Basecode.WebApp
             services.AddScoped<ClaimsProvider, ClaimsProvider>();
             services.AddScoped<ResumeChecker>();
 
+
             // Services 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IApplicantService, ApplicantService>();

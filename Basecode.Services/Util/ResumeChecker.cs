@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Basecode.Services.Util
@@ -17,7 +19,7 @@ namespace Basecode.Services.Util
             this.configuration = configuration;
         }
 
-        public async Task<string> ParseResume()
+        private async Task<string> ParseResume()
         {
 
             var apiKey = configuration["ApiKeys:Affinda"];
@@ -52,5 +54,44 @@ namespace Basecode.Services.Util
 
             return result;
         }
+
+        public async Task CheckResume()
+        {
+            var parsedResume = await ParseResume();
+
+            var openAiApiKey = configuration["ApiKeys:OpenAI"];
+            if (string.IsNullOrEmpty(openAiApiKey))
+            {
+                throw new ApplicationException("OpenAI API key not found in configuration.");
+            }
+
+            var prompt = "You are tasked with acting as an AI-powered resume checker for a hiring company looking to fill a " +
+                        "Frontend Developer position. The input to your system is a parsed resume, and your goal is to score the resume based on how well it fits the given job description. " +
+                        "The output should be a key-value pair of (\"Score\": Result) representing the overall likelihood of the resume fitting the Frontend Developer role," +
+                        " expressed as a percentage between 1% to 100%.:: " + parsedResume;
+
+            var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", openAiApiKey);
+
+            var requestData = new
+            {
+                prompt = prompt,
+                max_tokens = 150,
+                temperature = 0.5
+            };
+
+            var jsonContent = JsonConvert.SerializeObject(requestData);
+            var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+            using (var response = await httpClient.PostAsync("https://api.openai.com/v1/engines/davinci/completions", httpContent))
+            {
+                var responseString = await response.Content.ReadAsStringAsync();
+                dynamic responseObject = JsonConvert.DeserializeObject(responseString);
+                string result = responseObject.choices[0].text;
+                Console.WriteLine(result);
+            }
+        }
+
+
     }
 }
