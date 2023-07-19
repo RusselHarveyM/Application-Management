@@ -47,7 +47,7 @@ namespace Basecode.Services.Services
         /// <param name="applicant">The applicant.</param>
         /// <param name="newStatus">The new status.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-/        public async Task SendNotifyEmail(Applicant applicant, string newStatus)
+        public async Task SendNotifyEmail(Applicant applicant, string newStatus)
         {
             //Notify Applicant for their Unique Tracking ID
             var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
