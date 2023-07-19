@@ -45,5 +45,32 @@ namespace Basecode.Data.Interfaces
         /// </summary>
         /// <returns></returns>
         List<int> GetAllJobOpeningIds();
+
+        /// <summary>
+        /// Gets the jobs with applications.
+        /// </summary>
+        /// <returns></returns>
+        IQueryable<JobOpening> GetJobsWithApplications();
+
+        /// <summary>
+        /// Gets the job opening title by identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
+        string GetJobOpeningTitleById(int id);
+
+        /// <summary>
+        /// Gets the linked user ids.
+        /// </summary>
+        /// <param name="jobOpeningId">The job opening identifier.</param>
+        /// <returns></returns>
+        IQueryable<int> GetLinkedUserIds(int jobOpeningId);
+
+        /// <summary>
+        /// Updates the job opening users.
+        /// </summary>
+        /// <param name="jobOpeningId">The job opening identifier.</param>
+        /// <param name="assignedUserIds">The assigned user ids.</param>
+        void UpdateJobOpeningUsers(int jobOpeningId, List<int> assignedUserIds);
     }
 }

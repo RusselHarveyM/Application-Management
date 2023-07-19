@@ -42,5 +42,12 @@ namespace Basecode.Services.Interfaces
         /// Returns a tuple with the log content and the ID of the created applicant.
         /// </returns>
         (LogContent, int) Create(ApplicantViewModel applicant);
+
+        /// <summary>
+        /// Gets the applicants by the job opening id.
+        /// </summary>
+        /// <param name="jobOpeningId">The job opening id.</param>
+        /// <returns></returns>
+        List<ApplicantStatusViewModel> GetApplicantsByJobOpeningId(int jobOpeningId);
     }
 }

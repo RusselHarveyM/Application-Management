@@ -16,14 +16,16 @@ namespace Basecode.Services.Services
     public class UserService : ErrorHandling, IUserService
     {
         private readonly IUserRepository _repository;
+        private readonly IJobOpeningService _jobOpeningService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserService"/> class.
         /// </summary>
         /// <param name="repository">The repository.</param>
-        public UserService(IUserRepository repository)
+        public UserService(IUserRepository repository, IJobOpeningService jobOpeningService)
         {
             _repository = repository;
+            _jobOpeningService = jobOpeningService;
         }
 
         /// <summary>
@@ -131,5 +133,23 @@ namespace Basecode.Services.Services
             return validationErrors;
         }
 
+        public List<HRUserViewModel> GetAllUsersWithLinkStatus(int jobOpeningId)
+        {
+            var allUsers = _repository.RetrieveAll();
+
+            // Get the users linked to the specified JobOpening
+            var linkedUserIds = _jobOpeningService.GetLinkedUserIds(jobOpeningId); // Replace _jobOpeningRepository with your actual repository instance to get linked users
+
+            // Create a new HRUserViewModel list with link status
+            var usersWithLinkStatus = allUsers.Select(user => new HRUserViewModel
+            {
+                Id = user.Id,
+                Fullname = user.Fullname,
+                Email = user.Email,
+                IsLinkedToJobOpening = linkedUserIds.Contains(user.Id)
+            }).ToList();
+
+            return usersWithLinkStatus;
+        }
     }
 }

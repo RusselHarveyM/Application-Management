@@ -39,6 +39,6 @@ namespace Basecode.Data.Models
 
         public List<CharacterReference> CharacterReferences { get; set; }
 
-        public Application Application { get; set; }
+        public Application? Application { get; set; }
     }
 }

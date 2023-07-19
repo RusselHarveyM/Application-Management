@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="~/css/dashboard/dashboard.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Basecode.Main.styles.css" asp-append-version="true" />
     <script src="https://kit.fontawesome.com/d1f67a892f.js" crossorigin="anonymous"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </head>
 <body>
     <div class="d-flex h-100">
@@ -71,7 +74,6 @@
         </div>
     </div>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)

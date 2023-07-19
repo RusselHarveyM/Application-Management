@@ -231,5 +231,19 @@ namespace Basecode.WebApp.Controllers
             }
         }
 
+        [HttpPost]
+        public IActionResult UpdateJobOpeningAssignments(List<int> assignedUserIds, int jobOpeningId)
+        {
+            try
+            {
+                _jobOpeningService.UpdateJobOpeningUsers(jobOpeningId, assignedUserIds);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _logger.Error(ErrorHandling.DefaultException(e.Message));
+                return StatusCode(500, "Something went wrong.");
+            }
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Basecode.Data.Models;
+using Basecode.Data.ViewModels;
 
 namespace Basecode.Data.Interfaces
 {
@@ -26,5 +27,12 @@ namespace Basecode.Data.Interfaces
         /// <param name="applicant">The Applicant object to create.</param>
         /// <returns>The ID of the created applicant.</returns>
         int CreateApplicant(Applicant applicant);
+
+        /// <summary>
+        /// Gets the applicants by job opening id.
+        /// </summary>
+        /// <param name="jobOpeningId">The job opening id.</param>
+        /// <returns></returns>
+        IQueryable<ApplicantStatusViewModel> GetApplicantsByJobOpeningId(int jobOpeningId);
     }
 }

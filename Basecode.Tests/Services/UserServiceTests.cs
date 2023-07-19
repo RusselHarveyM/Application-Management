@@ -1,6 +1,7 @@
 ﻿using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
+using Basecode.Services.Interfaces;
 using Basecode.Services.Services;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Moq;
@@ -12,11 +13,13 @@ namespace Basecode.Tests.Services
     {
         private readonly Mock<IUserRepository> _fakeUserRepository;
         private readonly UserService _service;
+        private readonly Mock<IJobOpeningService> _fakeJobOpeningService;
 
         public UserServiceTests()
         {
             _fakeUserRepository = new Mock<IUserRepository>();
-            _service = new UserService(_fakeUserRepository.Object);
+            _fakeJobOpeningService = new Mock<IJobOpeningService>();
+            _service = new UserService(_fakeUserRepository.Object, _fakeJobOpeningService.Object);
         }
 
         [Fact]
