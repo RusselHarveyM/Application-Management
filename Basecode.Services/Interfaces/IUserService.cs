@@ -50,5 +50,7 @@ namespace Basecode.Services.Interfaces
         /// <param name="modelState">State of the model.</param>
         /// <returns>Dictionary containing the validation errors.</returns>
         Dictionary<string, string> GetValidationErrors(ModelStateDictionary modelState);
+
+        List<HRUserViewModel> GetAllUsersWithLinkStatus(int jobOpeningId);
     }
 }
