@@ -26,7 +26,6 @@ namespace Basecode.Services.Services
                 switch (mailType)
                 {
                     case "GUID":
-                        //for GUID, method for change.
                         await _emailService.SendNotifyEmail(applicant, newStatus);
                         break;
                     case "Approval":
