@@ -7,7 +7,7 @@ namespace Basecode.Data.Models
     {
         [Key]
         public int Id { get; set; }
-        public int? UserId_HR { get; set; }
+        public int? UserId { get; set; }
         public DateTime? Date { get; set; }
         public string? TeamsLink { get; set; }
         public int? Score { get; set; }
@@ -15,7 +15,5 @@ namespace Basecode.Data.Models
 
         [ForeignKey("Application")]
         public Guid ApplicationId { get; set; }
-
-        public virtual Application Application { get; set; }
     }
 }

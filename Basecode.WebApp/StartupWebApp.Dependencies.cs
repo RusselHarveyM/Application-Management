@@ -39,6 +39,7 @@ namespace Basecode.WebApp
             services.AddScoped<IResponsibilityRepository, ResponsibilityRepository>();
             services.AddScoped<ICharacterReferenceRepository, CharacterReferenceRepository>();
             services.AddScoped<IExaminationRepository, ExaminationRepository>();
+            services.AddScoped<IInterviewRepository, InterviewRepository>();
         }
     }
 }
