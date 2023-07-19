@@ -103,7 +103,7 @@ namespace Basecode.WebApp.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            returnUrl ??= Url.Content("~/Home");
+            returnUrl ??= Url.Content("~/Dashboard");
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
