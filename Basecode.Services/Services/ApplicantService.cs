@@ -4,10 +4,12 @@ using Basecode.Data.Models;
 using Basecode.Data.Repositories;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
+using Basecode.Services.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using static Basecode.Services.Services.ErrorHandling;
 
@@ -17,19 +19,23 @@ namespace Basecode.Services.Services
     {
         private readonly IApplicantRepository _repository;
         private readonly IApplicationRepository _applicationRepository;
+        private readonly IJobOpeningService _jobOpeningService;
         private readonly ITrackService _trackService;
+        private readonly ResumeChecker _resumeChecker;
         private readonly IMapper _mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicantService"/> class.
         /// </summary>
         /// <param name="repository">The repository.</param>
-        public ApplicantService(IApplicantRepository repository, IApplicationRepository applicationRepository, IMapper mapper, ITrackService trackService)
+        public ApplicantService(IApplicantRepository repository, IApplicationRepository applicationRepository, IMapper mapper, ITrackService trackService, ResumeChecker resumeChecker, IJobOpeningService jobOpeningService)
         {
             _repository = repository;
             _applicationRepository = applicationRepository;
             _mapper = mapper;
             _trackService = trackService;
+            _resumeChecker = resumeChecker;
+            _jobOpeningService = jobOpeningService;
         }
 
         /// <summary>
@@ -55,7 +61,7 @@ namespace Basecode.Services.Services
         /// <summary>Updates the application.</summary>
         /// <param name="applicant">The applicant.</param>
         /// <param name="newStatus">The new status.</param>
-        public void UpdateApplication(Application application,User user, string choice, string newStatus)
+        public void UpdateApplication(Application application, User user, string choice, string newStatus)
         {
 
             var applicant = _repository.GetById(application.ApplicantId);
@@ -68,7 +74,7 @@ namespace Basecode.Services.Services
                 _applicationRepository.UpdateApplication(application);
                 _trackService.StatusNotification(applicant, user, newStatus);
             }
-            else 
+            else
             {
                 //send automated email of regrets
                 _trackService.UpdateTrackStatusEmail(applicant, application.Id, user.Id, "Rejected", "Rejected");
@@ -80,10 +86,11 @@ namespace Basecode.Services.Services
         /// </summary>
         /// <param name="applicant"></param>
         /// <returns>Returns a tuple with the log content and the ID of the created applicant.</returns>
-        public (LogContent, int) Create(ApplicantViewModel applicant)
+        public async Task<(LogContent, int)> Create(ApplicantViewModel applicant)
         {
             LogContent logContent = new LogContent();
             int createdApplicantId = 0;
+            var jobOpening = _jobOpeningService.GetById(applicant.JobOpeningId);
 
             logContent = CheckApplicant(applicant);
             if (logContent.Result == false)
@@ -96,20 +103,37 @@ namespace Basecode.Services.Services
                 {
                     JobOpeningId = applicant.JobOpeningId,
                     ApplicantId = createdApplicantId,
-                    Status = "For Screening",
+                    Status = "NA",
                     ApplicationDate = DateTime.Now,
                     UpdateTime = DateTime.Now
                 };
 
-                var createdApplicationId = _applicationRepository.CreateApplication(application);
+                var jobPosition = jobOpening.Title;
 
-                _trackService.UpdateTrackStatusEmail(
-                            applicantModel,
-                            createdApplicationId,
-                            - 1,
-                            "For Screening",
-                            "GUID"
-                            );
+                var result = await _resumeChecker.CheckResume(jobPosition, applicant.CV);
+
+                JsonDocument jsonDocument = JsonDocument.Parse(result);
+                var jsonObject = jsonDocument.RootElement;
+
+                // Accessing individual properties
+                string jobPos = jsonObject.GetProperty("JobPosition").GetString();
+                string score = jsonObject.GetProperty("Score").GetString();
+                string explanation = jsonObject.GetProperty("Explanation").GetString();
+
+                if (int.Parse(score.Replace("%", "")) > 60)
+                {
+                    application.Status = "Shortlisted";
+                    var createdApplicationId = _applicationRepository.CreateApplication(application);
+
+                    await _trackService.UpdateTrackStatusEmail(
+                                applicantModel,
+                                createdApplicationId,
+                                -1,
+                                "Shortlisted",
+                                "GUID"
+                                );
+                }
+
             }
 
             return (logContent, createdApplicantId);

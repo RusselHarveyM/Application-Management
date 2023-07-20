@@ -7,6 +7,8 @@ using NLog;
 using Basecode.Services.Services;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Basecode.WebApp.Controllers
 {
@@ -115,8 +117,7 @@ namespace Basecode.WebApp.Controllers
         {
             try
             {
-                string createdBy = "dummy_person";
-                var data = _jobOpeningService.Create(jobOpening, createdBy);
+                var data = _jobOpeningService.Create(jobOpening, User.Identity?.Name??"person1");
                 //Checks for any validation warning
                 if (!data.Result)
                 {
@@ -178,9 +179,7 @@ namespace Basecode.WebApp.Controllers
         {
             try
             {
-
-                string updatedBy = "dummy1";
-                var data = _jobOpeningService.Update(jobOpening, updatedBy);
+                var data = _jobOpeningService.Update(jobOpening, User.Identity?.Name ?? "person1");
                 if (!data.Result)
                 {
                     // Update the job opening

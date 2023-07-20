@@ -4,6 +4,7 @@ using Basecode.Data.Models;
 using Basecode.Data.Repositories;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
+using Basecode.Services.Util;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace Basecode.Services.Services
         private readonly IJobOpeningRepository _repository;
         private readonly IQualificationService _qualificationService;
         private readonly IResponsibilityService _responsibilityService;
+        private ResumeChecker _resumeChecker;
         private readonly IMapper _mapper;
 
         /// <summary>
@@ -44,6 +46,8 @@ namespace Basecode.Services.Services
             var data = _repository.GetAll()
                 .Select(m => _mapper.Map<JobOpeningViewModel>(m))
                 .ToList();
+
+
 
             return data;
         }

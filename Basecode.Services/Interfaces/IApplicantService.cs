@@ -41,7 +41,7 @@ namespace Basecode.Services.Interfaces
         /// <returns>
         /// Returns a tuple with the log content and the ID of the created applicant.
         /// </returns>
-        (LogContent, int) Create(ApplicantViewModel applicant);
+        Task<(LogContent, int)> Create(ApplicantViewModel applicant);
 
         /// <summary>
         /// Gets the applicants by the job opening id.
