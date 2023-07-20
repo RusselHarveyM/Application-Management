@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Basecode.Data.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -19,7 +21,8 @@ namespace Basecode.Services.Util
             this.configuration = configuration;
         }
 
-        private async Task<string> ParseResume()
+
+        private async Task<string> ParseResume(byte[] resume)
         {
 
             var apiKey = configuration["ApiKeys:Affinda"];
@@ -30,9 +33,8 @@ namespace Basecode.Services.Util
 
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
             var result = "";
-            var templatePath = Path.Combine("wwwroot", "template", "resume.pdf");
             var content = new MultipartFormDataContent();
-            content.Add(new ByteArrayContent(File.ReadAllBytes(templatePath)), "file", "resume.pdf");
+            content.Add(new ByteArrayContent(resume), "file", "resume.pdf");
 
             var request = new HttpRequestMessage
             {
@@ -55,9 +57,9 @@ namespace Basecode.Services.Util
             return result;
         }
 
-        public async Task CheckResume()
+        public async Task<string> CheckResume(string jobPosition, byte[] resume)
         {
-            var parsedResume = await ParseResume();
+            var parsedResume = await ParseResume(resume);
 
             var openAiApiKey = configuration["ApiKeys:OpenAI"];
             if (string.IsNullOrEmpty(openAiApiKey))
@@ -65,32 +67,51 @@ namespace Basecode.Services.Util
                 throw new ApplicationException("OpenAI API key not found in configuration.");
             }
 
-            var prompt = "You are tasked with acting as an AI-powered resume checker for a hiring company looking to fill a " +
-                        "Frontend Developer position. The input to your system is a parsed resume, and your goal is to score the resume based on how well it fits the given job description. " +
-                        "The output should be a key-value pair of (\"Score\": Result) representing the overall likelihood of the resume fitting the Frontend Developer role," +
-                        " expressed as a percentage between 1% to 100%.:: " + parsedResume;
+            var maxContextLength = 4097;
+            var truncatedParsedResume = parsedResume.Substring(0, Math.Min(parsedResume.Length, maxContextLength));
 
+
+            // Set up the HttpClient
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", openAiApiKey);
 
-            var requestData = new
+            var requestBody = new
             {
-                prompt = prompt,
-                max_tokens = 150,
-                temperature = 0.5
+                model = "gpt-3.5-turbo",
+                messages = new[]
+                {
+            new
+            {
+                role = "system",
+                content = $"As an AI-powered resume evaluator for a leading hiring company, your task is to analyze parsed resumes and assess their suitability for a specific job position - the {jobPosition} role. Your objective is to return a key-value pair ('Score': Result), representing the overall likelihood of the resume aligning with the requirements of the {jobPosition} position. The score should be presented as a percentage, ranging from 1% to 100%." +
+                $"Your advanced algorithms will thoroughly evaluate the resume's contents, focusing on essential skills, qualifications, and experience relevant to the {jobPosition} position. Concentrate on the field of {jobPosition} position." +
+                $" Please provide a brief explanation of why the given score was assigned to the resume. Your assessment should take into account the candidate's expertise, achievements, and experience specifically in the {jobPosition} field, determining its compatibility with the desired role."
+            },
+            new
+            {
+                role = "user",
+                content = truncatedParsedResume // Use the parsedResume as user input
+            }
+        },
+                max_tokens = 150
             };
 
-            var jsonContent = JsonConvert.SerializeObject(requestData);
-            var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+            var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
 
-            using (var response = await httpClient.PostAsync("https://api.openai.com/v1/engines/davinci/completions", httpContent))
-            {
-                var responseString = await response.Content.ReadAsStringAsync();
-                dynamic responseObject = JsonConvert.DeserializeObject(responseString);
-                string result = responseObject.choices[0].text;
-                Console.WriteLine(result);
-            }
+            // Send the request to the OpenAI API using the correct endpoint for chat models
+            var response = await httpClient.PostAsync("https://api.openai.com/v1/chat/completions", content);
+
+
+            // Parse the response
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var json = JObject.Parse(responseContent);
+
+            // Accessing the "Score" value
+            string cont = json["choices"]?[0]?["message"]?["content"]?.ToString();
+
+            return cont;
         }
+
 
 
     }

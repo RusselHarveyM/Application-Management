@@ -35,7 +35,6 @@ namespace Basecode.Main.Controllers
         {
             try
             {
-                //_resumeChecker.CheckResume();
                 // Get all jobs currently available.
                 var jobOpenings = _jobOpeningService.GetJobs();
 

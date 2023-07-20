@@ -4,6 +4,7 @@ using Basecode.Data.Models;
 using Basecode.Data.Repositories;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
+using Basecode.Services.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,19 +18,23 @@ namespace Basecode.Services.Services
     {
         private readonly IApplicantRepository _repository;
         private readonly IApplicationRepository _applicationRepository;
+        private readonly IJobOpeningService _jobOpeningService;
         private readonly ITrackService _trackService;
+        private readonly ResumeChecker _resumeChecker;
         private readonly IMapper _mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicantService"/> class.
         /// </summary>
         /// <param name="repository">The repository.</param>
-        public ApplicantService(IApplicantRepository repository, IApplicationRepository applicationRepository, IMapper mapper, ITrackService trackService)
+        public ApplicantService(IApplicantRepository repository, IApplicationRepository applicationRepository, IMapper mapper, ITrackService trackService, ResumeChecker resumeChecker, IJobOpeningService jobOpeningService)
         {
             _repository = repository;
             _applicationRepository = applicationRepository;
             _mapper = mapper;
             _trackService = trackService;
+            _resumeChecker = resumeChecker;
+            _jobOpeningService = jobOpeningService;
         }
 
         /// <summary>
@@ -80,10 +85,11 @@ namespace Basecode.Services.Services
         /// </summary>
         /// <param name="applicant"></param>
         /// <returns>Returns a tuple with the log content and the ID of the created applicant.</returns>
-        public (LogContent, int) Create(ApplicantViewModel applicant)
+        public async Task<(LogContent, int)> Create(ApplicantViewModel applicant)
         {
             LogContent logContent = new LogContent();
             int createdApplicantId = 0;
+            var jobOpening = _jobOpeningService.GetById(applicant.JobOpeningId);
 
             logContent = CheckApplicant(applicant);
             if (logContent.Result == false)
@@ -101,9 +107,13 @@ namespace Basecode.Services.Services
                     UpdateTime = DateTime.Now
                 };
 
+                var jobPosition = jobOpening.Title;
+                
+                var result = await _resumeChecker.CheckResume(jobPosition, applicant.CV);
+
                 var createdApplicationId = _applicationRepository.CreateApplication(application);
 
-                _trackService.UpdateTrackStatusEmail(
+                await _trackService.UpdateTrackStatusEmail(
                             applicantModel,
                             createdApplicationId,
                             - 1,

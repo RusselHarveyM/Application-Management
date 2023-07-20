@@ -134,9 +134,9 @@ namespace Basecode.WebApp.Controllers
                 var isJobOpening = _jobOpeningService.GetById(applicant.JobOpeningId);
                 if (isJobOpening != null)
                 {
-                    byte[] cv = Convert.FromBase64String(fileData);
+                    byte[] cv = Convert.FromBase64String(fileData).ToArray();
                     applicant.CV = cv;
-                    (LogContent logContent, int createdApplicantId) = _applicantService.Create(applicant);
+                    (LogContent logContent, int createdApplicantId) = await _applicantService.Create(applicant);
                     if (!logContent.Result)
                     {
                         _logger.Trace("Create Applicant successfully.");

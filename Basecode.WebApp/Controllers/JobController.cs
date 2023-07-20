@@ -179,8 +179,6 @@ namespace Basecode.WebApp.Controllers
         {
             try
             {
-
-                
                 var data = _jobOpeningService.Update(jobOpening, User.Identity.Name);
                 if (!data.Result)
                 {
