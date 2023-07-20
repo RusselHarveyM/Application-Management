@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using static Basecode.Services.Services.ErrorHandling;
 
@@ -60,7 +61,7 @@ namespace Basecode.Services.Services
         /// <summary>Updates the application.</summary>
         /// <param name="applicant">The applicant.</param>
         /// <param name="newStatus">The new status.</param>
-        public void UpdateApplication(Application application,User user, string choice, string newStatus)
+        public void UpdateApplication(Application application, User user, string choice, string newStatus)
         {
 
             var applicant = _repository.GetById(application.ApplicantId);
@@ -73,7 +74,7 @@ namespace Basecode.Services.Services
                 _applicationRepository.UpdateApplication(application);
                 _trackService.StatusNotification(applicant, user, newStatus);
             }
-            else 
+            else
             {
                 //send automated email of regrets
                 _trackService.UpdateTrackStatusEmail(applicant, application.Id, user.Id, "Rejected", "Rejected");
@@ -102,24 +103,37 @@ namespace Basecode.Services.Services
                 {
                     JobOpeningId = applicant.JobOpeningId,
                     ApplicantId = createdApplicantId,
-                    Status = "For Screening",
+                    Status = "NA",
                     ApplicationDate = DateTime.Now,
                     UpdateTime = DateTime.Now
                 };
 
                 var jobPosition = jobOpening.Title;
-                
+
                 var result = await _resumeChecker.CheckResume(jobPosition, applicant.CV);
 
-                var createdApplicationId = _applicationRepository.CreateApplication(application);
+                JsonDocument jsonDocument = JsonDocument.Parse(result);
+                var jsonObject = jsonDocument.RootElement;
 
-                await _trackService.UpdateTrackStatusEmail(
-                            applicantModel,
-                            createdApplicationId,
-                            - 1,
-                            "For Screening",
-                            "GUID"
-                            );
+                // Accessing individual properties
+                string jobPos = jsonObject.GetProperty("JobPosition").GetString();
+                string score = jsonObject.GetProperty("Score").GetString();
+                string explanation = jsonObject.GetProperty("Explanation").GetString();
+
+                if (int.Parse(score.Replace("%", "")) > 60)
+                {
+                    application.Status = "Shortlisted";
+                    var createdApplicationId = _applicationRepository.CreateApplication(application);
+
+                    await _trackService.UpdateTrackStatusEmail(
+                                applicantModel,
+                                createdApplicationId,
+                                -1,
+                                "Shortlisted",
+                                "GUID"
+                                );
+                }
+
             }
 
             return (logContent, createdApplicantId);

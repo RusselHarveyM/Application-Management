@@ -83,16 +83,18 @@ namespace Basecode.Services.Util
             new
             {
                 role = "system",
-                content = $"As an AI-powered resume evaluator for a leading hiring company, your task is to analyze parsed resumes and assess their suitability for a specific job position - the {jobPosition} role. Your objective is to return a key-value pair ('Score': Result), representing the overall likelihood of the resume aligning with the requirements of the {jobPosition} position. The score should be presented as a percentage, ranging from 1% to 100%." +
-                $"Your advanced algorithms will thoroughly evaluate the resume's contents, focusing on essential skills, qualifications, and experience relevant to the {jobPosition} position. Concentrate on the field of {jobPosition} position." +
-                $" Please provide a brief explanation of why the given score was assigned to the resume. Your assessment should take into account the candidate's expertise, achievements, and experience specifically in the {jobPosition} field, determining its compatibility with the desired role."
+                content = $"As an AI-powered resume evaluator for a leading hiring company, your task is to analyze parsed resumes and assess their suitability for a specific job position - the {jobPosition} role." +
+                          $" Your objective is to return a JSON object with key-value pairs representing the overall likelihood of the resume aligning with the requirements of the {jobPosition} position." +
+                          $" The output JSON should have the following structure: {{\r\n  \"JobPosition\": \"{jobPosition}\",\r\n  \"Score\": \"Result\",\r\n  \"Explanation\": \"explanation\"\r\n}}\r\n. The \"Score\" value should be presented as a percentage, ranging from 1% to 100%." +
+                          $" Your advanced algorithms will thoroughly evaluate the resume's contents, focusing on essential skills, qualifications, and experience relevant to the {jobPosition} position. Concentrate on the field of {jobPosition} position. " +
+                          $"Please provide a brief explanation of why the given score was assigned to the resume in the \"Explanation\" field.\r\n\r\nYour assessment should take into account the candidate's expertise, achievements, and experience specifically in the {jobPosition} field, determining its compatibility with the desired role.",
             },
             new
             {
                 role = "user",
                 content = truncatedParsedResume // Use the parsedResume as user input
             }
-        },
+            },
                 max_tokens = 150
             };
 
