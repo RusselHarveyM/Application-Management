@@ -28,6 +28,7 @@ namespace Basecode.Data
         public virtual DbSet<Application> Application { get; set; }
         public virtual DbSet<JobOpening> JobOpening { get; set; }
 
+        public virtual DbSet<JobOpeningUser> JobOpeningUser { get; set; }
         public virtual DbSet<Qualification> Qualification { get; set; }
 
         public virtual DbSet<Responsibility> Responsibility { get; set; }
@@ -35,6 +36,7 @@ namespace Basecode.Data
         public virtual DbSet<RefreshToken> RefreshToken { get; set; }
         public virtual DbSet<CharacterReference> CharacterReference { get; set; }
         public virtual DbSet<Examination> Examination { get; set; }
-        public virtual DbSet<Interview> Interview { get; set; }
+
+        public virtual DbSet<AssignInterviewer> AssignInterviewer { get; set; }
     }
 }
