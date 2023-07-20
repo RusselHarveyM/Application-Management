@@ -12,6 +12,13 @@ function showEditModal(id) {
     });
 }
 
+function showAssignModal(id) {
+    $.get("/User/AssignView/" + id, function (data) {
+        $("#assignModalContainer").html(data);
+        $("#assignUserModal").modal("show");
+    });
+}
+
 function showDeleteModal(id) {
     $.get("/User/DeleteView/" + id, function (data) {
         $("#deleteModalContainer").html(data);
