@@ -14,15 +14,13 @@ namespace Basecode.Main.Controllers
     {
         private readonly IJobOpeningService _jobOpeningService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
-        private readonly ResumeChecker _resumeChecker;
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController" /> class.
         /// </summary>
         /// <param name="jobOpeningService">The job opening service.</param>
-        public HomeController(IJobOpeningService jobOpeningService, ResumeChecker resumeChecker)
+        public HomeController(IJobOpeningService jobOpeningService)
         {
             _jobOpeningService = jobOpeningService;
-            _resumeChecker = resumeChecker;
         }
 
         /// <summary>
