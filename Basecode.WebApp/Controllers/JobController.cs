@@ -117,7 +117,7 @@ namespace Basecode.WebApp.Controllers
         {
             try
             {
-                var data = _jobOpeningService.Create(jobOpening, User.Identity.Name);
+                var data = _jobOpeningService.Create(jobOpening, User.Identity?.Name??"person1");
                 //Checks for any validation warning
                 if (!data.Result)
                 {
@@ -179,7 +179,7 @@ namespace Basecode.WebApp.Controllers
         {
             try
             {
-                var data = _jobOpeningService.Update(jobOpening, User.Identity.Name);
+                var data = _jobOpeningService.Update(jobOpening, User.Identity?.Name ?? "person1");
                 if (!data.Result)
                 {
                     // Update the job opening
