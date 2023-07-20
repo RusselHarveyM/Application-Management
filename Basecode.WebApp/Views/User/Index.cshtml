@@ -58,6 +58,7 @@
                     <th>Email Address</th>
                     <th></th>
                     <th></th>
+                    <th></th>
                 </tr>
 
                 @if (Model.Count() > 0)
@@ -71,6 +72,7 @@
                             <td>@user.Fullname</td>
                             <td>@user.Username</td>
                             <td>@user.Email</td>
+                            <td><a style="margin-left:56%" class="btn btn-edit" role="button"  onclick="showAssignModal(@user.Id)"><i class="fa-regular fa fa-hand-pointer-o icon-white"></i>ASSIGN</a></td>
                             <td><a style="margin-left:56%" class="btn btn-edit" role="button" onclick="showEditModal(@user.Id)"><i class="fa-regular fa-pen-to-square icon-white"></i> EDIT</a></td>
                             <td><a style="margin-left:20%" class="btn btn-delete" role="button" onclick="showDeleteModal(@user.Id)"><i class="fa-solid fa-trash-can icon-white"></i> DELETE</a></td>
                         </tr>
@@ -86,6 +88,7 @@
         </div>
     </div>
 </div>
+<div id="assignModalContainer"></div>
 <div id="addModalContainer"></div>
 <div id="editModalContainer"></div>
 <div id="deleteModalContainer"></div>
