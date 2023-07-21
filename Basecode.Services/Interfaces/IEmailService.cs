@@ -16,5 +16,10 @@ namespace Basecode.Services.Interfaces
         Task SendApprovalEmail(User user, Applicant applicant, Guid appId, string newStatus);
 
         Task SendRejectedEmail(Applicant applicant, string newStatus);
+
+        void ScheduleInterview(string interviewerEmail, string intervierwerFullName, string interviewerUsername,
+                               string interviewerPassword, string jobPosition);
+       void ScheduleForHR(string interviewerEmail, string intervierwerFullName, string interviewerUsername,
+                               string interviewerPassword, string jobPosition);
     }
 }

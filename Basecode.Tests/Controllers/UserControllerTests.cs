@@ -16,7 +16,7 @@ namespace Basecode.Tests.Controllers
         public UserControllerTests()
         {
             _fakeUserService = new Mock<IUserService>();
-            _controller = new UserController(_fakeUserService.Object);
+            _controller = new UserController(_fakeUserService.Object, null, null, null);
         }
 
         [Fact]
