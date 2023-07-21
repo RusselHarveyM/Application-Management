@@ -29,6 +29,9 @@ namespace Basecode.Data.Interfaces
         /// <returns>A User object corresponding to the matching ID.</returns>
         User GetById(int id);
 
+
+        User GetByEmail(string email);
+
         /// <summary>
         /// Updates an existing user in the User table.
         /// </summary>

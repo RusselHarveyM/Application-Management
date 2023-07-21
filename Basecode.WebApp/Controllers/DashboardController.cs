@@ -117,7 +117,7 @@ namespace Basecode.WebApp.Controllers
             }
         }
 
-        public IActionResult ShortListView(string stage)
+        public IActionResult ShortListView()
         {
             try
             {
@@ -172,8 +172,6 @@ namespace Basecode.WebApp.Controllers
 
             return NotFound();
         }
-
-
 
     }
 }

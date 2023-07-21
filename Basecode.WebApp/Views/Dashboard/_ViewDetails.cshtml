@@ -8,7 +8,7 @@
             <div class="modal-header pb-5">
                 <div class="d-flex flex-column gap-3">
                     <h1 class="modal-title fs-3" style="color:red" id="viewApplicationModalLabel">@Model.JobOpening.Title</h1>
-                    <h5>ID: <i style="font-weight:400; font-size:0.7rem;">@Model.JobOpening.Id</i></h5>
+                    <h5>ID: <i style="font-weight:300; font-size:0.9rem;">@Model.JobOpening.Id</i></h5>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -33,7 +33,12 @@
                     }
                 </div>
             </div>
-            <a class="btn-danger" style="text-decoration:none; text-align:center; padding: 1.4rem; cursor:pointer">HR SCREENING</a>
-        </div>
+           @* <a asp-controller="Email" asp-action="SendApprovalEmail" class="btn-danger" style="text-decoration:none; text-align:center; padding: 1.4rem; cursor:pointer">HR SCREENING</a>
+      *@  
+            <a href="@Url.Action("SendApprovalEmail", "Email", new { applicant = Model.Applicant, appId = Model.Id, email = Model.JobOpening.CreatedBy, newStatus = "For HR Screening", mailType = "Approval" })" class="btn btn-danger" style="text-decoration:none; text-align:center; padding: 1.4rem; cursor:pointer">
+                HR SCREENING
+            </a>
+
+            </div>
     </div>
 </div>

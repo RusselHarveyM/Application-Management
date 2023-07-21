@@ -56,6 +56,11 @@ namespace Basecode.Data.Repositories
             return _context.User.Find(id);
         }
 
+        public User GetByEmail(string email)
+        {
+            return _context.User.FirstOrDefault(u => u.Email == email);
+        }
+
         /// <summary>
         /// Updates an existing user in the User table.
         /// </summary>
