@@ -24,6 +24,11 @@ namespace Basecode.Data.Repositories
             return application.Id;
         }
 
+        public IQueryable<Application> GetAll()
+        {
+            return this.GetDbSet<Application>();
+        }
+
         public Application GetById(Guid id)
         {
             return _context.Application.Find(id);

@@ -23,6 +23,8 @@ namespace Basecode.Services.Interfaces
 
         Application GetApplicationById(Guid id);
 
+        List<Application> GetShorlistedApplicatons(string stage);
+
         /// <summary>
         /// Creates the specified application.
         /// </summary>

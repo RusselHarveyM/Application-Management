@@ -15,6 +15,7 @@ namespace Basecode.WebApp.Controllers
         private readonly IApplicantService _applicantService;
         private readonly IJobOpeningService _jobOpeningService;
         private readonly IUserService _userService;
+        private readonly IApplicationService _applicationService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly IEmailService _emailService;
 
@@ -22,11 +23,13 @@ namespace Basecode.WebApp.Controllers
         /// Initializes a new instance of the <see cref="DashboardController"/> class.
         /// </summary>
         /// <param name="applicantService">The applicant service.</param>
+        public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService, IUserService userService, IApplicationService applicationService)
         public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService, IUserService userService, IEmailService emailService)
         {
             _applicantService = applicantService;
             _jobOpeningService = jobOpeningService;
             _userService = userService;
+            _applicationService = applicationService;
             _emailService = emailService;
         }
 
@@ -113,5 +116,64 @@ namespace Basecode.WebApp.Controllers
                 return StatusCode(500, "Something went wrong.");
             }
         }
+
+        public IActionResult ShortListView(string stage)
+        {
+            try
+            {
+                var shortlistedModel = new ShortListedViewModel();
+                shortlistedModel.HRShortlisted = _applicationService.GetShorlistedApplicatons("HR Shortlisted");
+                shortlistedModel.TechShortlisted = _applicationService.GetShorlistedApplicatons("Technical Shortlisted");
+
+                return View(shortlistedModel);
+            }
+            catch (Exception e)
+            {
+                _logger.Error(ErrorHandling.DefaultException(e.Message));
+                return StatusCode(500, "Something went wrong.");
+            }
+        }
+
+        [HttpGet]
+        public IActionResult ViewDetails(int id)
+        {
+            try
+            {
+                // Fetch the application details based on the applicationId
+                var applicant = _applicantService.GetApplicantById(id);
+                var application = applicant.Application;
+                var jobOpening = _jobOpeningService.GetByIdClean(application.JobOpeningId);
+                application.JobOpening = jobOpening;
+                if (application == null)
+                {
+                    // Handle the case when the application is not found
+                    return NotFound(); // Return a 404 Not Found response
+                }
+
+                // Pass the application object to the view
+                return PartialView("~/Views/Dashboard/_ViewDetails.cshtml", application);
+            }
+            catch (Exception e)
+            {
+                _logger.Error(ErrorHandling.DefaultException(e.Message));
+                return StatusCode(500, "Something went wrong.");
+            }
+        }
+
+        public IActionResult DownloadFile(int id)
+        {
+            var applicant = _applicantService.GetApplicantById(id);
+
+            if (applicant?.CV != null)
+            {
+                // Assuming the file is stored as a byte array named "FileData"
+                return File(applicant.CV, "application/octet-stream", "resume.pdf");
+            }
+
+            return NotFound();
+        }
+
+
+
     }
 }

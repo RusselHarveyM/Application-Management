@@ -35,6 +35,8 @@ namespace Basecode.Services.Interfaces
         /// </returns>
         JobOpeningViewModel GetById(int id);
 
+        JobOpening GetByIdClean(int id);
+
         /// <summary>
         /// Updates an existing job opening.
         /// </summary>

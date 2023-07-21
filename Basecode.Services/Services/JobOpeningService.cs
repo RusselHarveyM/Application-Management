@@ -107,6 +107,11 @@ namespace Basecode.Services.Services
             return data;
         }
 
+        public JobOpening GetByIdClean(int id)
+        {
+            return _repository.GetJobOpeningById(id);
+        }
+
         /// <summary>
         /// Updates an existing job opening.
         /// </summary>

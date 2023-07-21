@@ -25,6 +25,8 @@ namespace Basecode.Data.Interfaces
         /// <param name="application">The application to be added.</param>
         Guid CreateApplication(Application application);
 
+        IQueryable<Application> GetAll();
+
         /// <summary>
         /// Updates an existing application.
         /// </summary>

@@ -3,6 +3,7 @@ using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -82,6 +83,18 @@ namespace Basecode.Services.Services
 
             return application;
         }
+
+        public List<Application> GetShorlistedApplicatons(string stage)
+        {
+            var data = _repository.GetAll()
+                .Include(a => a.JobOpening)
+                .Include(a => a.Applicant)
+                .Where(m => m.Status == stage)
+                .ToList();
+            return data;
+        }
+
+
 
         /// <summary>
         /// Updates the specified application.
