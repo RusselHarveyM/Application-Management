@@ -36,18 +36,11 @@ namespace Basecode.Data.Repositories
             return applicant.Id;
         }
 
-        public IQueryable<ApplicantStatusViewModel> GetApplicantsByJobOpeningId(int jobOpeningId)
+        public IQueryable<Applicant> GetApplicantsByJobOpeningId(int jobOpeningId)
         {
             // Retrieve the applicants with their related applications' status
             var applicants = _context.Applicant
-                .Where(applicant => applicant.Application.JobOpeningId == jobOpeningId)
-                .Select(applicant => new ApplicantStatusViewModel
-                {
-                    Firstname = applicant.Firstname,
-                    Lastname = applicant.Lastname,
-                    Status = applicant.Application.Status // Retrieve the Status from the related Application
-                });
-
+                .Where(applicant => applicant.Application.JobOpeningId == jobOpeningId);
             return applicants;
         }
     }

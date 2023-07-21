@@ -133,6 +133,11 @@ namespace Basecode.Services.Services
             return validationErrors;
         }
 
+        /// <summary>
+        /// Gets all users and their link status to a job opening.
+        /// </summary>
+        /// <param name="jobOpeningId">The job opening id.</param>
+        /// <returns></returns>
         public List<HRUserViewModel> GetAllUsersWithLinkStatus(int jobOpeningId)
         {
             var allUsers = _repository.RetrieveAll();
@@ -150,6 +155,16 @@ namespace Basecode.Services.Services
             }).ToList();
 
             return usersWithLinkStatus;
+        }
+
+        /// <summary>
+        /// Gets the linked job openings.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns></returns>
+        public List<JobOpeningBasicViewModel> GetLinkedJobOpenings(int userId)
+        {
+            return _repository.GetLinkedJobOpenings(userId).ToList();
         }
     }
 }

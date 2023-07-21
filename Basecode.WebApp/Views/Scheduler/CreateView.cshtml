@@ -1,0 +1,83 @@
+﻿@model Basecode.Data.ViewModels.SchedulerViewModel
+@using Newtonsoft.Json;
+@{
+    Layout = "/Views/Shared/_Admin.cshtml";
+}
+
+<div class="container">
+    <form asp-action="Create" id="scheduleForm">
+        <div class="row mt-5">
+            <div class="col">
+                <label for="jobOpeningDropdown" class="form-label">
+                    Job Opening
+                </label>
+                <select asp-for="@Model.FormData.JobOpeningId" id="jobOpeningDropdown" class="form-select" required>
+                    <option> <!-- Placeholder --> </option>
+                    @foreach (var jobOpening in Model.JobOpenings)
+                    {
+                        <option value=@jobOpening.Id>@jobOpening.Title</option>
+                    }
+                </select>
+                <span asp-validation-for="@Model.FormData.JobOpeningId" class="text-danger" id="JobOpeningIdError"></span>
+            </div>
+
+            <div class="col">
+                <label for="meetingTypeDropdown" class="form-label">
+                    Type
+                </label>
+                <select asp-for="@Model.FormData.Type" id="meetingTypeDropdown" class="form-select" required>
+                    <option></option>
+                    <option value="For HR Interview">HR Interview</option>
+                    <option value="For Technical Exam">Technical Exam</option>
+                    <option value="For Technical Interview">Technical Interview</option>
+                </select>
+                <span asp-validation-for="@Model.FormData.Type" class="text-danger" id="TypeError"></span>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col">
+                <label for="date" class="form-label">Date</label>
+                <input asp-for="@Model.FormData.Date" type="date" id="date" class="form-control" required />
+                <span asp-validation-for="@Model.FormData.Date" class="text-danger" id="ScheduleError"></span>
+            </div>
+            <div class="col">
+                <label for="applicantDropdown" class="form-label">
+                    Applicants
+                </label>
+                <select id="applicantDropdown" class="form-select">
+                    <option> <!-- Placeholder --> </option>
+                    <!-- Applicants having the selected status will be dynamically added here -->
+                </select>
+                <button id="addApplicantButton" disabled>Add</button>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col">
+                <table class="table table-hover table-responsive">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Time</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="selectedApplicants">
+                    </tbody>
+                </table>
+                @*<span asp-validation-for="@Model.FormData.ApplicantData" class="text-danger" id="ApplicantDataError"></span>*@
+            </div>
+        </div>
+        <div class="mt-5 text-center">
+            <button type="submit" class="btn btn-primary" id="submitButton"> SUBMIT SCHEDULE</button>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+    // Give js file access to the 'Applicants' object
+    let applicants = @Html.Raw(JsonConvert.SerializeObject(Model.Applicants));
+</script>
+<script src="~/js/scheduler/form.js"></script>
+<partial name="~/Views/Shared/_ValidationScriptsPartial.cshtml" />

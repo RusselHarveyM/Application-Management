@@ -150,7 +150,33 @@ namespace Basecode.Services.Services
         /// <returns></returns>
         public List<ApplicantStatusViewModel> GetApplicantsByJobOpeningId(int jobOpeningId)
         {
-            return _repository.GetApplicantsByJobOpeningId(jobOpeningId).ToList();
+            return _repository.GetApplicantsByJobOpeningId(jobOpeningId)
+                .Select(applicant => new ApplicantStatusViewModel
+                {
+                    Id = applicant.Id,
+                    Firstname = applicant.Firstname,
+                    Lastname = applicant.Lastname,
+                    Status = applicant.Application.Status // Retrieve the Status from the related Application
+                })
+                .ToList();
+        }
+
+        /// <summary>
+        /// Gets the applicants and statuses.
+        /// </summary>
+        /// <returns></returns>
+        public List<ApplicantStatusViewModel> GetApplicantsWithStatuses()
+        {
+            return _repository.GetAll()
+                .Select(applicant => new ApplicantStatusViewModel
+                {
+                    Id = applicant.Id,
+                    Firstname = applicant.Firstname,
+                    Lastname = applicant.Lastname,
+                    Status = applicant.Application.Status, // Retrieve the Status from the related Application
+                    JobOpeningId = applicant.Application.JobOpeningId,
+                })
+                .ToList();
         }
     }
 }

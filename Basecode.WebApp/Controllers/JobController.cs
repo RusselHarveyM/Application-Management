@@ -117,15 +117,23 @@ namespace Basecode.WebApp.Controllers
         {
             try
             {
-                var data = _jobOpeningService.Create(jobOpening, User.Identity?.Name??"person1");
+                string createdBy = User.Identity?.Name ?? "person1";
+                int createdByUser = 1;  // temporary until User auth is sorted out
+                (ErrorHandling.LogContent logContent, int jobOpeningId) data = _jobOpeningService.Create(jobOpening, createdBy);
+
                 //Checks for any validation warning
-                if (!data.Result)
+                if (!data.logContent.Result && data.jobOpeningId > 0)
                 {
                     _logger.Trace("Create JobOpening succesfully.");
+
+                    // Assign logged-in user to the new job opening
+                    List<int> assignedUser = new List<int>() { createdByUser };
+                    UpdateJobOpeningAssignments(assignedUser, data.jobOpeningId);
+
                     return RedirectToAction("Index");
                 }
                 //Fails the validation
-                _logger.Trace(ErrorHandling.SetLog(data));
+                _logger.Warn(ErrorHandling.SetLog(data.logContent));
                 return View("CreateView", jobOpening);
             }
             catch (Exception e)
@@ -133,7 +141,6 @@ namespace Basecode.WebApp.Controllers
                 _logger.Error(ErrorHandling.DefaultException(e.Message));
                 return StatusCode(500, "Something went wrong.");
             }
-
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using Basecode.Data.Models;
+using Basecode.Data.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,5 +40,12 @@ namespace Basecode.Data.Interfaces
         /// </summary>
         /// <param name="user">The user.</param>
         void Delete(User user);
+
+        /// <summary>
+        /// Gets the job openings assigned to the user.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        IEnumerable<JobOpeningBasicViewModel> GetLinkedJobOpenings(int userId);
     }
 }

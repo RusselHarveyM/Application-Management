@@ -49,5 +49,11 @@ namespace Basecode.Services.Interfaces
         /// <param name="jobOpeningId">The job opening id.</param>
         /// <returns></returns>
         List<ApplicantStatusViewModel> GetApplicantsByJobOpeningId(int jobOpeningId);
+
+        /// <summary>
+        /// Gets the applicants and their application statuses.
+        /// </summary>
+        /// <returns></returns>
+        List<ApplicantStatusViewModel> GetApplicantsWithStatuses();
     }
 }

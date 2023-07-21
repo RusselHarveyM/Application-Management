@@ -42,5 +42,18 @@ namespace Basecode.Data.Repositories
                 .Where(a => applicationIds.Contains(a.Id)).ToList();
             return applications;
         }
+
+        public Guid GetApplicationIdByApplicantId(int applicantId)
+        {
+            var application = _context.Application
+                .FirstOrDefault(app => app.ApplicantId == applicantId);
+
+            if (application != null)
+            {
+                return application.Id;
+            }
+
+            return Guid.Empty;
+        }
     }
 }

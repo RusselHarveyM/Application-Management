@@ -114,5 +114,15 @@ namespace Basecode.Services.Services
         {
             return _repository.GetApplicationsByIds(applicationIds);
         }
+
+        /// <summary>
+        /// Gets the application id based on the applicant id.
+        /// </summary>
+        /// <param name="applicantId"></param>
+        /// <returns></returns>
+        public Guid GetApplicationIdByApplicantId(int applicantId)
+        {
+            return _repository.GetApplicationIdByApplicantId(applicantId);
+        }
     }
 }
