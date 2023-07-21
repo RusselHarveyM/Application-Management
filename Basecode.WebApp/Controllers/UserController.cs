@@ -243,6 +243,7 @@ namespace Basecode.WebApp.Controllers
                 }
                 // Perform the assignment
                 _assignInterviewerService.Create(jobposition, email);
+
                 // Use switch case for different roles
                 switch (data.Role)
                 {

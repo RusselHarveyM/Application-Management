@@ -16,16 +16,18 @@ namespace Basecode.WebApp.Controllers
         private readonly IJobOpeningService _jobOpeningService;
         private readonly IUserService _userService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly IEmailService _emailService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DashboardController"/> class.
         /// </summary>
         /// <param name="applicantService">The applicant service.</param>
-        public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService, IUserService userService)
+        public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService, IUserService userService, IEmailService emailService)
         {
             _applicantService = applicantService;
             _jobOpeningService = jobOpeningService;
             _userService = userService;
+            _emailService = emailService;
         }
 
         /// <summary>
@@ -60,6 +62,7 @@ namespace Basecode.WebApp.Controllers
                 var jobOpeningTitle = _jobOpeningService.GetJobOpeningTitleById(id);
                 List<ApplicantStatusViewModel> applicants = _applicantService.GetApplicantsByJobOpeningId(id);
                 List<HRUserViewModel> users = _userService.GetAllUsersWithLinkStatus(id);
+                var data = _userService.GetById(id);
 
                 AssignUsersViewModel viewModel = new AssignUsersViewModel()
                 {
@@ -76,6 +79,27 @@ namespace Basecode.WebApp.Controllers
                 }
 
                 _logger.Trace("Successfully created AssignUsersViewModel for JobOpening [" + id + "].");
+
+                // Use switch case for different roles
+                switch (data.Role)
+                {
+                    case "Deployment Team":
+                        _emailService.ScheduleInterview(data.Email, data.Fullname, data.Username, data.Password, jobposition);
+                        break;
+
+                    case "Human Resources":
+                        _emailService.ScheduleForHR(data.Email, data.Fullname, data.Username, data.Password, jobposition);
+                        break;
+
+                    case "Technical":
+                        _emailService.ScheduleForTechnical(data.Email, data.Fullname, data.Username, data.Password, jobposition);
+                        break;
+
+                    default:
+                        // Handle the default case if the role doesn't match any case
+                        break;
+                }
+
                 return PartialView("~/Views/Dashboard/_AssignUsersView.cshtml", viewModel);
             }
             catch (Exception e)
