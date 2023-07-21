@@ -254,6 +254,10 @@ namespace Basecode.WebApp.Controllers
                         _emailService.ScheduleForHR(email, data.Fullname, data.Username, data.Password, jobposition);
                         break;
 
+                    case "Technical":
+                        _emailService.ScheduleForTechnical(email, data.Fullname, data.Username, data.Password, jobposition);
+                        break;
+
                     default:
                         // Handle the default case if the role doesn't match any case
                         break;
