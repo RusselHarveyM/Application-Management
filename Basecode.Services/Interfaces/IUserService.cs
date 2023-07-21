@@ -11,34 +11,48 @@ using static Basecode.Services.Services.ErrorHandling;
 
 namespace Basecode.Services.Interfaces
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public interface IUserService
     {
         /// <summary>
         /// Retrieves a list of all users.
         /// </summary>
-        /// <returns>A list of UserViewModel objects representing all users available.</returns>
+        /// <returns>
+        /// A list of UserViewModel objects representing all users available.
+        /// </returns>
         List<UserViewModel> RetrieveAll();
 
         /// <summary>
         /// Creates the specified user.
         /// </summary>
         /// <param name="user">The user.</param>
+        /// <returns></returns>
         LogContent Create(User user);
 
         /// <summary>
         /// Retrieves a specific user based on the provided ID.
         /// </summary>
         /// <param name="id">Represents the ID of the user to fetch.</param>
-        /// <returns>A User object corresponding to the matching ID.</returns>
+        /// <returns>
+        /// A User object corresponding to the matching ID.
+        /// </returns>
         User GetById(int id);
 
 
+        /// <summary>
+        /// Gets the by email.
+        /// </summary>
+        /// <param name="email">The email.</param>
+        /// <returns></returns>
         User GetByEmail(string email);
 
         /// <summary>
         /// Updates an existing user.
         /// </summary>
         /// <param name="user">Represents the user with updated information.</param>
+        /// <returns></returns>
         LogContent Update(User user);
 
         /// <summary>
@@ -51,7 +65,9 @@ namespace Basecode.Services.Interfaces
         /// Gets the validation errors.
         /// </summary>
         /// <param name="modelState">State of the model.</param>
-        /// <returns>Dictionary containing the validation errors.</returns>
+        /// <returns>
+        /// Dictionary containing the validation errors.
+        /// </returns>
         Dictionary<string, string> GetValidationErrors(ModelStateDictionary modelState);
 
         /// <summary>
