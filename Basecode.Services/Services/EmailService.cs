@@ -7,11 +7,91 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Basecode.Data.Models;
+using Hangfire;
 
 namespace Basecode.Services.Services
 {
     public class EmailService : IEmailService
     {
+        public void ScheduleInterview(string interviewerEmail, string intervierwerFullName, string interviewerUsername,
+                               string interviewerPassword, string jobPosition)
+        {
+            // Schedule the email notification using Hangfire
+            BackgroundJob.Schedule(() => SendInterviewNotification(interviewerEmail, intervierwerFullName, interviewerUsername,
+                                                                   interviewerPassword, jobPosition),
+                                                                   TimeSpan.FromSeconds(5)); // Delay of 5 seconds
+
+            BackgroundJob.Schedule(() => SendInterviewNotif2weeks(interviewerEmail, intervierwerFullName, interviewerUsername,
+                                                                   interviewerPassword, jobPosition),
+                                                                   TimeSpan.FromDays(14)); // Delay of 2 weeks
+        }
+
+        public void ScheduleForHR(string interviewerEmail, string intervierwerFullName, string interviewerUsername,
+                               string interviewerPassword, string jobPosition)
+        {
+            BackgroundJob.Schedule(() => SendHrNotif2weeks(interviewerEmail, intervierwerFullName, interviewerUsername,
+                                                                   interviewerPassword, jobPosition),
+                                                                   TimeSpan.FromDays(14)); // Delay of 2 weeks
+        }
+
+        public async Task SendInterviewNotification(string interviewerEmail, string intervierwerFullName, string interviewerUsername,
+                               string interviewerPassword, string jobPosition)
+    {
+
+
+            //Notify Interviewer for their Task
+            var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
+            var templateContent = File.ReadAllText(templatePath);
+            var body = templateContent
+                .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+                .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+                .Replace("{{HEADLINE}}", "Assign Interviewer")
+                .Replace("{{BODY}}", $"Dear {intervierwerFullName},<br>" +
+                                     $"<br> The Job Position you being assigned to interview is the {jobPosition}. Please see details below.<br>"+
+                                     $"<br> Your Credentials Email: {interviewerEmail} Password: {interviewerPassword}<br>");
+
+            await this.SendEmail(interviewerEmail, "Alliance Software Inc. Hello Deployment Team", body);
+        }
+
+
+        public async Task SendInterviewNotif2weeks(string interviewerEmail, string intervierwerFullName, string interviewerUsername,
+                               string interviewerPassword, string jobPosition)
+        {
+
+
+            //Notify Interviewer for their Task
+            var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
+            var templateContent = File.ReadAllText(templatePath);
+            var body = templateContent
+                .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+                .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+                .Replace("{{HEADLINE}}", "Assign Interviewer")
+                .Replace("{{BODY}}", $"Dear {intervierwerFullName},<br>" +
+                                     $"<br> The Job Position you being assigned to interview is the {jobPosition}. Please see details below.<br>" +
+                                     $"<br> Your Credentials Email: {interviewerEmail} Password: {interviewerPassword}<br>");
+
+            await this.SendEmail(interviewerEmail, "Alliance Software Inc. Hello Deployment Team", body);
+        }
+
+        public async Task SendHrNotif2weeks(string interviewerEmail, string intervierwerFullName, string interviewerUsername,
+                               string interviewerPassword, string jobPosition)
+        {
+
+
+            //Notify Interviewer for their Task
+            var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
+            var templateContent = File.ReadAllText(templatePath);
+            var body = templateContent
+                .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+                .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+                .Replace("{{HEADLINE}}", "Assign Interviewer")
+                .Replace("{{BODY}}", $"Dear {intervierwerFullName},<br>" +
+                                     $"<br> The Job Position you being assigned to interview is the {jobPosition}. Please see details below.<br>" +
+                                     $"<br> Your Credentials Email: {interviewerEmail} Password: {interviewerPassword}<br>");
+
+            await this.SendEmail(interviewerEmail, "Alliance Software Inc. Hello Human Resource", body);
+        }
+
         /// <summary>
         /// Sends an email using the specified SMTP client with the provided recipient, subject, and body.
         /// </summary>

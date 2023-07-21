@@ -13,6 +13,8 @@ namespace Basecode.WebApp
             {
                 cfg.CreateMap<JobOpening, JobOpeningViewModel>();
                 cfg.CreateMap<JobOpeningViewModel, JobOpening>();
+                cfg.CreateMap<AssignInterviewer, AssignInterviewerViewModel>();
+                cfg.CreateMap<AssignInterviewerViewModel, AssignInterviewer>();
                 cfg.CreateMap<Application, ApplicationViewModel>();
                 cfg.CreateMap<User, LoginViewModel>();
                 cfg.CreateMap<ApplicantViewModel, Applicant>();
