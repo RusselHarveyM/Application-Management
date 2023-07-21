@@ -1,5 +1,6 @@
 ﻿using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
+using Basecode.Data.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,6 +74,24 @@ namespace Basecode.Data.Repositories
         {
             _context.User.Remove(user);
             _context.SaveChanges();
+        }
+
+        /// <summary>
+        /// Gets the linked job openings.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns></returns>
+        public IEnumerable<JobOpeningBasicViewModel> GetLinkedJobOpenings(int userId)
+        {
+            return _context.User
+                   .Where(u => u.Id == userId)
+                   .SelectMany(u => u.JobOpenings)
+                   .Select(j => new JobOpeningBasicViewModel
+                   {
+                       Id = j.Id,
+                       Title = j.Title
+                   })
+                   .ToList();
         }
     }
 }

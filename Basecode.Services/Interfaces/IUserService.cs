@@ -51,6 +51,18 @@ namespace Basecode.Services.Interfaces
         /// <returns>Dictionary containing the validation errors.</returns>
         Dictionary<string, string> GetValidationErrors(ModelStateDictionary modelState);
 
+        /// <summary>
+        /// Gets all users and their link status to a job opening.
+        /// </summary>
+        /// <param name="jobOpeningId">The job opening id.</param>
+        /// <returns></returns>
         List<HRUserViewModel> GetAllUsersWithLinkStatus(int jobOpeningId);
+
+        /// <summary>
+        /// Gets the linked job openings.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns></returns>
+        List<JobOpeningBasicViewModel> GetLinkedJobOpenings(int userId);
     }
 }

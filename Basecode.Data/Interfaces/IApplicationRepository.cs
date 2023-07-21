@@ -37,5 +37,12 @@ namespace Basecode.Data.Interfaces
         /// <param name="applicationIds">The application ids.</param>
         /// <returns></returns>
         List<Application> GetApplicationsByIds(List<Guid> applicationIds);
+
+        /// <summary>
+        /// Gets the application id based on the applicant id.
+        /// </summary>
+        /// <param name="applicantId"></param>
+        /// <returns></returns>
+        Guid GetApplicationIdByApplicantId(int applicantId);
     }
 }

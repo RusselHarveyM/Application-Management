@@ -23,10 +23,11 @@ namespace Basecode.Data.Repositories
             return this.GetDbSet<JobOpening>();
         }
 
-        public void AddJobOpening(JobOpening jobOpening)
+        public int AddJobOpening(JobOpening jobOpening)
         {
             _context.JobOpening.Add(jobOpening);
             _context.SaveChanges();
+            return jobOpening.Id;
         }
 
         public JobOpening GetJobOpeningById(int id)

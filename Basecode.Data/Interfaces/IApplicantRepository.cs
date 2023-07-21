@@ -29,10 +29,10 @@ namespace Basecode.Data.Interfaces
         int CreateApplicant(Applicant applicant);
 
         /// <summary>
-        /// Gets the applicants by job opening id.
+        /// Gets the applicants linked to a job opening.
         /// </summary>
-        /// <param name="jobOpeningId">The job opening id.</param>
+        /// <param name="jobOpeningId"></param>
         /// <returns></returns>
-        IQueryable<ApplicantStatusViewModel> GetApplicantsByJobOpeningId(int jobOpeningId);
+        IQueryable<Applicant> GetApplicantsByJobOpeningId(int jobOpeningId);
     }
 }
