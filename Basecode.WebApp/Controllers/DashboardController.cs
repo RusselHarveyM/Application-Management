@@ -58,13 +58,17 @@ namespace Basecode.WebApp.Controllers
             try
             {
                 var jobOpeningTitle = _jobOpeningService.GetJobOpeningTitleById(id);
+                JobOpeningBasicViewModel jobOpening = new JobOpeningBasicViewModel()
+                {
+                    Id = id,
+                    Title = jobOpeningTitle,
+                };
                 List<ApplicantStatusViewModel> applicants = _applicantService.GetApplicantsByJobOpeningId(id);
                 List<HRUserViewModel> users = _userService.GetAllUsersWithLinkStatus(id);
 
                 AssignUsersViewModel viewModel = new AssignUsersViewModel()
                 {
-                    JobOpeningId = id,
-                    JobOpeningTitle = jobOpeningTitle,
+                    JobOpening = jobOpening,
                     Applicants = applicants,
                     Users = users,
                 };
