@@ -15,11 +15,13 @@ namespace Basecode.Data.Interfaces
         /// </summary>
         /// <returns></returns>
         IQueryable<JobOpening> GetAll();
+        
         /// <summary>
         /// Adds the job opening.
         /// </summary>
-        /// <param name="jobOpening">The job opening.</param>
-        void AddJobOpening(JobOpening jobOpening);
+        /// <param name="jobOpening"></param>
+        /// <returns>The job opening id.</returns>
+        int AddJobOpening(JobOpening jobOpening);
 
         /// <summary>
         /// Gets the job opening by identifier.

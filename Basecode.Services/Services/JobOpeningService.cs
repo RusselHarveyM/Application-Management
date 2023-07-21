@@ -57,10 +57,11 @@ namespace Basecode.Services.Services
         /// </summary>
         /// <param name="jobOpening">The job opening to create.</param>
         /// <param name="createdBy">The user who created the job opening.</param>
-        /// <returns></returns>
-        public LogContent Create(JobOpeningViewModel jobOpening, string createdBy)
+        /// <returns>The log content and the new job opening's id.</returns>
+        public (LogContent, int) Create(JobOpeningViewModel jobOpening, string createdBy)
         {
             LogContent logContent = new LogContent();
+            int jobOpeningId = 0;
 
             logContent = CheckJobOpening(jobOpening);
             if (logContent.Result == false)
@@ -71,10 +72,10 @@ namespace Basecode.Services.Services
                 jobOpeningModel.UpdatedBy = createdBy;
                 jobOpeningModel.UpdatedTime = DateTime.Now;
 
-                _repository.AddJobOpening(jobOpeningModel);
+                jobOpeningId = _repository.AddJobOpening(jobOpeningModel);
             }
 
-            return logContent;
+            return (logContent, jobOpeningId);
         }
 
         /// <summary>
