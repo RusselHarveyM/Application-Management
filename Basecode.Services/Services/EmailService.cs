@@ -115,5 +115,27 @@ namespace Basecode.Services.Services
                 $"style=\"background-color: #FF0000; border: none; color: white; padding: 10px 24px; text-align: center; text-decoration: underline; " +
                 $"display: inline-block; font-size: 14px; margin: 4px 2px; cursor: pointer;\">Visit Alliance</a>");
         }
+
+        public async Task SendRegretEmail(Applicant applicant, string job)
+        {
+            //For applicants who were not shortlisted upon application
+            var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
+            var templateContent = File.ReadAllText(templatePath);
+            var body = templateContent
+                .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+                .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+                .Replace("{{HEADLINE}}", "Application Status")
+                .Replace("{{BODY}}", $"Dear {applicant.Firstname},<br>" +
+                                     $"<br> I hope this email finds you well. We appreciate your interest in the {job} position here at Alliance Software Inc. Thank you for taking the time to apply and share your qualifications with us. <br>" +
+                                     $"<br> After carefully reviewing your application, we regret to inform you that your profile does not align closely with the specific qualifications and requirements we are seeking for this role. Our selection process was highly competitive, and we received numerous applications from candidates who possess the exact skills and experience needed for the position. <br>" +
+                                     $"<br> While your experience and achievements are impressive, we have decided to move forward with other candidates whose qualifications more closely match our current needs. <br>" +
+                                     $"<br> Please know that this decision does not reflect on your capabilities or potential. We recognize the effort you put into your application, and we sincerely appreciate your interest in joining our team. <br>" +
+                                     $"<br> As a company, we strive to ensure that every applicant receives a fair evaluation. We encourage you to continue exploring other opportunities within our organization or elsewhere that may be a better fit for your skills and aspirations. <br>" +
+                                     $"<br> Once again, thank you for your interest in Alliance Software Inc. We wish you all the best in your job search and future endeavors." +
+                                     $"<br> If you have any questions or would like feedback on your application, please feel free to reach out. We're more than willing to provide insights that may be helpful in your career journey. <br>" +
+                                     $"<br> Best regards, <br>");
+
+            await this.SendEmail(applicant.Email, "Alliance Software Inc. Application Status Update", body);
+        }
     }
 }

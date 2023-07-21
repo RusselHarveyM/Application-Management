@@ -133,6 +133,10 @@ namespace Basecode.Services.Services
                                 "GUID"
                                 );
                 }
+                else
+                {
+                    await _trackService.RegretNotification(applicantModel, jobPosition);
+                }
 
             }
 

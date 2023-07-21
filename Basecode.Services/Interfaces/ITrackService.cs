@@ -12,5 +12,7 @@ namespace Basecode.Services.Interfaces
         Task UpdateTrackStatusEmail(Applicant applicant, Guid appId, int userId, string newStatus, string mailType);
 
         Task StatusNotification(Applicant applicant, User user, string newStatus);
+
+        Task RegretNotification(Applicant applicant, string job);
     }
 }

@@ -48,6 +48,12 @@ namespace Basecode.Services.Services
                 await _emailService.SendStatusNotification(user, applicant, newStatus);
             }
         }
+
+        public async Task RegretNotification(Applicant applicant, string job)
+        {
+            //Notify Applicant who is not shortlisted upon application
+            await _emailService.SendRegretEmail(applicant, job);
+        }
        
     }
 }
