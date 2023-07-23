@@ -92,6 +92,7 @@
             </div>
         </div>
         <form asp-action="FormOk" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger error-style"></div>
             <div class="form-group">
                 <input asp-for=CharReferenceId type="text" value="@ViewData["bgcrId"]" style="display:none;">
                 <input asp-for=UserHRId type="text" value="@ViewData["bgUserId"]" style="display:none;">
@@ -100,10 +101,12 @@
                     <div class="input-field">
                         <label for="referee_last_name">Last Name:</label>
                         <input asp-for="Lastname" type="text" id="referee_last_name" value="@ViewData["bgRefLastname"]" placeholder="Last Name">
+                        <span asp-validation-for="Lastname" class="text-danger error-style"></span>
                     </div>
                     <div class="input-field">
                         <label for="referee_first_name">First Name:</label>
                         <input asp-for="Firstname" type="text" id="referee_first_name" value="@ViewData["bgRefFirstname"]" placeholder="First Name">
+                        <span asp-validation-for="Firstname" class="text-danger error-style"></span>
                     </div>
                 </div>
 
@@ -111,33 +114,46 @@
                     <div class="input-field">
                         <label for="email_address">Email Address:</label>
                         <input asp-for="Email" type="text" id="email_address" value="@ViewData["bgRefEmail"]" placeholder="example@example.com">
+                        <span asp-validation-for="Email" class="text-danger error-style"></span>
                     </div>
                     <div class="input-field">
                         <label for="phone_number">Phone Number:</label>
                         <input asp-for="PhoneNumber" type="text" id="phone_number" placeholder="+639xxxxxxxxx">
+                        <span asp-validation-for="PhoneNumber" class="text-danger error-style"></span>
                     </div>
                 </div>
 
                 <label for="relationship_to_applicant">Relationship to the Applicant:</label>
                 <input asp-for="Relationship" type="text" style="width: 39%" id="relationship_to_applicant" placeholder="Relationship">
+                <span asp-validation-for="Relationship" class="text-danger error-style"></span>
             </div>
 
             <div class="form-group">
                 <h1>Character Assessment</h1>
                 <label for="known_duration">How long have you known the applicant?</label>
                 <textarea asp-for="Q1" id="known_duration" style="width: 90%; padding: 20px;" rows="4" placeholder="Your answer here..."></textarea>
+                <span asp-validation-for="Q1" class="text-danger error-style"></span>
 
                 <label for="character_strengths">What would you say about the applicant's character, strengths, and work ethics?</label>
                 <textarea asp-for="Q2" id="character_strengths" style="width: 90%; padding: 20px;" rows="4" placeholder="Your answer here..."></textarea>
+                <span asp-validation-for="Q2" class="text-danger error-style"></span>
 
                 <label for="suitable_for_position">Do you believe the applicant is suitable for the position he/she applied for?</label>
                 <textarea asp-for="Q3" id="suitable_for_position" style="width: 90%; padding: 20px;" rows="4" placeholder="Your answer here..."></textarea>
+                <span asp-validation-for="Q3" class="text-danger error-style"></span>
 
                 <label for="additional_comments">Is there anything else that you would like to add that may be relevant to the applicant's <p> candidacy?</p></label>
                 <textarea asp-for="Q4" id="additional_comments" style="width: 90%; padding: 20px;" rows="4" placeholder="Your answer here..."></textarea>
+                <span asp-validation-for="Q4" class="text-danger error-style"></span>
             </div>
 
             <button type="submit">Submit</button>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
