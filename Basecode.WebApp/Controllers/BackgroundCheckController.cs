@@ -27,7 +27,7 @@ namespace Basecode.WebApp.Controllers
         //[Route("/BackgroundCheck/Form/{characterReferenceId}/{userId}")]
         public IActionResult Index()
         {
-            return View("BackgroundCheckForm");
+            return View("BackgroundForm");
         }
 
         [Route("/BackgroundCheck/BackgroundForm/{characterReferenceId}/{userId}")]

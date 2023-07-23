@@ -118,7 +118,7 @@
                     </div>
                     <div class="input-field">
                         <label for="phone_number">Phone Number:</label>
-                        <input asp-for="PhoneNumber" type="text" id="phone_number" placeholder="+639xxxxxxxxx">
+                        <input asp-for="PhoneNumber" type="text" id="phone_number" placeholder="09xxxxxxxxx">
                         <span asp-validation-for="PhoneNumber" class="text-danger error-style"></span>
                     </div>
                 </div>
@@ -132,19 +132,19 @@
                 <h1>Character Assessment</h1>
                 <label for="known_duration">How long have you known the applicant?</label>
                 <textarea asp-for="Q1" id="known_duration" style="width: 90%; padding: 20px;" rows="4" placeholder="Your answer here..."></textarea>
-                <span asp-validation-for="Q1" class="text-danger error-style"></span>
+                <div><span asp-validation-for="Q1" class="text-danger error-style"></span></div>
 
                 <label for="character_strengths">What would you say about the applicant's character, strengths, and work ethics?</label>
                 <textarea asp-for="Q2" id="character_strengths" style="width: 90%; padding: 20px;" rows="4" placeholder="Your answer here..."></textarea>
-                <span asp-validation-for="Q2" class="text-danger error-style"></span>
+                <div><span asp-validation-for="Q2" class="text-danger error-style"></span></div>
 
                 <label for="suitable_for_position">Do you believe the applicant is suitable for the position he/she applied for?</label>
                 <textarea asp-for="Q3" id="suitable_for_position" style="width: 90%; padding: 20px;" rows="4" placeholder="Your answer here..."></textarea>
-                <span asp-validation-for="Q3" class="text-danger error-style"></span>
+                <div><span asp-validation-for="Q3" class="text-danger error-style"></span></div>
 
                 <label for="additional_comments">Is there anything else that you would like to add that may be relevant to the applicant's <p> candidacy?</p></label>
                 <textarea asp-for="Q4" id="additional_comments" style="width: 90%; padding: 20px;" rows="4" placeholder="Your answer here..."></textarea>
-                <span asp-validation-for="Q4" class="text-danger error-style"></span>
+                <div><span asp-validation-for="Q4" class="text-danger error-style"></span></div>
             </div>
 
             <button type="submit">Submit</button>
