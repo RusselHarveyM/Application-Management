@@ -1,5 +1,6 @@
 ﻿using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
+using Basecode.Services.Services;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
 
@@ -31,6 +32,37 @@ namespace Basecode.WebApp.Controllers
         [Route("/Background/Form/{characterReferenceId}/{userId}")]
         public IActionResult BackgroundForm(int characterReferenceId, int userId)
         {
+            _logger.Trace("BackgroundCheck Controller | Enter form successfully");
+            try
+            {
+                //Get applicant id
+                var applicantId = _characterReferenceService.GetApplicantIdByCharacterReferenceId(characterReferenceId);
+                //Get applicant
+                var applicantDetails = _applicantService.GetApplicantById(applicantId);
+                //Get application
+                var applicationDetails = _applicationService.GetApplicationByApplicantId(applicantId);
+                //Get job
+                var jobDetails = _jobOpeningService.GetById(applicationDetails!.JobOpeningId);
+                //Get character reference
+                var getReference = _characterReferenceService.GetCharacterReferenceById(characterReferenceId);
+                //Ready the applicant details for view
+                ViewData["bgApplicantLastname"] = applicantDetails.Lastname;
+                ViewData["bgApplicantFirstname"] = applicantDetails.Firstname;
+                ViewData["bgApplicantJob"] = jobDetails.Title;
+                ViewData["bgApplicantDate"] = applicationDetails.ApplicationDate.ToShortDateString();
+                ViewData["bgcrId"] = characterReferenceId;
+                ViewData["bgUserId"] = userId;
+                //Ready the referees details for view
+                var slicedName = getReference.Name.Split(' ');
+                ViewData["bgRefFirstname"] = slicedName[0] ?? " ";
+                ViewData["bgRefLastname"] = slicedName[1] ?? " ";
+                ViewData["bgRefEmail"] = getReference.Email;
+            }
+            catch(Exception e)
+            {
+                _logger.Error(ErrorHandling.DefaultException(e.Message));
+                return StatusCode(500, "Something went wrong.");
+            }
             //Check first if referee already answered form
             var isAnswered = _backgroundCheckService.GetBackgroundByCharacterRefId(characterReferenceId);
             if(isAnswered != null)
@@ -38,28 +70,7 @@ namespace Basecode.WebApp.Controllers
                 ViewBag.IsFormSubmitted = false;
                 return View("Redirection");
             }
-            //Get applicant id
-            var applicantId = _characterReferenceService.GetApplicantIdByCharacterReferenceId(characterReferenceId);
-            //Get applicant
-            var applicantDetails = _applicantService.GetApplicantById(applicantId);
-            //Get application
-            var applicationDetails = _applicationService.GetApplicationByApplicantId(applicantId);
-            //Get job
-            var jobDetails = _jobOpeningService.GetById(applicationDetails!.JobOpeningId);
-            //Get character reference
-            var getReference = _characterReferenceService.GetCharacterReferenceById(characterReferenceId);
-            //Ready the applicant details for view
-            ViewData["bgApplicantLastname"] = applicantDetails.Lastname;
-            ViewData["bgApplicantFirstname"] = applicantDetails.Firstname;
-            ViewData["bgApplicantJob"] = jobDetails.Title;
-            ViewData["bgApplicantDate"] = applicationDetails.ApplicationDate.ToShortDateString();
-            ViewData["bgcrId"] = characterReferenceId;
-            ViewData["bgUserId"] = userId;
-            //Ready the referees details for view
-            var slicedName = getReference.Name.Split(' ');
-            ViewData["bgRefFirstname"] = slicedName[0] ?? " ";
-            ViewData["bgRefLastname"] = slicedName[1] ?? " ";
-            ViewData["bgRefEmail"] = getReference.Email;
+            
 
             return View();
         }
@@ -67,6 +78,7 @@ namespace Basecode.WebApp.Controllers
         [Route("/Background/FormOk")]
         public ActionResult FormOk(BackgroundCheckFormViewModel data)
         {
+            _logger.Trace("Form Submitted Successfully");
             _backgroundCheckService.Create(data);
             ViewBag.IsFormSubmitted = true;
             return View("Redirection");
