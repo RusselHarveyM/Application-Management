@@ -1,4 +1,5 @@
-﻿using Basecode.Services.Interfaces;
+﻿using Basecode.Data.ViewModels;
+using Basecode.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
 
@@ -10,15 +11,17 @@ namespace Basecode.WebApp.Controllers
         private readonly IApplicantService _applicantService;
         private readonly IApplicationService _applicationService;
         private readonly IJobOpeningService _jobOpeningService;
+        private readonly IBackgroundCheckService _backgroundCheckService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
         public BackgroundCheck(ICharacterReferenceService characterReferenceService, IApplicantService applicantService,
-            IApplicationService applicationService, IJobOpeningService jobOpeningService)
+            IApplicationService applicationService, IJobOpeningService jobOpeningService, IBackgroundCheckService backgroundCheckService)
         {
             _characterReferenceService = characterReferenceService;
             _applicantService = applicantService;
             _applicationService = applicationService;
             _jobOpeningService = jobOpeningService;
+            _backgroundCheckService = backgroundCheckService;
         }
         public IActionResult Index()
         {
@@ -28,6 +31,13 @@ namespace Basecode.WebApp.Controllers
         [Route("/Background/Form/{characterReferenceId}/{userId}")]
         public IActionResult BackgroundForm(int characterReferenceId, int userId)
         {
+            //Check first if referee already answered form
+            var isAnswered = _backgroundCheckService.GetBackgroundByCharacterRefId(characterReferenceId);
+            if(isAnswered != null)
+            {
+                ViewBag.IsFormSubmitted = false;
+                return View("Redirection");
+            }
             //Get applicant id
             var applicantId = _characterReferenceService.GetApplicantIdByCharacterReferenceId(characterReferenceId);
             //Get applicant
@@ -53,6 +63,13 @@ namespace Basecode.WebApp.Controllers
 
             return View();
         }
-        
+
+        [Route("/Background/FormOk")]
+        public ActionResult FormOk(BackgroundCheckFormViewModel data)
+        {
+            _backgroundCheckService.Create(data);
+            ViewBag.IsFormSubmitted = true;
+            return View("Redirection");
+        }
     }
 }
