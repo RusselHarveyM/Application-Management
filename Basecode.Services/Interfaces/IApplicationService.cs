@@ -47,5 +47,12 @@ namespace Basecode.Services.Interfaces
         /// <param name="applicantId"></param>
         /// <returns></returns>
         Guid GetApplicationIdByApplicantId(int applicantId);
+
+        /// <summary>
+        /// Gets the application by applicant identifier.
+        /// </summary>
+        /// <param name="applicantId">The applicant identifier.</param>
+        /// <returns></returns>
+        Application? GetApplicationByApplicantId(int applicantId);
     }
 }
