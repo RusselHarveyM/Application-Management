@@ -29,7 +29,7 @@ namespace Basecode.Services.Interfaces
         /// </summary>
         /// <param name="characterReferenceId">The character reference identifier.</param>
         /// <returns></returns>
-        CharacterReference? GetCharacterReferenceById(int characterReferenceId)
+        CharacterReference? GetCharacterReferenceById(int characterReferenceId);
         /// <summary>
         /// Gets the character reference applicant identifier.
         /// </summary>
