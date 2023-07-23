@@ -18,5 +18,11 @@ namespace Basecode.Data.Interfaces
         /// </summary>
         /// <returns>An IQueryable of CharacterReference Object.</returns>
         IQueryable<CharacterReference> GetAll();
+        /// <summary>
+        /// Gets the by identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
+        CharacterReference GetById(int id);
     }
 }
