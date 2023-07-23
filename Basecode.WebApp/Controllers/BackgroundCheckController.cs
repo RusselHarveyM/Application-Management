@@ -46,6 +46,10 @@ namespace Basecode.WebApp.Controllers
                 }
                 //Get applicant id
                 var applicantId = _characterReferenceService.GetApplicantIdByCharacterReferenceId(characterReferenceId);
+                if(applicantId <= 0)
+                {
+                    return NotFound();
+                }
                 //Get applicant
                 var applicantDetails = _applicantService.GetApplicantById(applicantId);
                 //Get application

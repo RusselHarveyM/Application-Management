@@ -29,6 +29,7 @@ namespace Basecode.Services.Services
         {
             LogContent logContent = new LogContent();
 
+            logContent = CheckBackground(form);
             if (!logContent.Result)
             {
                 var newForm = _mapper.Map<BackgroundCheck>(form);

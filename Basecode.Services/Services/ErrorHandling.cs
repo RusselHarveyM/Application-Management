@@ -1,6 +1,8 @@
 ﻿using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Security.Policy;
 using System.Text.RegularExpressions;
 
 namespace Basecode.Services.Services
@@ -220,6 +222,52 @@ namespace Basecode.Services.Services
             {
                 logContent.SetError("404", "Existing application not found.");
             }
+            return logContent;
+        }
+
+        public static LogContent CheckBackground(BackgroundCheckFormViewModel backgroundCheck)
+        {
+            LogContent logContent = new LogContent();
+            if(backgroundCheck == null)
+            {
+                logContent.SetError("400", "No data found");
+            }else if (string.IsNullOrEmpty(backgroundCheck.Email))
+            {
+                logContent.SetError("400", "Email is required but has no value.");
+            }
+            else if (string.IsNullOrEmpty(backgroundCheck.Firstname))
+            {
+                logContent.SetError("400", "Firstname is required but has no value.d");
+            }
+            else if (string.IsNullOrEmpty(backgroundCheck.Lastname))
+            {
+                logContent.SetError("400", "Lastname is required but has no value.");
+            }
+            else if (string.IsNullOrEmpty(backgroundCheck.PhoneNumber))
+            {
+                logContent.SetError("400", "Phonenumber is required but has no value.");
+            }
+            else if (string.IsNullOrEmpty(backgroundCheck.Q1))
+            {
+                logContent.SetError("400", "Q1 is required but has no value.");
+            }
+            else if (string.IsNullOrEmpty(backgroundCheck.Q2))
+            {
+                logContent.SetError("400", "Q2 is required but has no value.");
+            }
+            else if (string.IsNullOrEmpty(backgroundCheck.Q3))
+            {
+                logContent.SetError("400", "Q3 is required but has no value.");
+            }
+            else if (string.IsNullOrEmpty(backgroundCheck.Q4))
+            {
+                logContent.SetError("400", "Q4 is required but has no value.");
+            }
+            else if (string.IsNullOrEmpty(backgroundCheck.Relationship))
+            {
+                logContent.SetError("400", "Q5 is required but has no value.");
+            }
+
             return logContent;
         }
     }

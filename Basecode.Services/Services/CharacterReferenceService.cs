@@ -59,9 +59,9 @@ namespace Basecode.Services.Services
             return data;
         }
 
-        public CharacterReference? GetCharacterReferenceById(int characterReferenceId)
+        public CharacterReference GetCharacterReferenceById(int characterReferenceId)
         {
-            return _repository.GetCharacterReferenceById(characterReferenceId);
+            return _repository.GetCharacterReferenceById(characterReferenceId) ?? throw new Exception("No data found");
         }
 
         public int GetApplicantIdByCharacterReferenceId(int characterReferenceId)
