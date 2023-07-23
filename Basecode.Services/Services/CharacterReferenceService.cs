@@ -61,7 +61,7 @@ namespace Basecode.Services.Services
 
         public CharacterReference? GetCharacterReferenceById(int characterReferenceId)
         {
-            return _repository.GetById(characterReferenceId);
+            return _repository.GetCharacterReferenceById(characterReferenceId);
         }
 
         public int GetApplicantIdByCharacterReferenceId(int characterReferenceId)
