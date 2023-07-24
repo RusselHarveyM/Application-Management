@@ -23,8 +23,7 @@ namespace Basecode.WebApp.Controllers
         /// Initializes a new instance of the <see cref="DashboardController"/> class.
         /// </summary>
         /// <param name="applicantService">The applicant service.</param>
-        public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService, IUserService userService, IApplicationService applicationService)
-        public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService, IUserService userService, IEmailService emailService)
+        public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService, IUserService userService, IEmailService emailService, IApplicationService applicationService)
         {
             _applicantService = applicantService;
             _jobOpeningService = jobOpeningService;
