@@ -3,6 +3,7 @@ using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -123,6 +124,16 @@ namespace Basecode.Services.Services
         public Guid GetApplicationIdByApplicantId(int applicantId)
         {
             return _repository.GetApplicationIdByApplicantId(applicantId);
+        }
+
+        /// <summary>
+        /// Gets the application by applicant identifier.
+        /// </summary>
+        /// <param name="applicantId">The applicant identifier.</param>
+        /// <returns></returns>
+        public Application? GetApplicationByApplicantId(int applicantId)
+        {
+            return _repository.GetAll().Where(m => m.ApplicantId == applicantId).SingleOrDefault();
         }
     }
 }

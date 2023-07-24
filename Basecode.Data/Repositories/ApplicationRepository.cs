@@ -17,7 +17,6 @@ namespace Basecode.Data.Repositories
         {
             _context = context;
         }
-
         public Guid CreateApplication(Application application)
         {
             _context.Application.Add(application);
@@ -54,6 +53,11 @@ namespace Basecode.Data.Repositories
             }
 
             return Guid.Empty;
+        }
+
+        public IQueryable<Application> GetAll()
+        {
+            return this.GetDbSet<Application>();
         }
     }
 }

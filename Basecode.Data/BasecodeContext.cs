@@ -38,5 +38,6 @@ namespace Basecode.Data
         public virtual DbSet<Interview> Interview { get; set; }
         public virtual DbSet<AssignInterviewer> AssignInterviewer { get; set; }
         public virtual DbSet<UserSchedule> UserSchedule { get; set; }
+        public virtual DbSet<BackgroundCheck> BackgroundCheck { get; set; }
     }
 }
