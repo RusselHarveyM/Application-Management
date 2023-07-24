@@ -10,7 +10,6 @@
         public DateTime Schedule { get; set; }
 
         public User User { get; set; }
-        public JobOpening JobOpening { get; set; }
         public Application Application { get; set; }
     }
 }
