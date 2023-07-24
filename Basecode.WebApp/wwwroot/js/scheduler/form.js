@@ -126,19 +126,19 @@ $('#scheduleForm').submit(function (event) {
     // Get the validation token from the form
     var token = $('input[name="__RequestVerificationToken"]').val();
 
-    var applicantData = [];
+    var applicantSchedules = [];
     $('#selectedApplicants').find('tr').each(function () {
         var applicantId = $(this).find('td:last').data('applicant-id');
         var time = $(this).find('td:eq(1)').find('input[type="time"]').val();
 
-        applicantData.push({ ApplicantId: applicantId, Time: time });
+        applicantSchedules.push({ ApplicantId: applicantId, Time: time });
     });
 
     var formData = {
         JobOpeningId: $('#jobOpeningDropdown').val(),
         Type: $('#meetingTypeDropdown').val(),
         Date: $('#date').val(),
-        ApplicantData: applicantData 
+        ApplicantSchedules: applicantSchedules 
     };
 
     console.log(formData);

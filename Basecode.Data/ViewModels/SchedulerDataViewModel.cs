@@ -17,9 +17,9 @@ namespace Basecode.Data.ViewModels
         public DateOnly Date { get; set; }
 
         [Required(ErrorMessage = "Please select an applicant and set a time.")]
-        public List<ApplicantTime> ApplicantData { get; set; }
+        public List<ApplicantSchedule> ApplicantSchedules { get; set; }
 
-        public class ApplicantTime
+        public class ApplicantSchedule
         {
             public int ApplicantId { get; set; }
             public string Time { get; set; }
