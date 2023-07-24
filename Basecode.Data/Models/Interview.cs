@@ -18,7 +18,7 @@ namespace Basecode.Data.Models
         public int? UserId { get; set; }
         public DateTime? Date { get; set; }
         public string? TeamsLink { get; set; }
-        public int? Type { get; set; }
+        public string? Type { get; set; }
         public string? Result { get; set; }
     }
 }
