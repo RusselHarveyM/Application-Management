@@ -119,7 +119,7 @@ namespace Basecode.WebApp.Controllers
             {
                 string createdBy = User.Identity?.Name ?? "person1";
                 int createdByUser = 1;  // temporary until User auth is sorted out
-                (ErrorHandling.LogContent logContent, int jobOpeningId) data = _jobOpeningService.Create(jobOpening, "russelharvey.mercado@cit.edu");
+                (ErrorHandling.LogContent logContent, int jobOpeningId) data = _jobOpeningService.Create(jobOpening, "insert your dummy email here");
 
                 //var data = _jobOpeningService.Create(jobOpening, "russelharvey.mercado@cit.edu");
 
