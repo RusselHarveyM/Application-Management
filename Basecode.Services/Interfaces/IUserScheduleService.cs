@@ -6,13 +6,45 @@ namespace Basecode.Services.Interfaces
 {
     public interface IUserScheduleService
     {
-        void CreateSchedules(SchedulerDataViewModel formData);
+        /// <summary>
+        /// Adds the user schedules.
+        /// </summary>
+        /// <param name="formData">The form data.</param>
+        /// <returns></returns>
+        Task AddUserSchedules(SchedulerDataViewModel formData);
 
         /// <summary>
         /// Creates a UserSchedule.
         /// </summary>
         /// <param name="userSchedule"></param>
         /// <returns></returns>
-        LogContent CreateSchedule(UserSchedule userSchedule);
+        (LogContent, int) AddUserSchedule(UserSchedule userSchedule);
+
+        /// <summary>
+        /// Sends the schedule to applicant.
+        /// </summary>
+        Task SendScheduleToApplicant(UserSchedule userSchedule, int userScheduleId, int applicantId, string meetingType);
+
+        /// <summary>
+        /// Gets the user schedule by identifier.
+        /// </summary>
+        /// <param name="userScheduleId">The user schedule identifier.</param>
+        /// <returns></returns>
+        UserSchedule GetUserScheduleById(int userScheduleId);
+
+        /// <summary>
+        /// Updates the schedule.
+        /// </summary>
+        /// <param name="userSchedule">The user schedule.</param>
+        /// <returns></returns>
+        LogContent UpdateUserSchedule(UserSchedule userSchedule);
+
+        /// <summary>
+        /// Sends the schedules to interviewer.
+        /// </summary>
+        /// <param name="formData">The form data.</param>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns></returns>
+        Task SendSchedulesToInterviewer(SchedulerDataViewModel formData, int userId);
     }
 }
