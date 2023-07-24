@@ -2,7 +2,6 @@
 using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
-using Microsoft.SqlServer.Server;
 using NLog;
 
 namespace Basecode.Services.Services
@@ -17,7 +16,7 @@ namespace Basecode.Services.Services
         private readonly IJobOpeningService _jobOpeningService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        public UserScheduleService(IUserScheduleRepository repository, IEmailService emailService, IApplicationService applicationService, 
+        public UserScheduleService(IUserScheduleRepository repository, IEmailService emailService, IApplicationService applicationService,
             IApplicantService applicantService, IUserService userService, IJobOpeningService jobOpeningService)
         {
             _repository = repository;
@@ -35,6 +34,7 @@ namespace Basecode.Services.Services
         public async Task AddUserSchedules(SchedulerDataViewModel formData)
         {
             int userId = 1; // Temporary until auth has been sorted out
+            List<int> successfullyAddedApplicantIds = new List<int>();
 
             foreach (var schedule in formData.ApplicantSchedules)
             {
@@ -42,7 +42,7 @@ namespace Basecode.Services.Services
 
                 var userSchedule = new UserSchedule
                 {
-                    UserId = userId, 
+                    UserId = userId,
                     ApplicationId = applicationId,
                     Type = formData.Type,
                     Schedule = DateTime.Parse(formData.Date.ToString() + " " + schedule.Time),
@@ -51,15 +51,15 @@ namespace Basecode.Services.Services
 
                 (LogContent logContent, int userScheduleId) data = AddUserSchedule(userSchedule);
 
-                if (!data.logContent.Result)
+                if (!data.logContent.Result && data.userScheduleId != -1)
                 {
                     _logger.Trace("Successfully created a new UserSchedule record.");
+                    await SendScheduleToApplicant(userSchedule, data.userScheduleId, schedule.ApplicantId, formData.Type);
+                    successfullyAddedApplicantIds.Add(schedule.ApplicantId);
                 }
-
-                await SendScheduleToApplicant(userSchedule, data.userScheduleId, schedule.ApplicantId, formData.Type);
             }
 
-            await SendSchedulesToInterviewer(formData, userId);
+            await SendSchedulesToInterviewer(formData, userId, successfullyAddedApplicantIds);
         }
 
         /// <summary>
@@ -69,9 +69,8 @@ namespace Basecode.Services.Services
         /// <returns></returns>
         public (LogContent, int) AddUserSchedule(UserSchedule userSchedule)
         {
-            LogContent logContent = new LogContent();
-            // Still need to add checking in ErrorHandling
-            int userScheduleId = 0;
+            LogContent logContent = CheckUserSchedule(userSchedule);
+            int userScheduleId = -1;
 
             if (logContent.Result == false)
             {
@@ -112,8 +111,7 @@ namespace Basecode.Services.Services
         /// <returns></returns>
         public LogContent UpdateUserSchedule(UserSchedule userSchedule)
         {
-            LogContent logContent = new LogContent();
-            // error handling to be added
+            LogContent logContent = CheckUserSchedule(userSchedule);
 
             if (logContent.Result == false)
             {
@@ -131,18 +129,22 @@ namespace Basecode.Services.Services
         /// </summary>
         /// <param name="formData">The form data.</param>
         /// <param name="userId">The user identifier.</param>
-        public async Task SendSchedulesToInterviewer(SchedulerDataViewModel formData, int userId)
+        public async Task SendSchedulesToInterviewer(SchedulerDataViewModel formData, int userId, List<int> successfullyAddedApplicantIds)
         {
             string meetingType = formData.Type[(formData.Type.Split()[0].Length + 1)..];   // Remove "For " from meeting type
+            string jobOpeningTitle = _jobOpeningService.GetJobOpeningTitleById(formData.JobOpeningId);
             var user = _userService.GetById(userId);
             string scheduledTimes = "";
+
             foreach (var schedule in formData.ApplicantSchedules)
             {
-                var applicant = _applicantService.GetApplicantById(schedule.ApplicantId);
-                scheduledTimes += $"{applicant.Firstname} {applicant.Lastname}'s Schedule: {schedule.Time}<br/>";
+                if (successfullyAddedApplicantIds.Contains(schedule.ApplicantId))
+                {
+                    var applicant = _applicantService.GetApplicantById(schedule.ApplicantId);
+                    scheduledTimes += $"{applicant.Firstname} {applicant.Lastname}'s Schedule: {schedule.Time}<br/>";
+                }
             }
 
-            string jobOpeningTitle = _jobOpeningService.GetJobOpeningTitleById(formData.JobOpeningId);
             await _emailService.SendSchedulesToInterviewer(user.Fullname, user.Email, jobOpeningTitle, formData.Date, scheduledTimes, meetingType);
         }
     }

@@ -13,10 +13,14 @@ namespace Basecode.Services.Services
             _repository = repository;
         }
 
+        /// <summary>
+        /// Adds the interview.
+        /// </summary>
+        /// <param name="schedule">The schedule.</param>
+        /// <returns></returns>
         public LogContent AddInterview(UserSchedule schedule)
         {
-            LogContent logContent = new LogContent();
-            // error handling TBA
+            LogContent logContent = CheckUserSchedule(schedule);
 
             if (logContent.Result == false)
             {

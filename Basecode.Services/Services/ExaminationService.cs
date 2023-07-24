@@ -32,8 +32,7 @@ namespace Basecode.Services.Services
         /// <returns></returns>
         public LogContent AddExamination(UserSchedule schedule)
         {
-            LogContent logContent = new LogContent();
-            // error handling TBA
+            LogContent logContent = CheckUserSchedule(schedule);
 
             if (logContent.Result == false)
             {

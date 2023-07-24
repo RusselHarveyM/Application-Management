@@ -40,10 +40,11 @@ namespace Basecode.WebApp.Controllers
                 int userId = 1;     // temporary until User auth is sorted out
                 var jobOpenings = _userService.GetLinkedJobOpenings(userId);
                 var applicants = _applicantService.GetApplicantsWithStatuses();
-                var userScheduleViewModel = new SchedulerDataViewModel();
+                var schedulerFormData = new SchedulerDataViewModel();
+
                 SchedulerViewModel viewModel = new SchedulerViewModel()
                 {
-                    FormData = userScheduleViewModel,
+                    FormData = schedulerFormData,
                     JobOpenings = jobOpenings,
                     Applicants = applicants,
                 };
@@ -69,17 +70,18 @@ namespace Basecode.WebApp.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    _logger.Warn("Invalid ModelState.");
-                    return BadRequest(ModelState);
+                    _logger.Warn("Model has validation error(s).");
+                    //return BadRequest(ModelState);
+                    return View(formData);
                 }
 
                 await _userScheduleService.AddUserSchedules(formData);
-
                 return RedirectToAction("Index", "Dashboard");
             }
-            catch
+            catch (Exception e)
             {
-                return View();
+                _logger.Error(ErrorHandling.DefaultException(e.Message));
+                return StatusCode(500, "Something went wrong.");
             }
         }
 
@@ -90,18 +92,14 @@ namespace Basecode.WebApp.Controllers
         {
             try
             {
-                int userScheduleId;
                 string userScheduleIdString = HttpContext.Request.Query["userScheduleId"];
-                if (!userScheduleIdString.IsNullOrEmpty())
-                {
-                    userScheduleId = Int32.Parse(userScheduleIdString);
-                }
-                else 
+                if (userScheduleIdString.IsNullOrEmpty())
                 {
                     _logger.Warn("Invalid query string");
                     return NotFound();
                 }
 
+                int userScheduleId = Int32.Parse(userScheduleIdString);
                 var userSchedule = _userScheduleService.GetUserScheduleById(userScheduleId);
 
                 if (userSchedule == null)
@@ -157,22 +155,19 @@ namespace Basecode.WebApp.Controllers
         {
             try
             {
-                int userScheduleId;
                 string userScheduleIdString = HttpContext.Request.Query["userScheduleId"];
-                if (!userScheduleIdString.IsNullOrEmpty())
-                {
-                    userScheduleId = Int32.Parse(userScheduleIdString);
-                }
-                else
+                if (userScheduleIdString.IsNullOrEmpty())
                 {
                     _logger.Warn("Invalid query string");
                     return NotFound();
                 }
 
+                int userScheduleId = Int32.Parse(userScheduleIdString);
                 var userSchedule = _userScheduleService.GetUserScheduleById(userScheduleId);
 
                 if (userSchedule == null)
                 {
+                    _logger.Error("Schedule is not found");
                     return NotFound();
                 }
 

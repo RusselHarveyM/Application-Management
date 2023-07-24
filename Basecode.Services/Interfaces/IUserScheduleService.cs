@@ -45,6 +45,6 @@ namespace Basecode.Services.Interfaces
         /// <param name="formData">The form data.</param>
         /// <param name="userId">The user identifier.</param>
         /// <returns></returns>
-        Task SendSchedulesToInterviewer(SchedulerDataViewModel formData, int userId);
+        Task SendSchedulesToInterviewer(SchedulerDataViewModel formData, int userId, List<int> successfullyAddedApplicantIds);
     }
 }
