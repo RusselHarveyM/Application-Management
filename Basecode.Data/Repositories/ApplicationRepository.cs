@@ -59,10 +59,5 @@ namespace Basecode.Data.Repositories
 
             return Guid.Empty;
         }
-
-        public IQueryable<Application> GetAll()
-        {
-            return this.GetDbSet<Application>();
-        }
     }
 }

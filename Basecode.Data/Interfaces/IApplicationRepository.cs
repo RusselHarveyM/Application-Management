@@ -54,10 +54,5 @@ namespace Basecode.Data.Interfaces
         /// <returns></returns>
         Guid GetApplicationIdByApplicantId(int applicantId);
 
-        /// <summary>
-        /// Gets all.
-        /// </summary>
-        /// <returns></returns>
-        IQueryable<Application> GetAll();
     }
 }
