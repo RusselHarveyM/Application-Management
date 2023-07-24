@@ -135,7 +135,6 @@ $('#scheduleForm').submit(function (event) {
     });
 
     var formData = {
-        JobOpeningId: $('#jobOpeningDropdown').val(),
         Type: $('#meetingTypeDropdown').val(),
         Date: $('#date').val(),
         ApplicantSchedules: applicantSchedules 

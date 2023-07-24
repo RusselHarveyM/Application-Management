@@ -35,7 +35,6 @@ namespace Basecode.Services.Services
                 var userSchedule = new UserSchedule
                 {
                     UserId = 1, // Temporary until auth has been sorted out
-                    JobOpeningId = formData.JobOpeningId,
                     Type = formData.Type,
                     Schedule = DateTime.Parse(formData.Date.ToString() + " " + schedule.Time),
                     ApplicationId = applicationId

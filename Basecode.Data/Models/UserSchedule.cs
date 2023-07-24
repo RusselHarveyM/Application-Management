@@ -4,7 +4,6 @@
     {
         public int Id { get; set; }
         public int UserId { get; set; }
-        public int JobOpeningId { get; set; }
         public Guid ApplicationId { get; set; }
         public string Type { get; set; }
         public DateTime Schedule { get; set; }
