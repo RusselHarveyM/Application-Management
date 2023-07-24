@@ -31,7 +31,6 @@ namespace Basecode.Data.Repositories
 
         public Application GetById(Guid id)
         {
-            //return _context.Application.Find(id);
             return _context.Application
                 .Include(a => a.Applicant)
                 .Include(a => a.JobOpening)

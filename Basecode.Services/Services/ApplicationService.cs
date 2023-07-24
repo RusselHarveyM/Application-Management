@@ -113,17 +113,12 @@ namespace Basecode.Services.Services
         /// <returns></returns>
         public LogContent Update(Application application)
         {
-            var existingApplication = _repository.GetById(application.Id);
-
             LogContent logContent = new LogContent();
-            logContent = CheckApplication(existingApplication);
+            logContent = CheckApplication(application);
 
             if (logContent.Result == false)
             {
-                existingApplication.Status = application.Status;
-                existingApplication.UpdateTime = DateTime.Now;
-
-                _repository.UpdateApplication(existingApplication);
+                _repository.UpdateApplication(application);
             }
 
             return logContent;

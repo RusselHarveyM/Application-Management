@@ -11,12 +11,14 @@ namespace Basecode.WebApp.Controllers
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly IApplicantService _applicantService;
         private readonly IUserService _userService;
+        private readonly ITrackService _trackService;
 
-        public TrackerController(IApplicationService applicationService, IApplicantService applicantService, IUserService userService)
+        public TrackerController(IApplicationService applicationService, IApplicantService applicantService, IUserService userService, ITrackService trackService)
         {
             _applicationService = applicationService;
             _applicantService = applicantService;
             _userService = userService;
+            _trackService = trackService;
         }
 
         /// <summary>
@@ -81,7 +83,7 @@ namespace Basecode.WebApp.Controllers
 
                 if(application != null && user != null)
                 {
-                    _applicantService.UpdateApplication(application, user, choice, status);
+                    _trackService.UpdateApplicationStatusByEmailResponse(application, user, choice, status);
                 }
 
                 return RedirectToAction("ChangeStatusView");
