@@ -71,7 +71,6 @@ namespace Basecode.WebApp.Controllers
                 if (!ModelState.IsValid)
                 {
                     _logger.Warn("Model has validation error(s).");
-                    //return BadRequest(ModelState);
                     return View(formData);
                 }
 
