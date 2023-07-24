@@ -6,7 +6,7 @@ namespace Basecode.Data.ViewModels
     public class SchedulerDataViewModel
     {
         [Required(ErrorMessage = "Please select a Job Opening.")]
-        [DisplayName("Full Name")]
+        [DisplayName("Job Opening")]
         public int JobOpeningId { get; set; }
 
         [Required(ErrorMessage = "Please select a Type.")]
