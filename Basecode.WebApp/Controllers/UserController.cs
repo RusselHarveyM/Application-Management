@@ -243,6 +243,7 @@ namespace Basecode.WebApp.Controllers
                 }
                 // Perform the assignment
                 _assignInterviewerService.Create(jobposition, email);
+
                 // Use switch case for different roles
                 switch (data.Role)
                 {
@@ -252,6 +253,10 @@ namespace Basecode.WebApp.Controllers
 
                     case "Human Resources":
                         _emailService.ScheduleForHR(email, data.Fullname, data.Username, data.Password, jobposition);
+                        break;
+
+                    case "Technical":
+                        _emailService.ScheduleForTechnical(email, data.Fullname, data.Username, data.Password, jobposition);
                         break;
 
                     default:
