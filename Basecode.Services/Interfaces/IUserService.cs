@@ -11,9 +11,6 @@ using static Basecode.Services.Services.ErrorHandling;
 
 namespace Basecode.Services.Interfaces
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public interface IUserService
     {
         /// <summary>

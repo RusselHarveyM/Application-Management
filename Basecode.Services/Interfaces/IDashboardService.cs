@@ -9,8 +9,25 @@ namespace Basecode.Services.Interfaces
 {
     public interface IDashboardService
     {
+        /// <summary>
+        /// Updates the status.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        /// <param name="user">The user.</param>
+        /// <param name="status">The status.</param>
+        /// <returns></returns>
         Task UpdateStatus(Application application, User user, string status);
+        /// <summary>
+        /// Gets the shorlisted applicatons.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns></returns>
         List<Application> GetShorlistedApplicatons(string type);
+        /// <summary>
+        /// Gets the application by identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         Application GetApplicationById(Guid id);
     }
 }

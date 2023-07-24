@@ -4,9 +4,6 @@ using static Basecode.Services.Services.ErrorHandling;
 
 namespace Basecode.Services.Interfaces
 {
-    /// <summary>
-    /// Represents an interface for the Applicant service.
-    /// </summary>
     public interface IApplicantService
     {
         /// <summary>
@@ -26,14 +23,21 @@ namespace Basecode.Services.Interfaces
         /// </returns>
         Applicant GetApplicantById(int id);
 
+        /// <summary>
+        /// Gets the applicant by identifier all.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         Applicant GetApplicantByIdAll(int id);
 
         /// <summary>
         /// Updates the application.
         /// </summary>
-        /// <param name="applicant">The applicant.</param>
+        /// <param name="application">The application.</param>
         /// <param name="user">The user.</param>
+        /// <param name="choice">The choice.</param>
         /// <param name="newStatus">The new status.</param>
+        /// <returns></returns>
         Task UpdateApplication(Application application, User user, string choice, string newStatus);
 
         /// <summary>

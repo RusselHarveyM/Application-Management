@@ -9,9 +9,6 @@ using static Basecode.Services.Services.ErrorHandling;
 
 namespace Basecode.Services.Interfaces
 {
-    /// <summary>
-    /// Defines methods for managing application data.
-    /// </summary>
     public interface IApplicationService
     {
         /// <summary>
@@ -43,6 +40,11 @@ namespace Basecode.Services.Interfaces
         /// <param name="application">The application.</param>
         void Create(Application application);
 
+        /// <summary>
+        /// Creates the with identifier.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        /// <returns></returns>
         Guid CreateWithId(Application application);
 
         /// <summary>
@@ -62,7 +64,7 @@ namespace Basecode.Services.Interfaces
         /// <summary>
         /// Gets the application id based on the applicant id.
         /// </summary>
-        /// <param name="applicantId"></param>
+        /// <param name="applicantId">The applicant identifier.</param>
         /// <returns></returns>
         Guid GetApplicationIdByApplicantId(int applicantId);
 

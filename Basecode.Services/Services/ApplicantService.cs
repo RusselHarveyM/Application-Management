@@ -17,16 +17,13 @@ namespace Basecode.Services.Services
 {
     public class ApplicantService : IApplicantService
     {
+
         private readonly IApplicantRepository _repository;
         private readonly IApplicationService _applicationService;
         private readonly IJobOpeningService _jobOpeningService;
         private readonly ITrackService _trackService;
         private readonly IMapper _mapper;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicantService"/> class.
-        /// </summary>
-        /// <param name="repository">The repository.</param>
         public ApplicantService(IApplicantRepository repository, IMapper mapper, ITrackService trackService, IJobOpeningService jobOpeningService, IApplicationService applicationService)
         {
             _repository = repository;
@@ -39,7 +36,9 @@ namespace Basecode.Services.Services
         /// <summary>
         /// Gets the applicants.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// A list of Applicant objects.
+        /// </returns>
         public List<Applicant> GetApplicants()
         {
             return _repository.GetAll().ToList();
@@ -49,13 +48,20 @@ namespace Basecode.Services.Services
         /// Retrieves an applicant by its ID.
         /// </summary>
         /// <param name="id">The ID of the applicant.</param>
-        /// <returns>The Applicant object.</returns>
+        /// <returns>
+        /// The Applicant object.
+        /// </returns>
         public Applicant GetApplicantById(int id)
         {
 
             return _repository.GetById(id);
         }
-        
+
+        /// <summary>
+        /// Gets the applicant by identifier all.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         public Applicant GetApplicantByIdAll(int id)
         {
             return _repository.GetByIdAll(id);
@@ -63,8 +69,12 @@ namespace Basecode.Services.Services
         }
 
 
-        /// <summary>Updates the application.</summary>
-        /// <param name="applicant">The applicant.</param>
+        /// <summary>
+        /// Updates the application.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        /// <param name="user">The user.</param>
+        /// <param name="choice">The choice.</param>
         /// <param name="newStatus">The new status.</param>
         public async Task UpdateApplication(Application application, User user, string choice, string newStatus)
         {
@@ -78,8 +88,10 @@ namespace Basecode.Services.Services
         /// <summary>
         /// Creates a new applicant based on the provided applicant data.
         /// </summary>
-        /// <param name="applicant"></param>
-        /// <returns>Returns a tuple with the log content and the ID of the created applicant.</returns>
+        /// <param name="applicant">The applicant.</param>
+        /// <returns>
+        /// Returns a tuple with the log content and the ID of the created applicant.
+        /// </returns>
         public async Task<(LogContent, int)> Create(ApplicantViewModel applicant)
         {
             LogContent logContent = new LogContent();

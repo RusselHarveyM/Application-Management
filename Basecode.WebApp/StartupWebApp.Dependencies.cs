@@ -35,7 +35,6 @@ namespace Basecode.WebApp
             services.AddScoped<IBackgroundCheckService, BackgroundCheckService>();
             services.AddScoped<IEmailSchedulerService, EmailSchedulerService>();
             services.AddScoped<IEmailSendingService, EmailSendingService>();
-            services.AddScoped<IApplicationStatusUpdateService, ApplicationStatusUpdateService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IDashboardService, DashboardService>();
 

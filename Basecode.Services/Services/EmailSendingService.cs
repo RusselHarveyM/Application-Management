@@ -10,15 +10,23 @@ using Basecode.Services.Interfaces;
 
 namespace Basecode.Services.Services
 {
+
     public class EmailSendingService : IEmailSendingService
     {
         private readonly IEmailService _emailService;
-
         public EmailSendingService(IEmailService emailService)
         {
             _emailService = emailService;
         }
 
+        /// <summary>
+        /// Sends the interview notification.
+        /// </summary>
+        /// <param name="interviewerEmail">The interviewer email.</param>
+        /// <param name="intervierwerFullName">Full name of the intervierwer.</param>
+        /// <param name="interviewerUsername">The interviewer username.</param>
+        /// <param name="interviewerPassword">The interviewer password.</param>
+        /// <param name="jobPosition">The job position.</param>
         public async Task SendInterviewNotification(string interviewerEmail, string intervierwerFullName, string interviewerUsername,
                                string interviewerPassword, string jobPosition)
         {
@@ -37,6 +45,14 @@ namespace Basecode.Services.Services
         }
 
 
+        /// <summary>
+        /// Sends the interview notification every 2 weeks.
+        /// </summary>
+        /// <param name="interviewerEmail">The interviewer email.</param>
+        /// <param name="intervierwerFullName">Full name of the intervierwer.</param>
+        /// <param name="interviewerUsername">The interviewer username.</param>
+        /// <param name="interviewerPassword">The interviewer password.</param>
+        /// <param name="jobPosition">The job position.</param>
         public async Task SendInterviewNotif2weeks(string interviewerEmail, string intervierwerFullName, string interviewerUsername,
                                string interviewerPassword, string jobPosition)
         {
@@ -56,6 +72,14 @@ namespace Basecode.Services.Services
             await _emailService.SendEmail(interviewerEmail, "Alliance Software Inc. Hello Deployment Team", body);
         }
 
+        /// <summary>
+        /// Sends the hr notifications every 2 weeks.
+        /// </summary>
+        /// <param name="interviewerEmail">The interviewer email.</param>
+        /// <param name="intervierwerFullName">Full name of the intervierwer.</param>
+        /// <param name="interviewerUsername">The interviewer username.</param>
+        /// <param name="interviewerPassword">The interviewer password.</param>
+        /// <param name="jobPosition">The job position.</param>
         public async Task SendHrNotif2weeks(string interviewerEmail, string intervierwerFullName, string interviewerUsername,
                                string interviewerPassword, string jobPosition)
         {
@@ -75,6 +99,14 @@ namespace Basecode.Services.Services
             await _emailService.SendEmail(interviewerEmail, "Alliance Software Inc. Hello Human Resource", body);
         }
 
+        /// <summary>
+        /// Sends the technical notifications every 2 weeks.
+        /// </summary>
+        /// <param name="interviewerEmail">The interviewer email.</param>
+        /// <param name="intervierwerFullName">Full name of the intervierwer.</param>
+        /// <param name="interviewerUsername">The interviewer username.</param>
+        /// <param name="interviewerPassword">The interviewer password.</param>
+        /// <param name="jobPosition">The job position.</param>
         public async Task SendTechnicalNotif2weeks(string interviewerEmail, string intervierwerFullName, string interviewerUsername,
                                string interviewerPassword, string jobPosition)
         {
@@ -97,9 +129,10 @@ namespace Basecode.Services.Services
         /// <summary>
         /// Sends an email to an applicant containing their Unique Tracking ID.
         /// </summary>
-        /// <param name="applicant">The applicant.</param>
-        /// <param name="newStatus">The new status.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
+        /// <param name="application">The application.</param>
+        /// <returns>
+        /// A task representing the asynchronous operation.
+        /// </returns>
         public async Task SendGUIDEmail(Application application)
         {
             //Notify Applicant for their Unique Tracking ID
@@ -124,6 +157,12 @@ namespace Basecode.Services.Services
             await _emailService.SendEmail(application.Applicant.Email, "Alliance Software Inc. Application Status Tracker", body);
         }
 
+        /// <summary>
+        /// Sends the status notification.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <param name="applicant">The applicant.</param>
+        /// <param name="newStatus">The new status.</param>
         public async Task SendStatusNotification(User user, Applicant applicant, string newStatus)
         {
             //Notify Applicant
@@ -142,6 +181,13 @@ namespace Basecode.Services.Services
                $"Applicant {applicant.Firstname} (ID: {applicant.Id}) has changed status to {newStatus}.");
         }
 
+        /// <summary>
+        /// Sends the approval email.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <param name="applicant">The applicant.</param>
+        /// <param name="appId">The application identifier.</param>
+        /// <param name="newStatus">The new status.</param>
         public async Task SendApprovalEmail(User user, Applicant applicant, Guid appId, string newStatus)
         {
             var templatePath = Path.Combine("wwwroot", "template", "ApprovalEmail.html");
@@ -159,6 +205,11 @@ namespace Basecode.Services.Services
             await _emailService.SendEmail(user.Email, "Alliance Software Inc. Applicant Status Update", body);
         }
 
+        /// <summary>
+        /// Sends the rejected email.
+        /// </summary>
+        /// <param name="applicant">The applicant.</param>
+        /// <param name="newStatus">The new status.</param>
         public async Task SendRejectedEmail(Applicant applicant, string newStatus)
         {
             var redirectLink = "https://localhost:50991/Home";
@@ -169,6 +220,11 @@ namespace Basecode.Services.Services
                 $"display: inline-block; font-size: 14px; margin: 4px 2px; cursor: pointer;\">Visit Alliance</a>");
         }
 
+        /// <summary>
+        /// Sends the regret email.
+        /// </summary>
+        /// <param name="applicant">The applicant.</param>
+        /// <param name="job">The job.</param>
         public async Task SendRegretEmail(Applicant applicant, string job)
         {
             //For applicants who were not shortlisted upon application

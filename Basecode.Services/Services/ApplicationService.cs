@@ -13,19 +13,13 @@ using System.Threading.Tasks;
 
 namespace Basecode.Services.Services
 {
+
     public class ApplicationService : ErrorHandling, IApplicationService
     {
+
         private readonly IApplicationRepository _repository;
         private readonly IMapper _mapper;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicationService" /> class.
-        /// </summary>
-        /// <param name="repository">The repository.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="jobOpeningService">The job opening service.</param>
-        /// <param name="applicantService">The applicant service.</param>
-        /// <param name="emailService">The Email Service</param>
         public ApplicationService(IApplicationRepository repository, IMapper mapper)
         {
             _repository = repository;
@@ -45,6 +39,7 @@ namespace Basecode.Services.Services
         /// Creates the specified application.
         /// </summary>
         /// <param name="application">The application.</param>
+        /// <returns></returns>
         public Guid CreateWithId(Application application)
         {
             return _repository.CreateApplication(application);
@@ -77,6 +72,11 @@ namespace Basecode.Services.Services
         }
 
 
+        /// <summary>
+        /// Gets the application by identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         public Application GetApplicationById(Guid id)
         {
             var application = _repository.GetById(id);
@@ -89,6 +89,11 @@ namespace Basecode.Services.Services
             return application;
         }
 
+        /// <summary>
+        /// Gets the shorlisted applicatons.
+        /// </summary>
+        /// <param name="stage">The stage.</param>
+        /// <returns></returns>
         public List<Application> GetShorlistedApplicatons(string stage)
         {
             var data = _repository.GetAll()
@@ -137,7 +142,7 @@ namespace Basecode.Services.Services
         /// <summary>
         /// Gets the application id based on the applicant id.
         /// </summary>
-        /// <param name="applicantId"></param>
+        /// <param name="applicantId">The applicant identifier.</param>
         /// <returns></returns>
         public Guid GetApplicationIdByApplicantId(int applicantId)
         {

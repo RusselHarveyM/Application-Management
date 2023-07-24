@@ -3,9 +3,6 @@ using System.Threading.Tasks;
 
 namespace Basecode.Services.Interfaces
 {
-    /// <summary>
-    /// Interface for tracking service.
-    /// </summary>
     public interface ITrackService
     {
         /// <summary>
@@ -17,8 +14,24 @@ namespace Basecode.Services.Interfaces
         /// <returns></returns>
         Task<Application> CheckAndSendApplicationStatus(Application application, Applicant applicant, JobOpening jobOpening);
 
+        /// <summary>
+        /// Updates the track status email.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        /// <param name="user">The user.</param>
+        /// <param name="newStatus">The new status.</param>
+        /// <param name="mailType">Type of the mail.</param>
+        /// <returns></returns>
         Task UpdateTrackStatusEmail(Application application, User user, string newStatus, string mailType);
 
+        /// <summary>
+        /// Updates the application status.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        /// <param name="user">The user.</param>
+        /// <param name="newStatus">The new status.</param>
+        /// <param name="mailType">Type of the mail.</param>
+        /// <returns></returns>
         Task<Application> UpdateApplicationStatus(Application application, User user, string newStatus, string mailType);
 
         /// <summary>
@@ -28,6 +41,7 @@ namespace Basecode.Services.Interfaces
         /// <param name="user">The user</param>
         /// <param name="choice">The choice (e.g., approved or rejected).</param>
         /// <param name="newStatus">The new status.</param>
+        /// <returns></returns>
         Task<Application> UpdateApplicationStatusByEmailResponse(Application application, User user, string choice, string newStatus);
 
         /// <summary>

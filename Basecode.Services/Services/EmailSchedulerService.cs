@@ -11,11 +11,20 @@ namespace Basecode.Services.Services
     public class EmailSchedulerService : IEmailSchedulerService
     {
         private readonly IEmailSendingService _emailSendingService;
+
         public EmailSchedulerService(IEmailSendingService emailSendingService) 
         {
             _emailSendingService = emailSendingService;
         }
 
+        /// <summary>
+        /// Schedules the interview.
+        /// </summary>
+        /// <param name="interviewerEmail">The interviewer email.</param>
+        /// <param name="intervierwerFullName">Full name of the intervierwer.</param>
+        /// <param name="interviewerUsername">The interviewer username.</param>
+        /// <param name="interviewerPassword">The interviewer password.</param>
+        /// <param name="jobPosition">The job position.</param>
         public void ScheduleInterview(string interviewerEmail, string intervierwerFullName, string interviewerUsername,
                               string interviewerPassword, string jobPosition)
         {
@@ -29,6 +38,14 @@ namespace Basecode.Services.Services
                                                                    TimeSpan.FromDays(14)); // Delay of 2 weeks
         }
 
+        /// <summary>
+        /// Schedules for hr.
+        /// </summary>
+        /// <param name="interviewerEmail">The interviewer email.</param>
+        /// <param name="intervierwerFullName">Full name of the intervierwer.</param>
+        /// <param name="interviewerUsername">The interviewer username.</param>
+        /// <param name="interviewerPassword">The interviewer password.</param>
+        /// <param name="jobPosition">The job position.</param>
         public void ScheduleForHR(string interviewerEmail, string intervierwerFullName, string interviewerUsername,
                                string interviewerPassword, string jobPosition)
         {
@@ -41,6 +58,14 @@ namespace Basecode.Services.Services
                                                                    TimeSpan.FromDays(14)); // Delay of 2 weeks
         }
 
+        /// <summary>
+        /// Schedules for technical.
+        /// </summary>
+        /// <param name="interviewerEmail">The interviewer email.</param>
+        /// <param name="intervierwerFullName">Full name of the intervierwer.</param>
+        /// <param name="interviewerUsername">The interviewer username.</param>
+        /// <param name="interviewerPassword">The interviewer password.</param>
+        /// <param name="jobPosition">The job position.</param>
         public void ScheduleForTechnical(string interviewerEmail, string intervierwerFullName, string interviewerUsername,
                                string interviewerPassword, string jobPosition)
         {

@@ -19,6 +19,13 @@ namespace Basecode.Services.Services
             _resumeChecker = resumeChecker;
         }
 
+        /// <summary>
+        /// Checks and sends application status based on resume evaluation.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        /// <param name="applicant">The applicant.</param>
+        /// <param name="jobOpening">The job opening.</param>
+        /// <returns></returns>
         public async Task<Application> CheckAndSendApplicationStatus(Application application, Applicant applicant, JobOpening jobOpening)
         {
             var result = await _resumeChecker.CheckResume(jobOpening.Title, applicant.CV);
@@ -43,6 +50,13 @@ namespace Basecode.Services.Services
             }
         }
 
+        /// <summary>
+        /// Updates the track status email.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        /// <param name="user">The user.</param>
+        /// <param name="newStatus">The new status.</param>
+        /// <param name="mailType">Type of the mail.</param>
         public async Task UpdateTrackStatusEmail(Application application, User user, string newStatus, string mailType)
         {
             if (application.Applicant.Id >= 0 && user.Id >= -1 && !mailType.IsNullOrEmpty())
@@ -64,6 +78,14 @@ namespace Basecode.Services.Services
             }
         }
 
+        /// <summary>
+        /// Updates the application status.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        /// <param name="user">The user.</param>
+        /// <param name="newStatus">The new status.</param>
+        /// <param name="mailType">Type of the mail.</param>
+        /// <returns></returns>
         public async Task<Application> UpdateApplicationStatus(Application application, User user, string newStatus, string mailType)
         {
             try
@@ -81,6 +103,14 @@ namespace Basecode.Services.Services
             }
         }
 
+        /// <summary>
+        /// Updates the application status.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        /// <param name="jobOpening">The job opening.</param>
+        /// <param name="newStatus">The new status.</param>
+        /// <param name="mailType">Type of the mail.</param>
+        /// <returns></returns>
         private async Task<Application> UpdateApplicationStatus(Application application, JobOpening jobOpening, string newStatus, string mailType)
         {
             try
@@ -99,6 +129,14 @@ namespace Basecode.Services.Services
            
         }
 
+        /// <summary>
+        /// Updates the application status based on the response through email.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        /// <param name="user">The user</param>
+        /// <param name="choice">The choice (e.g., approved or rejected).</param>
+        /// <param name="newStatus">The new status.</param>
+        /// <returns></returns>
         public async Task<Application> UpdateApplicationStatusByEmailResponse(Application application, User user, string choice, string newStatus)
         {
             if (choice.Equals("approved"))
@@ -112,6 +150,12 @@ namespace Basecode.Services.Services
             }
         }
 
+        /// <summary>
+        /// Notifies the applicant and user about the application status.
+        /// </summary>
+        /// <param name="applicant">The applicant.</param>
+        /// <param name="user">The user.</param>
+        /// <param name="newStatus">The new status.</param>
         public async Task StatusNotification(Applicant applicant, User user, string newStatus)
         {
             if (applicant.Id >= 0)
@@ -121,6 +165,11 @@ namespace Basecode.Services.Services
             }
         }
 
+        /// <summary>
+        /// Notifies the applicant about the regret for not being shortlisted.
+        /// </summary>
+        /// <param name="applicant">The applicant.</param>
+        /// <param name="job">The job position.</param>
         public async Task RegretNotification(Applicant applicant, string job)
         {
             //Notify Applicant who is not shortlisted upon application

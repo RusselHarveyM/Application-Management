@@ -18,10 +18,6 @@ namespace Basecode.WebApp.Controllers
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly IDashboardService _dashboardService;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DashboardController"/> class.
-        /// </summary>
-        /// <param name="applicantService">The applicant service.</param>
         public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService, IUserService userService, IDashboardService  dashboardService )
         {
             _applicantService = applicantService;
@@ -54,6 +50,11 @@ namespace Basecode.WebApp.Controllers
             }
         }
 
+        /// <summary>
+        /// Assigns the users view.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult AssignUsersView(int id)
         {
@@ -114,6 +115,10 @@ namespace Basecode.WebApp.Controllers
             }
         }
 
+        /// <summary>
+        /// Shorts the ListView.
+        /// </summary>
+        /// <returns></returns>
         public IActionResult ShortListView()
         {
             try
@@ -131,6 +136,11 @@ namespace Basecode.WebApp.Controllers
             }
         }
 
+        /// <summary>
+        /// Views the details.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult ViewDetails(int id)
         {
@@ -157,6 +167,13 @@ namespace Basecode.WebApp.Controllers
             }
         }
 
+        /// <summary>
+        /// Views the details update.
+        /// </summary>
+        /// <param name="appId">The application identifier.</param>
+        /// <param name="email">The email.</param>
+        /// <param name="status">The status.</param>
+        /// <returns></returns>
         public IActionResult ViewDetailsUpdate(Guid appId, string email, string status)
         {
             var application = _dashboardService.GetApplicationById(appId);
@@ -168,6 +185,11 @@ namespace Basecode.WebApp.Controllers
         }
 
 
+        /// <summary>
+        /// Downloads the file.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         public IActionResult DownloadFile(int id)
         {
             var applicant = _applicantService.GetApplicantByIdAll(id);
