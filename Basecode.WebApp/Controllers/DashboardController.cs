@@ -15,6 +15,7 @@ namespace Basecode.WebApp.Controllers
         private readonly IApplicantService _applicantService;
         private readonly IJobOpeningService _jobOpeningService;
         private readonly IUserService _userService;
+        private readonly IApplicationService _applicationService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly IEmailService _emailService;
 
@@ -22,11 +23,12 @@ namespace Basecode.WebApp.Controllers
         /// Initializes a new instance of the <see cref="DashboardController"/> class.
         /// </summary>
         /// <param name="applicantService">The applicant service.</param>
-        public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService, IUserService userService, IEmailService emailService)
+        public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService, IUserService userService, IEmailService emailService, IApplicationService applicationService)
         {
             _applicantService = applicantService;
             _jobOpeningService = jobOpeningService;
             _userService = userService;
+            _applicationService = applicationService;
             _emailService = emailService;
         }
 
@@ -67,8 +69,8 @@ namespace Basecode.WebApp.Controllers
                 };
                 List<ApplicantStatusViewModel> applicants = _applicantService.GetApplicantsByJobOpeningId(id);
                 List<HRUserViewModel> users = _userService.GetAllUsersWithLinkStatus(id);
-                var data = _userService.GetById(id);
-                var jobOpenings = _jobOpeningService.GetById(id);
+                //var data = _userService.GetById(id);
+                //var jobOpenings = _jobOpeningService.GetById(id);
 
                 AssignUsersViewModel viewModel = new AssignUsersViewModel()
                 {
@@ -86,24 +88,24 @@ namespace Basecode.WebApp.Controllers
                 _logger.Trace("Successfully created AssignUsersViewModel for JobOpening [" + id + "].");
 
                 // Use switch case for different roles
-                switch (data.Role)
-                {
-                    case "Deployment Team":
-                        _emailService.ScheduleInterview(data.Email, data.Fullname, data.Username, data.Password, jobOpenings.Title);
-                        break;
+                //switch (data.Role)
+                //{
+                //    case "Deployment Team":
+                //        _emailService.ScheduleInterview(data.Email, data.Fullname, data.Username, data.Password, jobOpenings.Title);
+                //        break;
 
-                    case "Human Resources":
-                        _emailService.ScheduleForHR(data.Email, data.Fullname, data.Username, data.Password, jobOpenings.Title);
-                        break;
+                //    case "Human Resources":
+                //        _emailService.ScheduleForHR(data.Email, data.Fullname, data.Username, data.Password, jobOpenings.Title);
+                //        break;
 
-                    case "Technical":
-                        _emailService.ScheduleForTechnical(data.Email, data.Fullname, data.Username, data.Password, jobOpenings.Title);
-                        break;
+                //    case "Technical":
+                //        _emailService.ScheduleForTechnical(data.Email, data.Fullname, data.Username, data.Password, jobOpenings.Title);
+                //        break;
 
-                    default:
-                        // Handle the default case if the role doesn't match any case
-                        break;
-                }
+                //    default:
+                //        // Handle the default case if the role doesn't match any case
+                //        break;
+                //}
 
                 return PartialView("~/Views/Dashboard/_AssignUsersView.cshtml", viewModel);
             }
@@ -113,5 +115,62 @@ namespace Basecode.WebApp.Controllers
                 return StatusCode(500, "Something went wrong.");
             }
         }
+
+        public IActionResult ShortListView()
+        {
+            try
+            {
+                var shortlistedModel = new ShortListedViewModel();
+                shortlistedModel.HRShortlisted = _applicationService.GetShorlistedApplicatons("HR Shortlisted");
+                shortlistedModel.TechShortlisted = _applicationService.GetShorlistedApplicatons("Technical Shortlisted");
+
+                return View(shortlistedModel);
+            }
+            catch (Exception e)
+            {
+                _logger.Error(ErrorHandling.DefaultException(e.Message));
+                return StatusCode(500, "Something went wrong.");
+            }
+        }
+
+        [HttpGet]
+        public IActionResult ViewDetails(int id)
+        {
+            try
+            {
+                // Fetch the application details based on the applicationId
+                var applicant = _applicantService.GetApplicantByIdAll(id);
+                var application = applicant.Application;
+                var jobOpening = _jobOpeningService.GetByIdClean(application.JobOpeningId);
+                application.JobOpening = jobOpening;
+                if (application == null)
+                {
+                    // Handle the case when the application is not found
+                    return NotFound(); // Return a 404 Not Found response
+                }
+
+                // Pass the application object to the view
+                return PartialView("~/Views/Dashboard/_ViewDetails.cshtml", application);
+            }
+            catch (Exception e)
+            {
+                _logger.Error(ErrorHandling.DefaultException(e.Message));
+                return StatusCode(500, "Something went wrong.");
+            }
+        }
+
+        public IActionResult DownloadFile(int id)
+        {
+            var applicant = _applicantService.GetApplicantByIdAll(id);
+
+            if (applicant?.CV != null)
+            {
+                // Assuming the file is stored as a byte array named "FileData"
+                return File(applicant.CV, "application/octet-stream", "resume.pdf");
+            }
+
+            return NotFound();
+        }
+
     }
 }

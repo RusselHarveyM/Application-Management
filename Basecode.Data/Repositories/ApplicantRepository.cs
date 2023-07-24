@@ -1,6 +1,7 @@
 ﻿using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,14 @@ namespace Basecode.Data.Repositories
         public Applicant GetById(int id)
         {
             return _context.Applicant.Find(id);
+        }
+
+        public Applicant GetByIdAll(int id)
+        {
+            return _context.Applicant
+                  .Where(a => a.Id == id)
+                  .Include(a => a.Application)
+                  .FirstOrDefault();
         }
 
         public int CreateApplicant(Applicant applicant)

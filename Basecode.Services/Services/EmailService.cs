@@ -212,7 +212,7 @@ namespace Basecode.Services.Services
                 .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
                 .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
                 .Replace("{{HEADLINE}}", "Approval Email")
-                .Replace("{{BODY}}", $"Dear {user.Fullname},<br> Application [{applicant.Id}] has just finished their interview, please provide your feedback to" +
+                .Replace("{{BODY}}", $"Dear {user.Fullname},<br> Application [{applicant.Id}] is ready for HR Screening, please provide your feedback to" +
                     $" proceed to the next phase. Thank you.")
                 .Replace("{{APPLICATION_ID}}", $"{ appId }")
                 .Replace("{{USER_ID}}", $"{user.Id}")

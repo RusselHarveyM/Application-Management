@@ -26,6 +26,8 @@ namespace Basecode.Services.Interfaces
         /// </returns>
         Applicant GetApplicantById(int id);
 
+        Applicant GetApplicantByIdAll(int id);
+
         /// <summary>
         /// Updates the application.
         /// </summary>

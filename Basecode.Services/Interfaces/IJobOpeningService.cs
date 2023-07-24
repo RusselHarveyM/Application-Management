@@ -36,6 +36,13 @@ namespace Basecode.Services.Interfaces
         JobOpeningViewModel GetById(int id);
 
         /// <summary>
+        /// Gets the by identifier clean.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
+        JobOpening GetByIdClean(int id);
+
+        /// <summary>
         /// Updates an existing job opening.
         /// </summary>
         /// <param name="jobOpening">The job opening to update.</param>
@@ -58,21 +65,27 @@ namespace Basecode.Services.Interfaces
         /// <summary>
         /// Gets the jobs with related applications.
         /// </summary>
-        /// <returns>A list of JobOpeningViewModels.</returns>
+        /// <returns>
+        /// A list of JobOpeningViewModels.
+        /// </returns>
         List<JobOpeningViewModel> GetJobsWithApplications();
 
         /// <summary>
         /// Gets the job opening title by its id.
         /// </summary>
         /// <param name="id">The job opening id.</param>
-        /// <returns>The job opening title.</returns>
+        /// <returns>
+        /// The job opening title.
+        /// </returns>
         string GetJobOpeningTitleById(int id);
 
         /// <summary>
         /// Gets the related user ids.
         /// </summary>
         /// <param name="jobOpeningId">The job opening id.</param>
-        /// <returns>A list of user ids.</returns>
+        /// <returns>
+        /// A list of user ids.
+        /// </returns>
         List<int> GetLinkedUserIds(int jobOpeningId);
 
         /// <summary>

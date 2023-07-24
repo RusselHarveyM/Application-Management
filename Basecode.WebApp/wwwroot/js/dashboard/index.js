@@ -5,3 +5,10 @@
         $("#assignUsersModal").modal("show");
     });
 }
+
+function showShortlistViewModal(applicantId) {
+    $.get("/Dashboard/ViewDetails/" + applicantId, function (data) {
+        $("#showShortlistViewModalContainer").html(data);
+        $("#viewApplicationModal").modal("show");
+    });
+}

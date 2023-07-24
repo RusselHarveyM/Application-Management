@@ -8,12 +8,17 @@ using System.Threading.Tasks;
 
 namespace Basecode.Data.Interfaces
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public interface IUserRepository
     {
         /// <summary>
         /// Retrieves all users from the User table.
         /// </summary>
-        /// <returns>A queryable collection of objects of type User.</returns>
+        /// <returns>
+        /// A queryable collection of objects of type User.
+        /// </returns>
         IQueryable<User> RetrieveAll();
 
         /// <summary>
@@ -26,8 +31,18 @@ namespace Basecode.Data.Interfaces
         /// Retrieves a user from the User table based on the specified ID.
         /// </summary>
         /// <param name="id">The ID of the user to retrieve.</param>
-        /// <returns>A User object corresponding to the matching ID.</returns>
+        /// <returns>
+        /// A User object corresponding to the matching ID.
+        /// </returns>
         User GetById(int id);
+
+
+        /// <summary>
+        /// Gets the by email.
+        /// </summary>
+        /// <param name="email">The email.</param>
+        /// <returns></returns>
+        User GetByEmail(string email);
 
         /// <summary>
         /// Updates an existing user in the User table.

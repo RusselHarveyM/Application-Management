@@ -16,14 +16,23 @@ namespace Basecode.Data.Interfaces
         /// Retrieves an application by its ID.
         /// </summary>
         /// <param name="id">The ID of the application to retrieve.</param>
-        /// <returns>The application with the specified ID, or null if not found.</returns>
+        /// <returns>
+        /// The application with the specified ID, or null if not found.
+        /// </returns>
         Application GetById(Guid id);
 
         /// <summary>
         /// Creates a new application entry.
         /// </summary>
         /// <param name="application">The application to be added.</param>
+        /// <returns></returns>
         Guid CreateApplication(Application application);
+
+        /// <summary>
+        /// Gets all.
+        /// </summary>
+        /// <returns></returns>
+        IQueryable<Application> GetAll();
 
         /// <summary>
         /// Updates an existing application.
@@ -45,10 +54,5 @@ namespace Basecode.Data.Interfaces
         /// <returns></returns>
         Guid GetApplicationIdByApplicantId(int applicantId);
 
-        /// <summary>
-        /// Gets all.
-        /// </summary>
-        /// <returns></returns>
-        IQueryable<Application> GetAll();
     }
 }

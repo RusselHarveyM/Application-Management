@@ -78,6 +78,12 @@ namespace Basecode.Services.Services
             return _repository.GetById(id);
         }
 
+
+        public User GetByEmail(string email)
+        {
+            return _repository.GetByEmail(email);
+        }
+
         /// <summary>
         /// Updates an existing user.
         /// </summary>

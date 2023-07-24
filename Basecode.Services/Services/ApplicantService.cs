@@ -54,7 +54,14 @@ namespace Basecode.Services.Services
         /// <returns>The Applicant object.</returns>
         public Applicant GetApplicantById(int id)
         {
+
             return _repository.GetById(id);
+        }
+        
+        public Applicant GetApplicantByIdAll(int id)
+        {
+            return _repository.GetByIdAll(id);
+
         }
 
 
@@ -122,14 +129,14 @@ namespace Basecode.Services.Services
 
                 if (int.Parse(score.Replace("%", "")) > 60)
                 {
-                    application.Status = "Shortlisted";
+                    application.Status = "HR Shortlisted";
                     var createdApplicationId = _applicationRepository.CreateApplication(application);
 
                     await _trackService.UpdateTrackStatusEmail(
                                 applicantModel,
                                 createdApplicationId,
                                 -1,
-                                "Shortlisted",
+                                "HR Shortlisted",
                                 "GUID"
                                 );
                 }

@@ -18,10 +18,24 @@ namespace Basecode.Services.Interfaces
         /// Retrieves an application by its ID.
         /// </summary>
         /// <param name="id">The ID of the application to retrieve.</param>
-        /// <returns>The application with the specified ID, or null if not found.</returns>
+        /// <returns>
+        /// The application with the specified ID, or null if not found.
+        /// </returns>
         ApplicationViewModel GetById(Guid id);
 
+        /// <summary>
+        /// Gets the application by identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         Application GetApplicationById(Guid id);
+
+        /// <summary>
+        /// Gets the shorlisted applicatons.
+        /// </summary>
+        /// <param name="stage">The stage.</param>
+        /// <returns></returns>
+        List<Application> GetShorlistedApplicatons(string stage);
 
         /// <summary>
         /// Creates the specified application.
@@ -33,12 +47,14 @@ namespace Basecode.Services.Interfaces
         /// Updates the specified application.
         /// </summary>
         /// <param name="application">The application.</param>
+        /// <returns></returns>
         LogContent Update(Application application);
 
         /// <summary>
         /// Gets the applications by ids.
         /// </summary>
         /// <param name="applicationIds">The application ids.</param>
+        /// <returns></returns>
         List<Application> GetApplicationsByIds(List<Guid> applicationIds);
 
         /// <summary>
