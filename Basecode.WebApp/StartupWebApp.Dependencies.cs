@@ -33,6 +33,7 @@ namespace Basecode.WebApp
             services.AddScoped<IAssignInterviewerService, AssignInterviewerService>();
             services.AddScoped<IUserScheduleService, UserScheduleService>();
             services.AddScoped<IBackgroundCheckService, BackgroundCheckService>();
+            services.AddScoped<IInterviewService, InterviewService>();
             services.AddScoped<IEmailSchedulerService, EmailSchedulerService>();
             services.AddScoped<IEmailSendingService, EmailSendingService>();
             services.AddScoped<IEmailService, EmailService>();
@@ -50,6 +51,7 @@ namespace Basecode.WebApp
             services.AddScoped<IAssignInterviewerRepository, AssignInterviewerRepository>();
             services.AddScoped<IUserScheduleRepository, UserScheduleRepository>();
             services.AddScoped<IBackgroundCheckRepository, BackgroundCheckRepository>();
+            services.AddScoped<IInterviewRepository, InterviewRepository>();
         }
     }
 }
