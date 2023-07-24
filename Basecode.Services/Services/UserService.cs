@@ -3,6 +3,7 @@ using Basecode.Data.Models;
 using Basecode.Data.Repositories;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
@@ -171,6 +172,44 @@ namespace Basecode.Services.Services
         public List<JobOpeningBasicViewModel> GetLinkedJobOpenings(int userId)
         {
             return _repository.GetLinkedJobOpenings(userId).ToList();
+        }
+        /// <summary>
+        /// Finds the user asynchronous.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="password">The password.</param>
+        /// <returns></returns>
+        public Task<IdentityUser> FindUserAsync(string userName, string password)
+        {
+            return _repository.FindUserAsync(userName, password);
+        }
+        /// <summary>
+        /// Creates the role.
+        /// </summary>
+        /// <param name="roleName">Name of the role.</param>
+        /// <returns></returns>
+        public async Task<IdentityResult> CreateRole(string roleName)
+        {
+            return await _repository.CreateRole(roleName);
+        }
+        /// <summary>
+        /// Finds the user.
+        /// </summary>
+        /// <param name="username">The username.</param>
+        /// <param name="password">The password.</param>
+        /// <returns></returns>
+        public async Task<IdentityUser> FindUser(string username, string password)
+        {
+            return await _repository.FindUser(username, password);
+        }
+        /// <summary>
+        /// Finds the user.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <returns></returns>
+        public IdentityUser FindUser(string userName)
+        {
+            return _repository.FindUser(userName);
         }
     }
 }

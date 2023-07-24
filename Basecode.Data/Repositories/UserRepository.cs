@@ -1,6 +1,8 @@
 ﻿using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,15 +14,21 @@ namespace Basecode.Data.Repositories
     public class UserRepository : BaseRepository, IUserRepository
     {
         private readonly BasecodeContext _context;
+        private UserManager<IdentityUser> _userManager;
+        private RoleManager<IdentityRole> _roleManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserRepository"/> class.
         /// </summary>
         /// <param name="unitOfWork">The unit of work.</param>
         /// <param name="context">The context.</param>
-        public UserRepository(IUnitOfWork unitOfWork, BasecodeContext context) : base(unitOfWork)
+        /// <param name="userManager">The user manager.</param>
+        /// <param name="roleManager">The role manager.</param>
+        public UserRepository(IUnitOfWork unitOfWork, BasecodeContext context, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager) : base(unitOfWork)
         {
             _context = context;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         /// <summary>
@@ -97,6 +105,63 @@ namespace Basecode.Data.Repositories
                        Title = j.Title
                    })
                    .ToList();
+        }
+
+        public async Task RegisterUserToAsp(string username, string password, string email, string role)
+        {
+            var roleChecker = role == "Human Resources" ? "HR" : "DT";
+            var user = new IdentityUser
+            {
+                UserName = username,
+                Email = email,
+            };
+
+            await _userManager.CreateAsync(user, password);
+
+            bool checkIfRoleExists = await _roleManager.RoleExistsAsync(roleChecker);
+            if (checkIfRoleExists)
+            {
+                await _userManager.AddToRoleAsync(user, roleChecker);
+            }
+            //return await user.Id;
+        }
+
+        public async Task<IdentityResult> CreateRole(string roleName)
+        {
+            bool checkIfRoleExists = await _roleManager.RoleExistsAsync(roleName);
+            if (!checkIfRoleExists)
+            {
+                var role = new IdentityRole();
+                role.Name = roleName;
+                var result = await _roleManager.CreateAsync(role);
+                return result;
+            }
+
+            return null;
+        }
+
+        public async Task<IdentityUser> FindUser(string userName, string password)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+            return user;
+        }
+
+        public async Task<IdentityUser> FindUserAsync(string userName, string password)
+        {
+            var userDB = GetDbSet<IdentityUser>().Where(x => x.UserName.ToLower().Equals(userName.ToLower())).AsNoTracking().FirstOrDefault();
+            var user = await _userManager.FindByNameAsync(userName);
+            var isPasswordOK = await _userManager.CheckPasswordAsync(user, password);
+            if ((user == null) || (isPasswordOK == false))
+            {
+                userDB = null;
+            }
+            return userDB;
+        }
+
+        public IdentityUser FindUser(string userName)
+        {
+            var userDB = GetDbSet<IdentityUser>().Where(x => x.UserName.ToLower().Equals(userName.ToLower())).AsNoTracking().FirstOrDefault();
+            return userDB;
         }
     }
 }
