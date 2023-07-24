@@ -1,0 +1,15 @@
+﻿.form-label {
+    font-weight: 600;
+}
+
+.btn, .btn:hover {
+    color: white;
+    background-color: #D02A19;
+    border-radius: 0.4rem;
+    border-color: #D02A19;
+    font-weight: 500;
+}
+
+.btn-outline-primary:disabled {
+    color: #D02A19;
+}

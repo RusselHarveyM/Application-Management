@@ -1,15 +1,18 @@
 ﻿$(document).ready(function () {
     $('#jobOpeningDropdown').select2({
+        theme: "bootstrap-5",
         placeholder: "Select an assigned job opening",
     });
 
     $('#meetingTypeDropdown').select2({
+        theme: "bootstrap-5",
         placeholder: "Select a meeting type",
         disabled: true,
         minimumResultsForSearch: Infinity,  // Hide the search box
     });
 
     $('#applicantDropdown').select2({
+        theme: "bootstrap-5",
         placeholder: "Select an applicant",
         disabled: true,
         language: {
@@ -89,9 +92,9 @@ function AddToRow(applicant) {
     const newRow = document.createElement('tr');
     newRow.innerHTML = `
     <td>${applicant.Firstname} ${applicant.Lastname}</td>
-    <td> <input type="time"> </td>
+    <td> <input type="time" class="form-control-sm"> </td>
     <td data-applicant-id="${applicant.Id}">
-    <button class="remove-button"><i class="fa-solid fa-xmark"></i></button>
+    <button class="remove-button btn-close"></button>
     </td>
     `;
     $('#selectedApplicants').append(newRow);
@@ -141,8 +144,6 @@ $('#scheduleForm').submit(function (event) {
         ApplicantSchedules: applicantSchedules 
     };
 
-    console.log(formData);
-
     // Make an AJAX POST request to the controller endpoint
     $.ajax({
         url: $('#scheduleForm').attr('action'),
@@ -159,7 +160,6 @@ $('#scheduleForm').submit(function (event) {
                 // Iterate over the errors and display them
                 $.each(errors, function (key, value) {
                     $('#' + key + 'Error').text(value);
-                    console.log(key + value);
                 });
             } else {
                 console.log(response.status + " Something went wrong.");
