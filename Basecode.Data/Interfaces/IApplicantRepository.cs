@@ -21,6 +21,8 @@ namespace Basecode.Data.Interfaces
         /// <returns>The Applicant object.</returns>
         Applicant GetById(int id);
 
+        Applicant GetByIdAll(int id);
+
         /// <summary>
         /// Creates a new applicant.
         /// </summary>

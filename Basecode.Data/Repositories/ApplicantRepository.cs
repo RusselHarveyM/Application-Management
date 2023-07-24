@@ -26,11 +26,15 @@ namespace Basecode.Data.Repositories
 
         public Applicant GetById(int id)
         {
-            //return _context.Applicant.Find(id);
+            return _context.Applicant.Find(id);
+        }
+
+        public Applicant GetByIdAll(int id)
+        {
             return _context.Applicant
-                   .Where(a => a.Id == id)
-                   .Include(a => a.Application)
-                   .FirstOrDefault();
+                  .Where(a => a.Id == id)
+                  .Include(a => a.Application)
+                  .FirstOrDefault();
         }
 
         public int CreateApplicant(Applicant applicant)

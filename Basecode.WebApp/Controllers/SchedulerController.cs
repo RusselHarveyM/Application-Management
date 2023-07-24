@@ -31,15 +31,6 @@ namespace Basecode.WebApp.Controllers
         {
             try
             {
-                //var userIdString = _signInManager.UserManager.GetUserId(User);
-
-                //if (userIdString == null)
-                //{
-                //    _logger.Error("Failed to retrieve the logged in user's id.");
-                //    return NotFound();
-                //}
-
-                //int userId = int.Parse(userIdString);
                 int userId = 1;     // temporary until User auth is sorted out
                 var jobOpenings = _userService.GetLinkedJobOpenings(userId);
                 var applicants = _applicantService.GetApplicantsWithStatuses();

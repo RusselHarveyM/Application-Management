@@ -140,7 +140,7 @@ namespace Basecode.WebApp.Controllers
             try
             {
                 // Fetch the application details based on the applicationId
-                var applicant = _applicantService.GetApplicantById(id);
+                var applicant = _applicantService.GetApplicantByIdAll(id);
                 var application = applicant.Application;
                 var jobOpening = _jobOpeningService.GetByIdClean(application.JobOpeningId);
                 application.JobOpening = jobOpening;
@@ -162,7 +162,7 @@ namespace Basecode.WebApp.Controllers
 
         public IActionResult DownloadFile(int id)
         {
-            var applicant = _applicantService.GetApplicantById(id);
+            var applicant = _applicantService.GetApplicantByIdAll(id);
 
             if (applicant?.CV != null)
             {

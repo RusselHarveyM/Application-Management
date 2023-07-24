@@ -35,7 +35,7 @@
             </div>
            @* <a asp-controller="Email" asp-action="SendApprovalEmail" class="btn-danger" style="text-decoration:none; text-align:center; padding: 1.4rem; cursor:pointer">HR SCREENING</a>
       *@  
-            <a href="@Url.Action("SendApprovalEmail", "Email", new { applicant = Model.Applicant, appId = Model.Id, email = Model.JobOpening.CreatedBy, newStatus = "For HR Screening", mailType = "Approval" })" class="btn btn-danger" style="text-decoration:none; text-align:center; padding: 1.4rem; cursor:pointer">
+            <a href="@Url.Action("SendApprovalEmail", "Email", new { applicant = Model.Applicant, appId = Model.Id, email = Model.JobOpening.CreatedBy, status = "For HR Screening", newStatus = "For HR Interview", mailType = "Approval" })" class="btn btn-danger" style="text-decoration:none; text-align:center; padding: 1.4rem; cursor:pointer">
                 HR SCREENING
             </a>
 

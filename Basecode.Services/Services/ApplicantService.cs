@@ -57,6 +57,12 @@ namespace Basecode.Services.Services
 
             return _repository.GetById(id);
         }
+        
+        public Applicant GetApplicantByIdAll(int id)
+        {
+            return _repository.GetByIdAll(id);
+
+        }
 
 
         /// <summary>Updates the application.</summary>
