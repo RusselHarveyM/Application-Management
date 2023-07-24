@@ -18,18 +18,20 @@ namespace Basecode.WebApp.Controllers
         private readonly IApplicationService _applicationService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly IEmailService _emailService;
+        private readonly ITrackService _trackService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DashboardController"/> class.
         /// </summary>
         /// <param name="applicantService">The applicant service.</param>
-        public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService, IUserService userService, IEmailService emailService, IApplicationService applicationService)
+        public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService, IUserService userService, IEmailService emailService, IApplicationService applicationService, ITrackService trackService)
         {
             _applicantService = applicantService;
             _jobOpeningService = jobOpeningService;
             _userService = userService;
             _applicationService = applicationService;
             _emailService = emailService;
+            _trackService = trackService;
         }
 
         /// <summary>
@@ -134,7 +136,7 @@ namespace Basecode.WebApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult ViewDetails(int id)
+        public IActionResult ViewDetailsView(int id)
         {
             try
             {
@@ -158,6 +160,22 @@ namespace Basecode.WebApp.Controllers
                 return StatusCode(500, "Something went wrong.");
             }
         }
+
+        public IActionResult ViewDetails(Applicant applicant, Guid appId, string email, string status, string newStatus, string mailType)
+        {
+            var application = _applicationService.GetApplicationById(appId);
+            var foundUser = _userService.GetByEmail(email);
+
+            return RedirectToAction("ViewDetailsView");
+        }
+
+        //public IActionResult SendApprovalEmail(Applicant applicant, Guid appId, string email, string status,string newStatus, string mailType)
+        //{
+        //    var application = _applicationService.GetApplicationById(appId);
+        //    var foundUser = _userService.GetByEmail(email);
+        //    _trackService.UpdateTrackStatusEmail(applicant, appId, foundUser.Id, newStatus, mailType);
+        //    return RedirectToAction("ShortListView", "Dashboard");
+        //}
 
         public IActionResult DownloadFile(int id)
         {

@@ -43,6 +43,8 @@ namespace Basecode.Services.Interfaces
         /// <param name="application">The application.</param>
         void Create(Application application);
 
+        Guid CreateWithId(Application application);
+
         /// <summary>
         /// Updates the specified application.
         /// </summary>

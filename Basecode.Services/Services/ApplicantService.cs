@@ -70,22 +70,7 @@ namespace Basecode.Services.Services
         /// <param name="newStatus">The new status.</param>
         public void UpdateApplication(Application application, User user, string choice, string newStatus)
         {
-
-            var applicant = _repository.GetById(application.ApplicantId);
-
-            application.UpdateTime = DateTime.Now;
-            application.Status = newStatus;
-
-            if (choice.Equals("approved"))
-            {
-                _applicationRepository.UpdateApplication(application);
-                _trackService.StatusNotification(applicant, user, newStatus);
-            }
-            else
-            {
-                //send automated email of regrets
-                _trackService.UpdateTrackStatusEmail(applicant, application.Id, user.Id, "Rejected", "Rejected");
-            }
+           _trackService.UpdateApplicationStatusByEmailResponse(application, user, choice, newStatus);
         }
 
         /// <summary>
@@ -97,7 +82,7 @@ namespace Basecode.Services.Services
         {
             LogContent logContent = new LogContent();
             int createdApplicantId = 0;
-            var jobOpening = _jobOpeningService.GetById(applicant.JobOpeningId);
+            var jobOpening = _jobOpeningService.GetByIdClean(applicant.JobOpeningId);
 
             logContent = CheckApplicant(applicant);
             if (logContent.Result == false)
@@ -115,36 +100,9 @@ namespace Basecode.Services.Services
                     UpdateTime = DateTime.Now
                 };
 
-                var jobPosition = jobOpening.Title;
 
-                var result = await _resumeChecker.CheckResume(jobPosition, applicant.CV);
-
-                JsonDocument jsonDocument = JsonDocument.Parse(result);
-                var jsonObject = jsonDocument.RootElement;
-
-                // Accessing individual properties
-                string jobPos = jsonObject.GetProperty("JobPosition").GetString();
-                string score = jsonObject.GetProperty("Score").GetString();
-                string explanation = jsonObject.GetProperty("Explanation").GetString();
-
-                if (int.Parse(score.Replace("%", "")) > 60)
-                {
-                    application.Status = "HR Shortlisted";
-                    var createdApplicationId = _applicationRepository.CreateApplication(application);
-
-                    await _trackService.UpdateTrackStatusEmail(
-                                applicantModel,
-                                createdApplicationId,
-                                -1,
-                                "HR Shortlisted",
-                                "GUID"
-                                );
-                }
-                else
-                {
-                    await _trackService.RegretNotification(applicantModel, jobPosition);
-                }
-
+                // Resume checking moved to the TrackService
+                _trackService.CheckAndSendApplicationStatus(application, applicantModel, jobOpening);
             }
 
             return (logContent, createdApplicantId);

@@ -46,6 +46,15 @@ namespace Basecode.Services.Services
         }
 
         /// <summary>
+        /// Creates the specified application.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        public Guid CreateWithId(Application application)
+        {
+            return _repository.CreateApplication(application);
+        }
+
+        /// <summary>
         /// Retrieves an application by its ID.
         /// </summary>
         /// <param name="id">The ID of the application to retrieve.</param>
