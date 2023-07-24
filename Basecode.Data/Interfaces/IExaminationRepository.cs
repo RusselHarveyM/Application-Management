@@ -10,5 +10,11 @@ namespace Basecode.Data.Interfaces
         /// <param name="jobOpeningId">The job opening identifier.</param>
         /// <returns></returns>
         IQueryable<Examination> GetExaminationsByJobOpeningId(int jobOpeningId);
+
+        /// <summary>
+        /// Adds the examination.
+        /// </summary>
+        /// <param name="examination">The examination.</param>
+        void AddExamination(Examination examination);
     }
 }
