@@ -15,7 +15,11 @@ namespace Basecode.Services.Interfaces
         /// <param name="applicant">The applicant.</param>
         /// <param name="jobOpening">The job opening.</param>
         /// <returns></returns>
-        void CheckAndSendApplicationStatus(Application application, Applicant applicant, JobOpening jobOpening);
+        Task<Application> CheckAndSendApplicationStatus(Application application, Applicant applicant, JobOpening jobOpening);
+
+        Task UpdateTrackStatusEmail(Application application, User user, string newStatus, string mailType);
+
+        Task<Application> UpdateApplicationStatus(Application application, User user, string newStatus, string mailType);
 
         /// <summary>
         /// Updates the application status based on the response through email.
@@ -24,7 +28,7 @@ namespace Basecode.Services.Interfaces
         /// <param name="user">The user</param>
         /// <param name="choice">The choice (e.g., approved or rejected).</param>
         /// <param name="newStatus">The new status.</param>
-        void UpdateApplicationStatusByEmailResponse(Application application, User user, string choice, string newStatus);
+        Task<Application> UpdateApplicationStatusByEmailResponse(Application application, User user, string choice, string newStatus);
 
         /// <summary>
         /// Notifies the applicant and user about the application status.

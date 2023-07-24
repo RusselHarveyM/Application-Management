@@ -21,7 +21,7 @@ namespace Basecode.Services.Interfaces
         Task SendTechnicalNotif2weeks(string interviewerEmail, string intervierwerFullName, string interviewerUsername,
                                       string interviewerPassword, string jobPosition);
 
-        Task SendNotifyEmail(Applicant applicant, string newStatus);
+        Task SendGUIDEmail(Application application);
 
         Task SendStatusNotification(User user, Applicant applicant, string newStatus);
 

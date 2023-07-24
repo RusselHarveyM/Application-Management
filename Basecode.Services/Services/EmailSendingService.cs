@@ -100,7 +100,7 @@ namespace Basecode.Services.Services
         /// <param name="applicant">The applicant.</param>
         /// <param name="newStatus">The new status.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task SendNotifyEmail(Applicant applicant, string newStatus)
+        public async Task SendGUIDEmail(Application application)
         {
             //Notify Applicant for their Unique Tracking ID
             var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
@@ -109,19 +109,19 @@ namespace Basecode.Services.Services
                 .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
                 .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
                 .Replace("{{HEADLINE}}", "Application Status Tracker")
-                .Replace("{{BODY}}", $"Dear {applicant.Firstname},<br>" +
+                .Replace("{{BODY}}", $"Dear {application.Applicant.Firstname},<br>" +
                                      $"<br> We are reaching out to provide you with your application ID for tracking purposes. Please find the details below:<br>" +
-                                     $"<br> <b>Application ID: [{applicant.Application.Id}]</b> <br>" +
+                                     $"<br> <b>Application ID: [{application.Id}]</b> <br>" +
                                      $"<br> This unique ID will allow you to track the progress of your application. To do so, please follow these steps: <br>" +
                                      $"<br> 1. Visit Alliance Software Inc. website at [website URL]." +
                                      $"<br> 2. Navigate to the application tracker section." +
-                                     $"<br> 3. Enter your Application ID: {applicant.Application.Id}" +
+                                     $"<br> 3. Enter your Application ID: {application.Id}" +
                                      $"<br> 4. Click the \"Track\" button. <br>" +
                                      $"<br> The tracking system will provide real-time updates on the status of your application, from submission to evaluation. We appreciate your patience throughout the process. <br>" +
                                      $"<br> If you have any questions or encounter any issues, please reach out to our support team at [contact email/phone number]. <br>" +
                                      $"<br> Thank you for choosing Alliance Software Inc. We wish you the best of luck with your application!");
 
-            await _emailService.SendEmail(applicant.Email, "Alliance Software Inc. Application Status Tracker", body);
+            await _emailService.SendEmail(application.Applicant.Email, "Alliance Software Inc. Application Status Tracker", body);
         }
 
         public async Task SendStatusNotification(User user, Applicant applicant, string newStatus)

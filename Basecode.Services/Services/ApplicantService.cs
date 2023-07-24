@@ -18,24 +18,22 @@ namespace Basecode.Services.Services
     public class ApplicantService : IApplicantService
     {
         private readonly IApplicantRepository _repository;
-        private readonly IApplicationRepository _applicationRepository;
+        private readonly IApplicationService _applicationService;
         private readonly IJobOpeningService _jobOpeningService;
         private readonly ITrackService _trackService;
-        private readonly ResumeChecker _resumeChecker;
         private readonly IMapper _mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicantService"/> class.
         /// </summary>
         /// <param name="repository">The repository.</param>
-        public ApplicantService(IApplicantRepository repository, IApplicationRepository applicationRepository, IMapper mapper, ITrackService trackService, ResumeChecker resumeChecker, IJobOpeningService jobOpeningService)
+        public ApplicantService(IApplicantRepository repository, IMapper mapper, ITrackService trackService, IJobOpeningService jobOpeningService, IApplicationService applicationService)
         {
             _repository = repository;
-            _applicationRepository = applicationRepository;
             _mapper = mapper;
             _trackService = trackService;
-            _resumeChecker = resumeChecker;
             _jobOpeningService = jobOpeningService;
+            _applicationService = applicationService;
         }
 
         /// <summary>
@@ -68,9 +66,13 @@ namespace Basecode.Services.Services
         /// <summary>Updates the application.</summary>
         /// <param name="applicant">The applicant.</param>
         /// <param name="newStatus">The new status.</param>
-        public void UpdateApplication(Application application, User user, string choice, string newStatus)
+        public async Task UpdateApplication(Application application, User user, string choice, string newStatus)
         {
-           _trackService.UpdateApplicationStatusByEmailResponse(application, user, choice, newStatus);
+           var result = await _trackService.UpdateApplicationStatusByEmailResponse(application, user, choice, newStatus);
+            if(result != null)
+            {
+                _applicationService.Update(result);
+            }
         }
 
         /// <summary>
@@ -97,12 +99,20 @@ namespace Basecode.Services.Services
                     ApplicantId = createdApplicantId,
                     Status = "NA",
                     ApplicationDate = DateTime.Now,
-                    UpdateTime = DateTime.Now
+                    UpdateTime = DateTime.Now,
+                    Applicant = applicantModel,
+                    JobOpening = jobOpening
                 };
 
+                _applicationService.Create(application);
 
                 // Resume checking moved to the TrackService
-                _trackService.CheckAndSendApplicationStatus(application, applicantModel, jobOpening);
+                var result = await _trackService.CheckAndSendApplicationStatus(application, applicantModel, jobOpening);
+
+                if(result != null)
+                {
+                    _applicationService.Update(result);
+                }
             }
 
             return (logContent, createdApplicantId);

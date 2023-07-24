@@ -5,6 +5,7 @@ using Basecode.Data.Repositories;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
 using Basecode.Services.Util;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,6 @@ namespace Basecode.Services.Services
         private readonly IJobOpeningRepository _repository;
         private readonly IQualificationService _qualificationService;
         private readonly IResponsibilityService _responsibilityService;
-        private ResumeChecker _resumeChecker;
         private readonly IMapper _mapper;
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace Basecode.Services.Services
         /// <param name="jobOpening">The job opening to create.</param>
         /// <param name="createdBy">The user who created the job opening.</param>
         /// <returns>The log content and the new job opening's id.</returns>
-        public (LogContent, int) Create(JobOpeningViewModel jobOpening, string createdBy)
+        public (LogContent, int) Create(JobOpeningViewModel jobOpening, User user, string createdBy)
         {
             LogContent logContent = new LogContent();
             int jobOpeningId = 0;
@@ -71,6 +71,7 @@ namespace Basecode.Services.Services
                 jobOpeningModel.CreatedTime = DateTime.Now;
                 jobOpeningModel.UpdatedBy = createdBy;
                 jobOpeningModel.UpdatedTime = DateTime.Now;
+                jobOpeningModel.Users.Add(user);
 
                 jobOpeningId = _repository.AddJobOpening(jobOpeningModel);
             }

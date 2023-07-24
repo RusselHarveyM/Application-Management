@@ -15,23 +15,19 @@ namespace Basecode.WebApp.Controllers
         private readonly IApplicantService _applicantService;
         private readonly IJobOpeningService _jobOpeningService;
         private readonly IUserService _userService;
-        private readonly IApplicationService _applicationService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
-        private readonly IEmailService _emailService;
-        private readonly ITrackService _trackService;
+        private readonly IDashboardService _dashboardService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DashboardController"/> class.
         /// </summary>
         /// <param name="applicantService">The applicant service.</param>
-        public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService, IUserService userService, IEmailService emailService, IApplicationService applicationService, ITrackService trackService)
+        public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService, IUserService userService, IDashboardService  dashboardService )
         {
             _applicantService = applicantService;
             _jobOpeningService = jobOpeningService;
             _userService = userService;
-            _applicationService = applicationService;
-            _emailService = emailService;
-            _trackService = trackService;
+            _dashboardService = dashboardService;
         }
 
         /// <summary>
@@ -123,8 +119,8 @@ namespace Basecode.WebApp.Controllers
             try
             {
                 var shortlistedModel = new ShortListedViewModel();
-                shortlistedModel.HRShortlisted = _applicationService.GetShorlistedApplicatons("HR Shortlisted");
-                shortlistedModel.TechShortlisted = _applicationService.GetShorlistedApplicatons("Technical Shortlisted");
+                shortlistedModel.HRShortlisted = _dashboardService.GetShorlistedApplicatons("HR Shortlisted");
+                shortlistedModel.TechShortlisted = _dashboardService.GetShorlistedApplicatons("Technical Shortlisted");
 
                 return View(shortlistedModel);
             }
@@ -136,7 +132,7 @@ namespace Basecode.WebApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult ViewDetailsView(int id)
+        public IActionResult ViewDetails(int id)
         {
             try
             {
@@ -161,21 +157,16 @@ namespace Basecode.WebApp.Controllers
             }
         }
 
-        public IActionResult ViewDetails(Applicant applicant, Guid appId, string email, string status, string newStatus, string mailType)
+        public IActionResult ViewDetailsUpdate(Guid appId, string email, string status)
         {
-            var application = _applicationService.GetApplicationById(appId);
+            var application = _dashboardService.GetApplicationById(appId);
             var foundUser = _userService.GetByEmail(email);
 
-            return RedirectToAction("ViewDetailsView");
+            _dashboardService.UpdateStatus(application, foundUser, status);
+
+            return RedirectToAction("ShortListView");
         }
 
-        //public IActionResult SendApprovalEmail(Applicant applicant, Guid appId, string email, string status,string newStatus, string mailType)
-        //{
-        //    var application = _applicationService.GetApplicationById(appId);
-        //    var foundUser = _userService.GetByEmail(email);
-        //    _trackService.UpdateTrackStatusEmail(applicant, appId, foundUser.Id, newStatus, mailType);
-        //    return RedirectToAction("ShortListView", "Dashboard");
-        //}
 
         public IActionResult DownloadFile(int id)
         {

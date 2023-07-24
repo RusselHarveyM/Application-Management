@@ -17,18 +17,18 @@ namespace Basecode.WebApp.Controllers
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly IJobOpeningService _jobOpeningService;
         private readonly IAssignInterviewerService _assignInterviewerService;
-        private readonly IEmailService _emailService;
+        private readonly IEmailSchedulerService _emailSchedulerService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserController"/> class.
         /// </summary>
         /// <param name="service">The User service.</param>
-        public UserController(IUserService service, IJobOpeningService jobOpeningService, IAssignInterviewerService assignInterviewer, IEmailService emailService)
+        public UserController(IUserService service, IJobOpeningService jobOpeningService, IAssignInterviewerService assignInterviewer, IEmailSchedulerService emailSchedulerService)
         {
             _service = service;
             _jobOpeningService = jobOpeningService;
             _assignInterviewerService = assignInterviewer;
-            _emailService = emailService;
+            _emailSchedulerService = emailSchedulerService;
         }
 
         /// <summary>
@@ -248,15 +248,15 @@ namespace Basecode.WebApp.Controllers
                 switch (data.Role)
                 {
                     case "Deployment Team":
-                        _emailService.ScheduleInterview(email, data.Fullname, data.Username, data.Password, jobposition);
+                        _emailSchedulerService.ScheduleInterview(email, data.Fullname, data.Username, data.Password, jobposition);
                         break;
 
                     case "Human Resources":
-                        _emailService.ScheduleForHR(email, data.Fullname, data.Username, data.Password, jobposition);
+                        _emailSchedulerService.ScheduleForHR(email, data.Fullname, data.Username, data.Password, jobposition);
                         break;
 
                     case "Technical":
-                        _emailService.ScheduleForTechnical(email, data.Fullname, data.Username, data.Password, jobposition);
+                        _emailSchedulerService.ScheduleForTechnical(email, data.Fullname, data.Username, data.Password, jobposition);
                         break;
 
                     default:

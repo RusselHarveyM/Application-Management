@@ -16,8 +16,6 @@ namespace Basecode.Services.Services
     public class ApplicationService : ErrorHandling, IApplicationService
     {
         private readonly IApplicationRepository _repository;
-        private readonly IJobOpeningService _jobOpeningService;
-        private readonly IApplicantService _applicantService;
         private readonly IMapper _mapper;
 
         /// <summary>
@@ -28,11 +26,9 @@ namespace Basecode.Services.Services
         /// <param name="jobOpeningService">The job opening service.</param>
         /// <param name="applicantService">The applicant service.</param>
         /// <param name="emailService">The Email Service</param>
-        public ApplicationService(IApplicationRepository repository, IMapper mapper, IJobOpeningService jobOpeningService, IApplicantService applicantService)
+        public ApplicationService(IApplicationRepository repository, IMapper mapper)
         {
             _repository = repository;
-            _jobOpeningService = jobOpeningService;
-            _applicantService = applicantService;
             _mapper = mapper;
         }
 
@@ -70,12 +66,12 @@ namespace Basecode.Services.Services
                 return null;
             }
 
-            var job = _jobOpeningService.GetById(application.JobOpeningId);
-            var applicant = _applicantService.GetApplicantById(application.ApplicantId);
+            //var job = _jobOpeningService.GetById(application.JobOpeningId);
+            //var applicant = _applicantService.GetApplicantById(application.ApplicantId);
 
             var applicationViewModel = _mapper.Map<ApplicationViewModel>(application);
-            applicationViewModel.JobOpeningTitle = job.Title;
-            applicationViewModel.ApplicantName = $"{applicant.Firstname} {applicant.Lastname}";
+            applicationViewModel.JobOpeningTitle = application.JobOpening.Title;
+            applicationViewModel.ApplicantName = $"{application.Applicant.Firstname} {application.Applicant.Lastname}";
 
             return applicationViewModel;
         }

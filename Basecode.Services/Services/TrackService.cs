@@ -1,6 +1,7 @@
 ﻿using Basecode.Data.Models;
 using Basecode.Services.Interfaces;
 using Basecode.Services.Util;
+using Microsoft.IdentityModel.Tokens;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -9,18 +10,16 @@ namespace Basecode.Services.Services
 {
     public class TrackService : ITrackService
     {
-        private readonly IApplicationService _applicationService;
         private readonly IEmailSendingService _emailSendingService;
         private readonly ResumeChecker _resumeChecker;
 
-        public TrackService(IApplicationService applicationService, IEmailSendingService emailSendingService, ResumeChecker resumeChecker)
+        public TrackService(IEmailSendingService emailSendingService, ResumeChecker resumeChecker)
         {
-            _applicationService = applicationService;
             _emailSendingService = emailSendingService;
             _resumeChecker = resumeChecker;
         }
 
-        public async void CheckAndSendApplicationStatus(Application application, Applicant applicant, JobOpening jobOpening)
+        public async Task<Application> CheckAndSendApplicationStatus(Application application, Applicant applicant, JobOpening jobOpening)
         {
             var result = await _resumeChecker.CheckResume(jobOpening.Title, applicant.CV);
 
@@ -28,29 +27,30 @@ namespace Basecode.Services.Services
             var jsonObject = jsonDocument.RootElement;
 
             // Accessing individual properties
-            string jobPos = jsonObject.GetProperty("JobPosition").GetString();
+            string jobPosition = jsonObject.GetProperty("JobPosition").GetString();
             string score = jsonObject.GetProperty("Score").GetString();
             string explanation = jsonObject.GetProperty("Explanation").GetString();
 
             if (int.Parse(score.Replace("%", "")) > 60)
             {
 
-                await UpdateApplicationStatus(application, jobOpening, "HR Shortlisted", "GUID");
+                return await UpdateApplicationStatus(application, jobOpening, "HR Shortlisted", "GUID");
             }
             else
             {
                 await RegretNotification(applicant, jobOpening.Title);
+                return null;
             }
         }
 
-        private async Task UpdateTrackStatusEmail(Application application, User user, string newStatus, string mailType)
+        public async Task UpdateTrackStatusEmail(Application application, User user, string newStatus, string mailType)
         {
-            if (application.Applicant.Id >= 0 && user.Id >= -1)
+            if (application.Applicant.Id >= 0 && user.Id >= -1 && !mailType.IsNullOrEmpty())
             {
                 switch (mailType)
                 {
                     case "GUID":
-                        await _emailSendingService.SendNotifyEmail(application.Applicant, newStatus);
+                        await _emailSendingService.SendGUIDEmail(application);
                         break;
                     case "Approval":
                         await _emailSendingService.SendApprovalEmail(user, application.Applicant, application.Id, newStatus);
@@ -64,38 +64,51 @@ namespace Basecode.Services.Services
             }
         }
 
-        private async Task UpdateApplicationStatus(Application application, User user, string newStatus, string mailType)
+        public async Task<Application> UpdateApplicationStatus(Application application, User user, string newStatus, string mailType)
         {
-            application.UpdateTime = DateTime.Now;
-            application.Status = newStatus;
+            try
+            {
+                application.UpdateTime = DateTime.Now;
+                application.Status = newStatus;
 
-            _applicationService.Update(application);
-
-            await StatusNotification(application.Applicant, user, newStatus);
-            await UpdateTrackStatusEmail(application, user, newStatus, mailType);
+                await StatusNotification(application.Applicant, user, newStatus);
+                await UpdateTrackStatusEmail(application, user, newStatus, mailType);
+                return application;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
 
-        private async Task UpdateApplicationStatus(Application application, JobOpening jobOpening, string newStatus, string mailType)
+        private async Task<Application> UpdateApplicationStatus(Application application, JobOpening jobOpening, string newStatus, string mailType)
         {
-            application.UpdateTime = DateTime.Now;
-            application.Status = newStatus;
+            try
+            {
+                application.UpdateTime = DateTime.Now;
+                application.Status = newStatus;
 
-            _applicationService.Update(application);
-
-            await StatusNotification(application.Applicant, jobOpening.Users.First() , newStatus);
-            await UpdateTrackStatusEmail(application, jobOpening.Users.First(), newStatus, mailType);
+                await StatusNotification(application.Applicant, jobOpening.Users.First(), newStatus);
+                await UpdateTrackStatusEmail(application, jobOpening.Users.First(), newStatus, mailType);
+                return application;
+            }
+            catch(Exception e)
+            {
+                return null;
+            }
+           
         }
 
-        public async void UpdateApplicationStatusByEmailResponse(Application application, User user, string choice, string newStatus)
+        public async Task<Application> UpdateApplicationStatusByEmailResponse(Application application, User user, string choice, string newStatus)
         {
             if (choice.Equals("approved"))
             {
-                await UpdateApplicationStatus(application, user, newStatus, "Approval");
+                return await UpdateApplicationStatus(application, user, newStatus, "Approval");
             }
             else
             {
                 //send automated email of regrets
-                await UpdateApplicationStatus(application, user, newStatus, "Rejected");
+                return await UpdateApplicationStatus(application, user, newStatus, "Rejected");
             }
         }
 

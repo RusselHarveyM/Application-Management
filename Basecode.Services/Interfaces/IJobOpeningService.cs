@@ -23,8 +23,9 @@ namespace Basecode.Services.Interfaces
         /// </summary>
         /// <param name="jobOpening">The job opening to create.</param>
         /// <param name="createdBy">The user who created the job opening.</param>
+        /// <param name="user">The user who created the job opening.</param>
         /// <returns>The log content and the new job opening's id.</returns>
-        (LogContent, int) Create(JobOpeningViewModel jobOpening, string createdBy);
+        (LogContent, int) Create(JobOpeningViewModel jobOpening, User user, string createdBy);
 
         /// <summary>
         /// Gets a job opening by its ID.

@@ -37,6 +37,7 @@ namespace Basecode.WebApp
             services.AddScoped<IEmailSendingService, EmailSendingService>();
             services.AddScoped<IApplicationStatusUpdateService, ApplicationStatusUpdateService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IDashboardService, DashboardService>();
 
             // Repositories
             services.AddScoped<IUserRepository, UserRepository>();

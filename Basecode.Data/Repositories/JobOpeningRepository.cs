@@ -32,7 +32,7 @@ namespace Basecode.Data.Repositories
 
         public JobOpening GetJobOpeningById(int id)
         {
-            return _context.JobOpening.Find(id);
+            return _context.JobOpening.Include(j => j.Users).FirstOrDefault(j => j.Id == id);
         }
 
         public void UpdateJobOpening(JobOpening jobOpening)

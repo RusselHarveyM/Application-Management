@@ -34,7 +34,7 @@ namespace Basecode.Services.Interfaces
         /// <param name="applicant">The applicant.</param>
         /// <param name="user">The user.</param>
         /// <param name="newStatus">The new status.</param>
-        void UpdateApplication(Application application, User user, string choice, string newStatus);
+        Task UpdateApplication(Application application, User user, string choice, string newStatus);
 
         /// <summary>
         /// Creates a new applicant based on the provided applicant data.
