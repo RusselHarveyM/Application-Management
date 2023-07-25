@@ -38,6 +38,7 @@ namespace Basecode.WebApp
             services.AddScoped<IEmailSendingService, EmailSendingService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IDashboardService, DashboardService>();
+            services.AddScoped<IAdminService, AdminService>();
 
             // Repositories
             services.AddScoped<IUserRepository, UserRepository>();
@@ -52,6 +53,7 @@ namespace Basecode.WebApp
             services.AddScoped<IUserScheduleRepository, UserScheduleRepository>();
             services.AddScoped<IBackgroundCheckRepository, BackgroundCheckRepository>();
             services.AddScoped<IInterviewRepository, InterviewRepository>();
+            services.AddScoped<IAdminRepository, AdminRepository>();
         }
     }
 }

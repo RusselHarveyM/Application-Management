@@ -1,5 +1,6 @@
 ﻿using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace Basecode.Services.Interfaces
         /// </summary>
         /// <param name="user">The user.</param>
         /// <returns></returns>
-        LogContent Create(User user);
+        Task<LogContent> Create(UserViewModel user);
 
         /// <summary>
         /// Retrieves a specific user based on the provided ID.
@@ -37,7 +38,12 @@ namespace Basecode.Services.Interfaces
         /// </returns>
         User GetById(int id);
 
-
+        /// <summary>
+        /// Gets the by identifier asynchronous.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
+        Task<User> GetByIdAsync(int id);
         /// <summary>
         /// Gets the by email.
         /// </summary>
@@ -56,7 +62,7 @@ namespace Basecode.Services.Interfaces
         /// Deletes the specified user.
         /// </summary>
         /// <param name="user">The user.</param>
-        void Delete(User user);
+        Task Delete(User user);
 
         /// <summary>
         /// Gets the validation errors.
@@ -80,5 +86,32 @@ namespace Basecode.Services.Interfaces
         /// <param name="userId">The user identifier.</param>
         /// <returns></returns>
         List<JobOpeningBasicViewModel> GetLinkedJobOpenings(int userId);
+
+        /// <summary>
+        /// Finds the user.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <returns></returns>
+        IdentityUser FindUser(string userName);
+        /// <summary>
+        /// Creates the role.
+        /// </summary>
+        /// <param name="roleName">Name of the role.</param>
+        /// <returns></returns>
+        Task<IdentityResult> CreateRole(string roleName);
+        /// <summary>
+        /// Finds the user.
+        /// </summary>
+        /// <param name="username">The username.</param>
+        /// <param name="password">The password.</param>
+        /// <returns></returns>
+        Task<IdentityUser> FindUser(string username, string password);
+        /// <summary>
+        /// Finds the user asynchronous.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="password">The password.</param>
+        /// <returns></returns>
+        Task<IdentityUser> FindUserAsync(string userName, string password);
     }
 }
