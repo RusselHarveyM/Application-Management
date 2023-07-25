@@ -108,5 +108,7 @@ namespace Basecode.Services.Interfaces
         /// Sends the schedules to interviewer.
         /// </summary>
         Task SendSchedulesToInterviewer(string fullname, string userEmail, string jobOpeningTitle, DateOnly date, string scheduledTimes, string meetingType);
+
+        Task SendGratitudeEmail(Applicant applicant, CharacterReference reference);
     }
 }
