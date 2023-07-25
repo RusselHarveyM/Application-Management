@@ -115,6 +115,6 @@ namespace Basecode.Services.Interfaces
         /// <param name="applicant">The applicant.</param>
         /// <param name="reference">The reference.</param>
         /// <returns></returns>
-        Task SendGratitudeEmail(Applicant applicant, CharacterReference reference);
+        Task SendGratitudeEmail(Applicant applicant, BackgroundCheck reference);
     }
 }
