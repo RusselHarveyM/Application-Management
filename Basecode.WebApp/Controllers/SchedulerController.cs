@@ -12,21 +12,16 @@ namespace Basecode.WebApp.Controllers
         private readonly IUserScheduleService _userScheduleService;
         private readonly IUserService _userService;
         private readonly IApplicantService _applicantService;
-        private readonly IExaminationService _examinationService;
-        private readonly IInterviewService _interviewService;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly TokenHelper _tokenHelper;
         private const string SecretKey = "CDC1CAAACAA3269755F5EC44C7202F0055C9C322AEB5C4B6103F6E9C11EF136F";
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        public SchedulerController(IUserScheduleService userScheduleService, IUserService userService, IApplicantService applicantService, 
-            IInterviewService interviewService, IExaminationService examinationService, UserManager<IdentityUser> userManager)
+        public SchedulerController(IUserScheduleService userScheduleService, IUserService userService, IApplicantService applicantService, UserManager<IdentityUser> userManager)
         {
             _userScheduleService = userScheduleService;
             _userService = userService;
             _applicantService = applicantService;
-            _interviewService = interviewService;
-            _examinationService = examinationService;
             _userManager = userManager;
             _tokenHelper = new TokenHelper(SecretKey);
         }
