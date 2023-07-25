@@ -207,5 +207,11 @@ namespace Basecode.WebApp.Controllers
             return NotFound();
         }
 
+
+        public IActionResult ApplicantDirectoryView()
+        {
+            return View();
+        }
+
     }
 }
