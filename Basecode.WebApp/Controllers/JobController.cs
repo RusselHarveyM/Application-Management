@@ -1,14 +1,10 @@
 ﻿using Basecode.Services.Interfaces;
-using Basecode.Data.Models;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using Basecode.Data.ViewModels;
 using NLog;
 using Basecode.Services.Services;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Basecode.WebApp.Controllers
 {
