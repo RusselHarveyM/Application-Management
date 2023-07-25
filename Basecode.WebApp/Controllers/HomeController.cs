@@ -6,7 +6,6 @@ using NLog;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Services;
 using Microsoft.IdentityModel.Tokens;
-using Basecode.Services.Util;
 
 namespace Basecode.Main.Controllers
 {
@@ -14,6 +13,7 @@ namespace Basecode.Main.Controllers
     {
         private readonly IJobOpeningService _jobOpeningService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController" /> class.
         /// </summary>

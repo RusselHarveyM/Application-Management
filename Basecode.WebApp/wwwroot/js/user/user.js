@@ -37,10 +37,3 @@
 $('.modal').on('hidden.bs.modal', function () {
     $(this).parent().empty();
 });
-
-function showSelectedTitle() {
-    const dropdown = document.getElementById("titleDropdown");
-    const selectedTitle = dropdown.value;
-    document.getElementById("selectedTitle").innerText = "Selected title: " + selectedTitle;
-}
-

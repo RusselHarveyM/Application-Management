@@ -1,7 +1,6 @@
 ﻿using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
-using Basecode.Services.Interfaces;
 using Basecode.Services.Services;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Moq;
@@ -11,15 +10,13 @@ namespace Basecode.Tests.Services
 {
     public class UserServiceTests
     {
-        /*private readonly Mock<IUserRepository> _fakeUserRepository;
+        private readonly Mock<IUserRepository> _fakeUserRepository;
         private readonly UserService _service;
-        private readonly Mock<IJobOpeningService> _fakeJobOpeningService;
 
         public UserServiceTests()
         {
             _fakeUserRepository = new Mock<IUserRepository>();
-            _fakeJobOpeningService = new Mock<IJobOpeningService>();
-            _service = new UserService(_fakeUserRepository.Object, _fakeJobOpeningService.Object);
+            _service = new UserService(_fakeUserRepository.Object);
         }
 
         [Fact]
@@ -206,6 +203,6 @@ namespace Basecode.Tests.Services
             Assert.Equal(2, result.Count);
             Assert.Equal("Email address must be valid", result["Email"]);
             Assert.Equal("Password must be at least 8 characters", result["Password"]);
-        }*/
+        }
     }
 }

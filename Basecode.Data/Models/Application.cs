@@ -14,8 +14,5 @@ namespace Basecode.Data.Models
         public string Status { get; set; }
         public DateTime ApplicationDate { get; set; }
         public DateTime UpdateTime { get; set; }
-
-        public JobOpening JobOpening { get; set; } = null!;
-        public Applicant Applicant { get; set; } = null!;
     }
 }

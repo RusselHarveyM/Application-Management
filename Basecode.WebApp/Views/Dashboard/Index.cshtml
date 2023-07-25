@@ -1,17 +1,40 @@
-﻿@using Basecode.Data.ViewModels;
-@model List<JobOpeningViewModel>
-
-@{
+﻿@{
     Layout = "/Views/Shared/_Admin.cshtml";
+
+    // Dummy data
+    var users = new List<dynamic>
+    {
+        new { UserId = 0, Name = "Henry Ca", Job = "Software Developer", Position = "Front-End", Date = "25/11/2023", Status = "HR-Interview" },
+        new { UserId = 1, Name = "Johaanne Si", Job = "Software Developer", Position = "Back-End", Date = "25/11/2023", Status = "HR-Interview" },
+        new { UserId = 2, Name = "Mark Anthon", Job = "Software Developer", Position = "Full-Stack", Date = "25/11/2023", Status = "Onboard" },
+        new { UserId = 3, Name = "Marizza Izza", Job = "Software Developer", Position = "Dev-Ops", Date = "25/11/2023", Status = "HR-Interview" },
+        new { UserId = 4, Name = "Marizza Ezza", Job = "Software Developer", Position = "Dev-Ops", Date = "25/11/2023", Status = "HR-Interview" },
+        new { UserId = 5, Name = "Marizza Ozza", Job = "Software Developer", Position = "Dev-Ops", Date = "25/11/2023", Status = "HR-Interview" },
+        new { UserId = 6, Name = "Marizza Uzza", Job = "Software Developer", Position = "Dev-Ops", Date = "25/11/2023", Status = "HR-Interview" },
+        new { UserId = 7, Name = "Marizza Azza", Job = "Software Developer", Position = "Dev-Ops", Date = "25/11/2023", Status = "HR-Interview" }
+    };
 
     // Variables for dashboard statistics
     var onboard = 26;
     var deployed = 73;
     var totalApplication = 229;
-}
 
-@*Add external JavaScript file*@
-<script src="~/js/dashboard/index.js"></script>
+    // Helper method to determine the status color
+    string GetStatusColor(string status)
+    {
+        switch (status)
+        {
+            case "HR-Interview":
+                return "#EF9834FF"; // Orange
+            case "Onboard":
+                return "#00FF00"; // Green
+            case "Deployed":
+                return "#0000FF"; // Blue
+            default:
+                return "#000000"; // Black (fallback color)
+        }
+    }
+}
 
 <h2 class="mb-4" style="color: #171A1FFF;">Dashboard</h2>
 
@@ -48,25 +71,25 @@
                 <thead>
                     <!-- Table header -->
                     <tr>
-                        <th>Job Title</th>
-                        <th>Employment Type</th>
-                        <th>Work Setup</th>
-                        <th>Location</th>
-                        <th>Number of Applicants</th>
-                        <th></th>
+                        <th>User ID</th>
+                        <th>Name</th>
+                        <th>Job</th>
+                        <th>Position</th>
+                        <th>Date</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
                     <!-- Add the table rows -->
-                    @foreach (var job in Model)
+                    @foreach (var user in users)
                     {
                         <tr>
-                            <td>@job.Title</td>
-                            <td>@job.EmploymentType</td>
-                            <td>@job.WorkSetup</td>
-                            <td>@job.Location</td>
-                            <td>@job.Applications.Count</td>
-                            <td><a class="btn btn-view" role="button" onclick="showAssignUsersModal(@job.Id)"><i class="fa-solid fa-people-arrows"></i> ASSIGN HR</a></td>
+                            <td>@user.UserId</td>
+                            <td>@user.Name</td>
+                            <td>@user.Job</td>
+                            <td>@user.Position</td>
+                            <td>@user.Date</td>
+                            <td style="color: @GetStatusColor(user.Status);">@user.Status</td>
                         </tr>
                     }
                 </tbody>
@@ -75,4 +98,3 @@
     </div>
 </div>
 
-<div id="assignUsersModalContainer"></div>

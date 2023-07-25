@@ -23,18 +23,5 @@ namespace Basecode.Services.Interfaces
         /// <param name="applicantId">The applicant id.</param>
         /// <returns>List of character references of an applicant.</returns>
         List<CharacterReference> GetReferencesByApplicantId(int applicantId);
-
-        /// <summary>
-        /// Gets the character reference by identifier.
-        /// </summary>
-        /// <param name="characterReferenceId">The character reference identifier.</param>
-        /// <returns></returns>
-        CharacterReference GetCharacterReferenceById(int characterReferenceId);
-        /// <summary>
-        /// Gets the character reference applicant identifier.
-        /// </summary>
-        /// <param name="characterReferenceId">The character reference identifier.</param>
-        /// <returns></returns>
-        int GetApplicantIdByCharacterReferenceId(int characterReferenceId);
     }
 }

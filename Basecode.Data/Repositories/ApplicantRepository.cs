@@ -1,7 +1,5 @@
 ﻿using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
-using Basecode.Data.ViewModels;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,28 +27,12 @@ namespace Basecode.Data.Repositories
             return _context.Applicant.Find(id);
         }
 
-        public Applicant GetByIdAll(int id)
-        {
-            return _context.Applicant
-                  .Where(a => a.Id == id)
-                  .Include(a => a.Application)
-                  .FirstOrDefault();
-        }
-
         public int CreateApplicant(Applicant applicant)
         {
             _context.Applicant.Add(applicant);
             _context.SaveChanges();
 
             return applicant.Id;
-        }
-
-        public IQueryable<Applicant> GetApplicantsByJobOpeningId(int jobOpeningId)
-        {
-            // Retrieve the applicants with their related applications' status
-            var applicants = _context.Applicant
-                .Where(applicant => applicant.Application.JobOpeningId == jobOpeningId);
-            return applicants;
         }
     }
 }

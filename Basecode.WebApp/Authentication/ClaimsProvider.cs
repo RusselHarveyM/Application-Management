@@ -1,7 +1,6 @@
 ﻿using Basecode.Data;
 using Basecode.Data.Models;
 using Basecode.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,7 +33,8 @@ namespace Basecode.WebApp.Authentication
         {
             ClaimsIdentity claimsIdentity = null;
 
-            var user = await _userService.FindUserAsync(username, password);
+            //var user = await _userService.FindUserAsync(username, password);  // NULL FOR NOW
+            var user = (User?)null; // THE NULLED
 
             if (user == null)
             {
@@ -55,7 +55,8 @@ namespace Basecode.WebApp.Authentication
         {
             ClaimsIdentity claimsIdentity = null;
 
-            var user = _userService.FindUser(username);
+            //var user = _userService.FindUser(username);   // NULL FOR NOW
+            var user = (User?)null; // THE NULLED
 
             if (user == null)
             {
@@ -72,22 +73,22 @@ namespace Basecode.WebApp.Authentication
         /// <param name="user"></param>
         /// <param name="db"></param>
         /// <returns></returns>
-        public ClaimsIdentity CreateClaimsIdentity(IdentityUser user, BasecodeContext db)
+        public ClaimsIdentity CreateClaimsIdentity(User user, BasecodeContext db)
         {
             var now = DateTime.UtcNow;
             var claims = new List<Claim>();
 
-            var userRoles = db.UserRoles.Where(i => i.UserId == user.Id);
-            foreach (var u in userRoles)
-            {
-                var role = db.Roles.Single(i => i.Id == u.RoleId);
-                claims.Add(new Claim(ClaimTypes.Role, role.Name));
-            }
+            //var userRoles = db.UserRoles.Where(i => i.UserId == user.Id);
+            //foreach (var u in userRoles)
+            //{
+            //    var role = db.Roles.Single(i => i.Id == u.RoleId);
+            //    claims.Add(new Claim(ClaimTypes.Role, role.Name));
+            //}
 
-            claims.Add(new Claim(Constants.ClaimTypes.UserName, user.UserName));
-            claims.Add(new Claim(Constants.ClaimTypes.ID, user.Id.ToString()));
-            claims.Add(new Claim(Constants.ClaimTypes.UserId, user.Id.ToString()));
-            claims.Add(new Claim(ClaimTypes.Name, user.UserName));
+            //claims.Add(new Claim(Constants.ClaimTypes.UserName, user.Username));            
+            //claims.Add(new Claim(Constants.ClaimTypes.ID, user.Id.ToString()));
+            //claims.Add(new Claim(Constants.ClaimTypes.UserId, user.Id.ToString()));
+            //claims.Add(new Claim(ClaimTypes.Name, user.Username));            
 
             return new ClaimsIdentity(claims);
         }

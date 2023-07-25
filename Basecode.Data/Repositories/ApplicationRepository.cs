@@ -17,50 +17,22 @@ namespace Basecode.Data.Repositories
         {
             _context = context;
         }
-        public Guid CreateApplication(Application application)
+
+        public void CreateApplication(Application application)
         {
             _context.Application.Add(application);
             _context.SaveChanges();
-            return application.Id;
-        }
-
-        public IQueryable<Application> GetAll()
-        {
-            return this.GetDbSet<Application>();
         }
 
         public Application GetById(Guid id)
         {
-            return _context.Application
-                .Include(a => a.Applicant)
-                .Include(a => a.JobOpening)
-                .FirstOrDefault(a => a.Id == id);
+            return _context.Application.Find(id);
         }
 
         public void UpdateApplication(Application application)
         {
             _context.Application.Update(application);
             _context.SaveChanges();
-        }
-
-        public List<Application> GetApplicationsByIds(List<Guid> applicationIds)
-        {
-            var applications = _context.Application
-                .Where(a => applicationIds.Contains(a.Id)).ToList();
-            return applications;
-        }
-
-        public Guid GetApplicationIdByApplicantId(int applicantId)
-        {
-            var application = _context.Application
-                .FirstOrDefault(app => app.ApplicantId == applicantId);
-
-            if (application != null)
-            {
-                return application.Id;
-            }
-
-            return Guid.Empty;
         }
     }
 }

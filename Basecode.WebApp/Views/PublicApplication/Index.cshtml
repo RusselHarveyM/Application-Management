@@ -12,16 +12,6 @@
     </script>
 }
 
-<style>
-    .is-invalid {
-        border-color: red;
-    }
-
-    .file-invalid {
-        border-color: red;
-    }
-</style>
-
 <div class="container d-flex flex-column align-items-center justify-content-center mt-5 mb-5" style="width: 800px">
     <div class="container d-flex flex-row align-items-start justify-content-center gap-2 mb-5">
         <div class="d-flex flex-column align-items-center justify-content-start">
@@ -53,8 +43,8 @@
             <p class="mb-0">Confirmation</p>
         </div>
     </div>
-    <form asp-controller="PublicApplication" asp-action="Reference" method="post" enctype="multipart/form-data" onsubmit="return validateForm();">
-        <input type="hidden" asp-for="JobOpeningId" value="@TempData["JobOpeningId"]" />
+    <form asp-controller="PublicApplication" asp-action="Reference" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="jobId" value="@TempData["JobOpeningId"]" />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="container d-flex flex-column align-items-center justify-content-center">
             <div class="container">
@@ -162,7 +152,7 @@
                         <p class="mb-0">CV</p>
                     </div>
                     <div class="col-sm-10">
-                        <div class="container d-flex flex-column align-items-center justify-content-center rounded p-1" id="fileContainer" style="border-style: dashed; border-color: #E7EAED; background-color: #FAFAFB;">
+                        <div class="container d-flex flex-column align-items-center justify-content-center rounded p-1" style="border-style: dashed; border-color: #E7EAED; background-color: #FAFAFB;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#424856" class="bi bi-cloud-arrow-up-fill" viewBox="0 0 16 16">
                                 <path d="M8 2a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 6.095 0 7.555 0 9.318 0 11.366 1.708 13 3.781 13h8.906C14.502 13 16 11.57 16 9.773c0-1.636-1.242-2.969-2.834-3.194C12.923 3.999 10.69 2 8 2zm2.354 5.146a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2z" />
                             </svg>
@@ -193,35 +183,6 @@
             fileName.textContent = 'Drop file here';
         }
     });
-
-    function validateForm() {
-        var inputs = document.querySelectorAll('.form-control');
-        var fileUpload = document.getElementById('file-upload');
-        var container = document.getElementById('fileContainer');
-        var isValid = true;
-
-        for (var i = 0; i < inputs.length; i++) {
-            if (inputs[i].name === 'Middlename') {
-                continue;
-            }
-
-            if (inputs[i].value.trim() === '') {
-                isValid = false;
-                inputs[i].classList.add('is-invalid');
-            } else {
-                inputs[i].classList.remove('is-invalid');
-            }
-        }
-
-        if (!(fileUpload.files.length > 0)) {
-            isValid = false;
-            container.style.borderColor = "red";
-        } else {
-            container.style.borderColor = "#E7EAED";
-        }
-
-        return isValid;
-    }
 </script>
 
 @section Scripts {

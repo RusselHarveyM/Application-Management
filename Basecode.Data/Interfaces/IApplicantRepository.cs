@@ -1,5 +1,4 @@
 ﻿using Basecode.Data.Models;
-using Basecode.Data.ViewModels;
 
 namespace Basecode.Data.Interfaces
 {
@@ -21,20 +20,11 @@ namespace Basecode.Data.Interfaces
         /// <returns>The Applicant object.</returns>
         Applicant GetById(int id);
 
-        Applicant GetByIdAll(int id);
-
         /// <summary>
         /// Creates a new applicant.
         /// </summary>
         /// <param name="applicant">The Applicant object to create.</param>
         /// <returns>The ID of the created applicant.</returns>
         int CreateApplicant(Applicant applicant);
-
-        /// <summary>
-        /// Gets the applicants linked to a job opening.
-        /// </summary>
-        /// <param name="jobOpeningId"></param>
-        /// <returns></returns>
-        IQueryable<Applicant> GetApplicantsByJobOpeningId(int jobOpeningId);
     }
 }

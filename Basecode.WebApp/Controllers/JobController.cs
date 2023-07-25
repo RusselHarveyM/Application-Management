@@ -6,22 +6,21 @@ using Basecode.Data.ViewModels;
 using NLog;
 using Basecode.Services.Services;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Basecode.WebApp.Controllers
 {
     public class JobController : Controller
     {
         private readonly IJobOpeningService _jobOpeningService;
-        private readonly IUserService _userService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        public JobController(IJobOpeningService jobOpeningService, IUserService userService)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JobController" /> class.
+        /// </summary>
+        /// <param name="jobOpeningService">The job opening service.</param>
+        public JobController(IJobOpeningService jobOpeningService)
         {
             _jobOpeningService = jobOpeningService;
-            _userService = userService;
         }
 
         /// <summary>
@@ -60,7 +59,6 @@ namespace Basecode.WebApp.Controllers
         /// <returns>
         /// A view for creating a new job opening.
         /// </returns>
-        [Authorize]
         public IActionResult CreateView()
         {
             try
@@ -110,29 +108,20 @@ namespace Basecode.WebApp.Controllers
         /// <param name="jobOpening">The job opening.</param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize]
         public IActionResult Create(JobOpeningViewModel jobOpening)
         {
             try
             {
-                string createdBy = User.Identity?.Name ?? "person1";
-                var user = _userService.GetByEmail("russelharvey.mercado@cit.edu");
-                int createdByUser = 1;  // temporary until User auth is sorted out
-                (ErrorHandling.LogContent logContent, int jobOpeningId) data = _jobOpeningService.Create(jobOpening, user, "russelharvey.mercado@cit.edu");
-
+                string createdBy = "dummy_person";
+                var data = _jobOpeningService.Create(jobOpening, createdBy);
                 //Checks for any validation warning
-                if (!data.logContent.Result && data.jobOpeningId > 0)
+                if (!data.Result)
                 {
                     _logger.Trace("Create JobOpening succesfully.");
-
-                    // Assign logged-in user to the new job opening
-                    List<int> assignedUser = new List<int>() { createdByUser };
-                    UpdateJobOpeningAssignments(assignedUser, data.jobOpeningId);
-
                     return RedirectToAction("Index");
                 }
                 //Fails the validation
-                _logger.Warn(ErrorHandling.SetLog(data.logContent));
+                _logger.Trace(ErrorHandling.SetLog(data));
                 return View("CreateView", jobOpening);
             }
             catch (Exception e)
@@ -140,6 +129,7 @@ namespace Basecode.WebApp.Controllers
                 _logger.Error(ErrorHandling.DefaultException(e.Message));
                 return StatusCode(500, "Something went wrong.");
             }
+
         }
 
         /// <summary>
@@ -149,7 +139,6 @@ namespace Basecode.WebApp.Controllers
         /// <returns>
         /// A view for updating the job opening or NotFound result if no job opening is found.
         /// </returns>
-        [Authorize]
         public IActionResult UpdateView(int id)
         {
             try
@@ -180,15 +169,16 @@ namespace Basecode.WebApp.Controllers
         /// Redirects to the Index action if the model state is valid or returns the same view with the model if not valid.
         /// </returns>
         [HttpPost]
-        [Authorize]
         public IActionResult Update(JobOpeningViewModel jobOpening)
         {
             try
             {
-                var data = _jobOpeningService.Update(jobOpening, User.Identity?.Name ?? "person1");
+
+                string updatedBy = "dummy1";
+                var data = _jobOpeningService.Update(jobOpening, updatedBy);
                 if (!data.Result)
                 {
-                    // Update the job opening
+                // Update the job opening
                     _logger.Trace("Updated [" + jobOpening.Id + "] successfully.");
                     return RedirectToAction("Index");
                 }
@@ -211,7 +201,6 @@ namespace Basecode.WebApp.Controllers
         /// Redirects to the Index action or returns NotFound result if no job opening is found.
         /// </returns>
         [HttpPost]
-        [Authorize]
         public IActionResult Delete(int id)
         {
             try
@@ -235,25 +224,5 @@ namespace Basecode.WebApp.Controllers
             }
         }
 
-        /// <summary>
-        /// Updates the job opening assignments.
-        /// </summary>
-        /// <param name="assignedUserIds">The assigned user ids.</param>
-        /// <param name="jobOpeningId">The job opening identifier.</param>
-        /// <returns></returns>
-        [HttpPost]
-        public IActionResult UpdateJobOpeningAssignments(List<int> assignedUserIds, int jobOpeningId)
-        {
-            try
-            {
-                _jobOpeningService.UpdateJobOpeningUsers(jobOpeningId, assignedUserIds);
-                return Ok();
-            }
-            catch (Exception e)
-            {
-                _logger.Error(ErrorHandling.DefaultException(e.Message));
-                return StatusCode(500, "Something went wrong.");
-            }
-        }
     }
 }

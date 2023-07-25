@@ -49,6 +49,7 @@
     }
 
     .publish-btn {
+        background-color: #f44336;
         color: white;
     }
 
@@ -73,26 +74,16 @@
         transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
     }
 
-  .head-title {
+    .head-title {
         margin-bottom: 0.5rem;
-        font-size: 20px;
     }
 
     option {
         font-size: 0.7rem;
-        font-size: 14px;
     }
 
     label {
-        font-size: 17px;
-    }
-
-    .custom-control {
-        width: 100%;
-        border: 1px solid black;
-        padding: 10px 10px;
-        margin: 5px 0;
-        box-sizing: border-box;
+        font-size: 14px;
     }
 
     .side-double {
@@ -154,7 +145,7 @@
         <div class="quali-res">
             <div class="mb-2">
                 <label asp-for="Qualifications">Qualifications</label>
-                <button style="margin-left:29px; border:none; background-color: #DA2C43" id="addQualificationBtn" type="button" class="btn btn-primary ms-3">+</button>
+                <button id="addQualificationBtn" type="button" class="btn btn-primary ms-3">+</button>
             </div>
             <span asp-validation-for="Qualifications" class="text-danger"></span>
             <div id="qualifications-list">
@@ -174,7 +165,7 @@
         <div class="quali-res">
             <div class="mb-2">
                 <label asp-for="Responsibilities">Responsibilities</label>
-                <button style="background-color: #DA2C43; border:none" id="addResponsibilityBtn" type="button" class="btn btn-primary ms-3">+</button>
+                <button id="addResponsibilityBtn" type="button" class="btn btn-primary ms-3">+</button>
             </div>
             <span asp-validation-for="Responsibilities" class="text-danger"></span>
             <div id="responsibilities-list">
@@ -195,7 +186,7 @@
             <a asp-action="Index">
                 <button type="button" asp-action="Index" class="btn btn-secondary">Back to List</button>
             </a>
-            <button type="submit" style="background-color: #DA2C43" class="btn btn-primary">Update</button>
+            <button type="submit" class="btn btn-primary">Update</button>
         </div>
     </form>
 </div>
