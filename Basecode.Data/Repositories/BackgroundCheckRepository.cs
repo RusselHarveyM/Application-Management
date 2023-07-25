@@ -16,7 +16,7 @@ namespace Basecode.Data.Repositories
             _context = context;
         }
 
-        public void Create(BackgroundCheck form)
+        public int Create(BackgroundCheck form)
         {
             _context.BackgroundCheck.Add(form);
             _context.SaveChanges();

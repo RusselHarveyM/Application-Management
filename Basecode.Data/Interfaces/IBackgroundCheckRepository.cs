@@ -13,7 +13,8 @@ namespace Basecode.Data.Interfaces
         /// Creates the specified form.
         /// </summary>
         /// <param name="form">The form.</param>
-        void Create(BackgroundCheck form);
+        /// <returns>Id of the created background check.</returns>
+        int Create(BackgroundCheck form);
         /// <summary>
         /// Gets all.
         /// </summary>
