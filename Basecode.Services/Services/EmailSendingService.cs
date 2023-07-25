@@ -246,5 +246,45 @@ namespace Basecode.Services.Services
 
             await _emailService.SendEmail(applicant.Email, "Alliance Software Inc. Application Status Update", body);
         }
+
+        /// <summary>
+        /// Sends the schedule to applicant.
+        /// </summary>
+        public async Task SendScheduleToApplicant(UserSchedule userSchedule, int userScheduleId, Applicant applicant, string meetingType)
+        {
+            var ACCEPT_URL = "https://localhost:53813/Scheduler/AcceptSchedule";
+            var REJECT_URL = "https://localhost:53813/Scheduler/RejectSchedule";
+            var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
+            var templateContent = File.ReadAllText(templatePath);
+            var body = templateContent
+                .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+                .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+                .Replace("{{HEADLINE}}", $"{meetingType} Schedule")
+                .Replace("{{BODY}}", $"Dear {applicant.Firstname},<br>" +
+                                     $"<br> Your {meetingType} has been scheduled for {userSchedule.Schedule}.<br/>" +
+                                     $"<br> Please click the button to accept or reject the schedule:<br/>" +
+                                     $"<br> <a href=\"{ACCEPT_URL}?userScheduleId={userScheduleId}\">Accept</a> " +
+                                     $"<a href=\"{REJECT_URL}?userScheduleId={userScheduleId}\">Reject</a>");
+
+            await _emailService.SendEmail(applicant.Email, $"Alliance Software Inc. Application {meetingType} Schedule", body);
+        }
+
+        /// <summary>
+        /// Sends the schedules to the interviewer.
+        /// </summary>
+        public async Task SendSchedulesToInterviewer(string fullname, string userEmail, string jobOpeningTitle, DateOnly date, string scheduledTimes, string meetingType)
+        {
+            var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
+            var templateContent = File.ReadAllText(templatePath);
+            var body = templateContent
+                .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+                .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+                .Replace("{{HEADLINE}}", $"{meetingType} Schedule")
+                .Replace("{{BODY}}", $"Dear {fullname},<br>" +
+                                     $"<br> Here is an overview of the {meetingType} schedules you have set for the position of {jobOpeningTitle} on {date}:<br>" +
+                                     $"<br> {scheduledTimes}");
+
+            await _emailService.SendEmail(userEmail, $"Alliance Software Inc. {meetingType} Schedules", body);
+        }
     }
 }

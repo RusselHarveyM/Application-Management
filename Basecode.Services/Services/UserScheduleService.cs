@@ -9,18 +9,18 @@ namespace Basecode.Services.Services
     public class UserScheduleService : ErrorHandling, IUserScheduleService
     {
         private readonly IUserScheduleRepository _repository;
-        private readonly IEmailService _emailService;
+        private readonly IEmailSendingService _emailSendingService;
         private readonly IApplicationService _applicationService;
         private readonly IApplicantService _applicantService;
         private readonly IUserService _userService;
         private readonly IJobOpeningService _jobOpeningService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        public UserScheduleService(IUserScheduleRepository repository, IEmailService emailService, IApplicationService applicationService,
+        public UserScheduleService(IUserScheduleRepository repository, IEmailSendingService emailSendingService, IApplicationService applicationService,
             IApplicantService applicantService, IUserService userService, IJobOpeningService jobOpeningService)
         {
             _repository = repository;
-            _emailService = emailService;
+            _emailSendingService = emailSendingService;
             _applicationService = applicationService;
             _applicantService = applicantService;
             _userService = userService;
@@ -91,7 +91,7 @@ namespace Basecode.Services.Services
         {
             meetingType = meetingType[(meetingType.Split()[0].Length + 1)..];   // Remove "For " from meeting type
             var applicant = _applicantService.GetApplicantById(applicantId);
-            await _emailService.SendScheduleToApplicant(userSchedule, userScheduleId, applicant, meetingType);
+            await _emailSendingService.SendScheduleToApplicant(userSchedule, userScheduleId, applicant, meetingType);
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace Basecode.Services.Services
                 }
             }
 
-            await _emailService.SendSchedulesToInterviewer(user.Fullname, user.Email, jobOpeningTitle, formData.Date, scheduledTimes, meetingType);
+            await _emailSendingService.SendSchedulesToInterviewer(user.Fullname, user.Email, jobOpeningTitle, formData.Date, scheduledTimes, meetingType);
         }
     }
 }
