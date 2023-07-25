@@ -56,7 +56,7 @@ namespace Basecode.Services.Interfaces
         /// </summary>
         /// <param name="user">Represents the user with updated information.</param>
         /// <returns></returns>
-        LogContent Update(User user);
+        Task<LogContent> Update(UserViewModel user);
 
         /// <summary>
         /// Deletes the specified user.

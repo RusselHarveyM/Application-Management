@@ -55,7 +55,7 @@ namespace Basecode.Data.Interfaces
         /// Updates an existing user in the User table.
         /// </summary>
         /// <param name="user">Represents the user with updated information.</param>
-        void Update(User user);
+        Task Update(User user);
 
         /// <summary>
         /// Deletes the specified user.

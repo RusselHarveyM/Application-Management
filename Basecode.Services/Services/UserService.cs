@@ -100,20 +100,21 @@ namespace Basecode.Services.Services
         /// Updates an existing user.
         /// </summary>
         /// <param name="user">Represents the user with updated information.</param>
-        public LogContent Update(User user)
+        public async Task<LogContent> Update(UserViewModel user)
         {
             LogContent logContent = new LogContent();
             logContent = CheckUser(user);
 
             if (logContent.Result == false)
             {
-                var userToBeUpdated = _repository.GetById(user.Id);
+                var userToBeUpdated = await _repository.GetByIdAsync(user.Id);
+                var oldPassword = userToBeUpdated.Password;
                 userToBeUpdated.Fullname = user.Fullname;
                 userToBeUpdated.Username = user.Username;
                 userToBeUpdated.Email = user.Email;
                 userToBeUpdated.Password = user.Password;
                 userToBeUpdated.Role = user.Role;
-                _repository.Update(userToBeUpdated);
+                await _repository.Update(userToBeUpdated);
             }
 
             return logContent;

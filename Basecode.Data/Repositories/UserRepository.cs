@@ -119,10 +119,14 @@ namespace Basecode.Data.Repositories
         /// Updates an existing user in the User table.
         /// </summary>
         /// <param name="user">Represents the user with updated information.</param>
-        public void Update(User user)
+        public async Task Update(User user)
         {
-            _context.User.Update(user);
-            _context.SaveChanges();
+            var identityUser = await _userManager.FindByIdAsync(user.AspId);
+            //var newMail = await _userManager.ChangeEmailAsync()
+            var token = await _userManager.GeneratePasswordResetTokenAsync(identityUser);
+
+            var result = await _userManager.ResetPasswordAsync(identityUser, token, user.Password);
+            await _context.SaveChangesAsync();
         }
 
         /// <summary>
