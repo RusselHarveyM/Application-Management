@@ -109,6 +109,12 @@ namespace Basecode.Services.Interfaces
         /// </summary>
         Task SendSchedulesToInterviewer(string fullname, string userEmail, string jobOpeningTitle, DateOnly date, string scheduledTimes, string meetingType);
 
+        /// <summary>
+        /// Sends the gratitude email.
+        /// </summary>
+        /// <param name="applicant">The applicant.</param>
+        /// <param name="reference">The reference.</param>
+        /// <returns></returns>
         Task SendGratitudeEmail(Applicant applicant, CharacterReference reference);
     }
 }

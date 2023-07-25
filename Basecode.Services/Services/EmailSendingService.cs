@@ -287,6 +287,11 @@ namespace Basecode.Services.Services
             await _emailService.SendEmail(userEmail, $"Alliance Software Inc. {meetingType} Schedules", body);
         }
 
+        /// <summary>
+        /// Sends the gratitude email.
+        /// </summary>
+        /// <param name="applicant">The applicant.</param>
+        /// <param name="reference">The reference.</param>
         public async Task SendGratitudeEmail(Applicant applicant, CharacterReference reference)
         {
             var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
