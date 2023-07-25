@@ -19,12 +19,11 @@ namespace Basecode.Services.Interfaces
         /// Creates a new job opening.
         /// </summary>
         /// <param name="jobOpening">The job opening to create.</param>
-        /// <param name="user">The user who created the job opening.</param>
         /// <param name="createdBy">The user who created the job opening.</param>
         /// <returns>
         /// The log content and the new job opening's id.
         /// </returns>
-        (LogContent, int) Create(JobOpeningViewModel jobOpening, User user, string createdBy);
+        (LogContent, int) Create(JobOpeningViewModel jobOpening, string createdBy);
 
         /// <summary>
         /// Gets a job opening by its ID.
@@ -86,13 +85,13 @@ namespace Basecode.Services.Interfaces
         /// <returns>
         /// A list of user ids.
         /// </returns>
-        List<int> GetLinkedUserIds(int jobOpeningId);
+        List<string> GetLinkedUserIds(int jobOpeningId);
 
         /// <summary>
         /// Updates the many-to-many relationship between User and JobOpening.
         /// </summary>
         /// <param name="jobOpeningId">The job opening id.</param>
         /// <param name="assignedUserIds">The assigned user ids.</param>
-        void UpdateJobOpeningUsers(int jobOpeningId, List<int> assignedUserIds);
+        void UpdateJobOpeningUsers(int jobOpeningId, List<string> assignedUserIds);
     }
 }

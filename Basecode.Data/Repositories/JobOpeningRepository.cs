@@ -1,11 +1,6 @@
 ﻿using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Basecode.Data.Repositories
 {
@@ -67,14 +62,14 @@ namespace Basecode.Data.Repositories
             return title;
         }
 
-        public IQueryable<int> GetLinkedUserIds(int jobOpeningId)
+        public IQueryable<string> GetLinkedUserIds(int jobOpeningId)
         {
             return _context.JobOpening
                             .Where(j => j.Id == jobOpeningId)
-                            .SelectMany(j => j.Users.Select(u => u.Id));
+                            .SelectMany(j => j.Users.Select(u => u.AspId));
         }
 
-        public void UpdateJobOpeningUsers(int jobOpeningId, List<int> assignedUserIds)
+        public void UpdateJobOpeningUsers(int jobOpeningId, List<string> assignedUserIds)
         {
             var jobOpening = _context.JobOpening
                 .Include(j => j.Users)
@@ -82,10 +77,10 @@ namespace Basecode.Data.Repositories
 
             if (jobOpening != null)
             {
-                var existingUserIds = jobOpening.Users.Select(u => u.Id).ToList();
+                var existingUserIds = jobOpening.Users.Select(u => u.AspId).ToList();
 
                 // Find the users to remove from the junction table
-                var usersToRemove = jobOpening.Users.Where(u => existingUserIds.Contains(u.Id) && !assignedUserIds.Contains(u.Id)).ToList();
+                var usersToRemove = jobOpening.Users.Where(u => existingUserIds.Contains(u.AspId) && !assignedUserIds.Contains(u.AspId)).ToList();
 
                 // Remove unassigned users from the junction table
                 foreach (var user in usersToRemove)
@@ -94,7 +89,7 @@ namespace Basecode.Data.Repositories
                 }
 
                 // Link the selected users to the JobOpening
-                var selectedUsersToAdd = _context.User.Where(u => assignedUserIds.Contains(u.Id) && !existingUserIds.Contains(u.Id)).ToList();
+                var selectedUsersToAdd = _context.User.Where(u => assignedUserIds.Contains(u.AspId) && !existingUserIds.Contains(u.AspId)).ToList();
                 foreach (var user in selectedUsersToAdd)
                 {
                     jobOpening.Users.Add(user);
