@@ -95,47 +95,14 @@ namespace Basecode.WebApp.Controllers
             try
             {
                 int userScheduleId = _tokenHelper.GetIdFromToken(token, "accept");
-
                 if (userScheduleId == 0)
                 {
                     _logger.Warn("Invalid token.");
                     return Unauthorized("Invalid token.");
                 }
 
-                var userSchedule = _userScheduleService.GetUserScheduleById(userScheduleId);
-
-                if (userSchedule == null)
-                {
-                    _logger.Error("Schedule is not found.");
-                    return NotFound("Schedule is not found.");
-                }
-
-                if (userSchedule.Status == "accepted")
-                {
-                    _logger.Error("Schedule has already been accepted.");
-                    return Unauthorized("Schedule has already been accepted.");
-                }
-
-                if (userSchedule.Type == "For HR Interview" || userSchedule.Type == "For Technical Interview")
-                {
-                    var interviewData = _interviewService.AddInterview(userSchedule);
-                    if (!interviewData.Result)
-                    {
-                        _logger.Trace("Successfully created a new Interview record.");
-                    }
-                }
-                else
-                {
-                    var examData = _examinationService.AddExamination(userSchedule);
-                    if (!examData.Result)
-                    {
-                        _logger.Trace("Successfully created a new Examination record.");
-                    }
-                }
-
-                userSchedule.Status = "accepted";
-                var scheduleData = _userScheduleService.UpdateUserSchedule(userSchedule);
-                if (!scheduleData.Result)
+                var data = _userScheduleService.AcceptSchedule(userScheduleId);
+                if (!data.Result)
                 {
                     _logger.Trace("User Schedule [" + userScheduleId + "] has been successfully accepted.");
                 }
