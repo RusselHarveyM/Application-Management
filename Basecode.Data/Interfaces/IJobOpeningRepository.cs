@@ -66,13 +66,13 @@ namespace Basecode.Data.Interfaces
         /// </summary>
         /// <param name="jobOpeningId">The job opening identifier.</param>
         /// <returns></returns>
-        IQueryable<int> GetLinkedUserIds(int jobOpeningId);
+        IQueryable<string> GetLinkedUserIds(int jobOpeningId);
 
         /// <summary>
         /// Updates the job opening users.
         /// </summary>
         /// <param name="jobOpeningId">The job opening identifier.</param>
         /// <param name="assignedUserIds">The assigned user ids.</param>
-        void UpdateJobOpeningUsers(int jobOpeningId, List<int> assignedUserIds);
+        void UpdateJobOpeningUsers(int jobOpeningId, List<string> assignedUserIds);
     }
 }

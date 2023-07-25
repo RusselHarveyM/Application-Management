@@ -176,14 +176,19 @@ namespace Basecode.WebApp.Controllers
         /// <returns></returns>
         public async Task<IActionResult> ViewDetailsUpdate(Guid appId, string email, string status)
         {
-            var application = _dashboardService.GetApplicationById(appId);
-            var foundUser = _userService.GetByEmail(email);
-
-            await _dashboardService.UpdateStatus(application, foundUser, status);
-
-            return RedirectToAction("ShortListView");
+            try
+            {
+                var application = _dashboardService.GetApplicationById(appId);
+                var foundUser = _userService.GetByEmail(email);
+                 await _dashboardService.UpdateStatus(application, foundUser, status);
+                 return RedirectToAction("ShortListView");
+            }
+            catch(Exception e)
+            {
+                _logger.Error(ErrorHandling.DefaultException(e.Message));
+                return StatusCode(500, "Something went wrong.");
+            }
         }
-
 
         /// <summary>
         /// Downloads the file.

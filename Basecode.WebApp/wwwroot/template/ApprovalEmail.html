@@ -31,7 +31,7 @@
             padding: 0 !important;
             height: 100% !important;
             width: 100% !important;
-            background: #f1f1f1;
+            background: #f1f1f1;}
         
         /* What it does: Stops email clients resizing small text. */
             *
@@ -287,7 +287,7 @@
         }
 
             .heading-section-white h2 {
-                font-family: line-height: 1;
+                line-height: 1;
                 padding-bottom: 0;
             }
 
@@ -468,34 +468,5 @@
 
         </div>
     </center>
-
-    <script>
-        $(document).ready(function () {
-            $('#rejectButton').click(function () {
-                updateStatus('rejected');
-            });
-
-            $('#approveButton').click(function () {
-                updateStatus('approved');
-            });
-
-            function updateStatus(status) {
-                // Send an AJAX request to your MVC service endpoint
-                $.ajax({
-                    url: '/Tracker/ChangeStatus',
-                    type: 'POST',
-                    data: { status: status },
-                    success: function (response) {
-                        // Handle the response from the server if needed
-                        console.log('Status updated successfully');
-                    },
-                    error: function (error) {
-                        // Handle the error if the request fails
-                        console.error('Failed to update status:', error);
-                    }
-                });
-            }
-        });
-    </script>
 </body>
 </html>

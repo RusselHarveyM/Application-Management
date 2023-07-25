@@ -1,27 +1,24 @@
 ﻿using Basecode.Services.Interfaces;
-using Basecode.Data.Models;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using Basecode.Data.ViewModels;
 using NLog;
 using Basecode.Services.Services;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Basecode.WebApp.Controllers
 {
     public class JobController : Controller
     {
         private readonly IJobOpeningService _jobOpeningService;
-        private readonly IUserService _userService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public JobController(IJobOpeningService jobOpeningService, IUserService userService)
+        public JobController(IJobOpeningService jobOpeningService, UserManager<IdentityUser> userManager)
         {
             _jobOpeningService = jobOpeningService;
-            _userService = userService;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -111,14 +108,12 @@ namespace Basecode.WebApp.Controllers
         /// <returns></returns>
         [HttpPost]
         [Authorize]
-        public IActionResult Create(JobOpeningViewModel jobOpening)
+        public async Task<IActionResult> Create(JobOpeningViewModel jobOpening)
         {
             try
             {
-                string createdBy = User.Identity?.Name ?? "person1";
-                var user = _userService.GetByEmail("russelharvey.mercado@cit.edu");
-                int createdByUser = 1;  // temporary until User auth is sorted out
-                (ErrorHandling.LogContent logContent, int jobOpeningId) data = _jobOpeningService.Create(jobOpening, user, "russelharvey.mercado@cit.edu");
+                var user = await _userManager.GetUserAsync(User);
+                (ErrorHandling.LogContent logContent, int jobOpeningId) data = _jobOpeningService.Create(jobOpening, user.Email);
 
                 //Checks for any validation warning
                 if (!data.logContent.Result && data.jobOpeningId > 0)
@@ -126,8 +121,8 @@ namespace Basecode.WebApp.Controllers
                     _logger.Trace("Create JobOpening succesfully.");
 
                     // Assign logged-in user to the new job opening
-                    List<int> assignedUser = new List<int>() { createdByUser };
-                    UpdateJobOpeningAssignments(assignedUser, data.jobOpeningId);
+                    List<string> assignedUser = new List<string>() { user.Id };
+                    _jobOpeningService.UpdateJobOpeningUsers(data.jobOpeningId, assignedUser);
 
                     return RedirectToAction("Index");
                 }
@@ -235,25 +230,25 @@ namespace Basecode.WebApp.Controllers
             }
         }
 
-        /// <summary>
-        /// Updates the job opening assignments.
-        /// </summary>
-        /// <param name="assignedUserIds">The assigned user ids.</param>
-        /// <param name="jobOpeningId">The job opening identifier.</param>
-        /// <returns></returns>
-        [HttpPost]
-        public IActionResult UpdateJobOpeningAssignments(List<int> assignedUserIds, int jobOpeningId)
-        {
-            try
-            {
-                _jobOpeningService.UpdateJobOpeningUsers(jobOpeningId, assignedUserIds);
-                return Ok();
-            }
-            catch (Exception e)
-            {
-                _logger.Error(ErrorHandling.DefaultException(e.Message));
-                return StatusCode(500, "Something went wrong.");
-            }
-        }
+        // /// <summary>
+        // /// Updates the job opening assignments.
+        // /// </summary>
+        // /// <param name="assignedUserIds">The assigned user ids.</param>
+        // /// <param name="jobOpeningId">The job opening identifier.</param>
+        // /// <returns></returns>
+        // [HttpPost]
+        // public IActionResult UpdateJobOpeningAssignments(List<int> assignedUserIds, int jobOpeningId)
+        // {
+        //     try
+        //     {
+        //         _jobOpeningService.UpdateJobOpeningUsers(jobOpeningId, assignedUserIds);
+        //         return Ok();
+        //     }
+        //     catch (Exception e)
+        //     {
+        //         _logger.Error(ErrorHandling.DefaultException(e.Message));
+        //         return StatusCode(500, "Something went wrong.");
+        //     }
+        // }
     }
 }
