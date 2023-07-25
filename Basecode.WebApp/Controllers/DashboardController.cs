@@ -1,5 +1,4 @@
-﻿using Basecode.Data.Models;
-using Basecode.Data.ViewModels;
+﻿using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
 using Basecode.Services.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -206,6 +205,12 @@ namespace Basecode.WebApp.Controllers
             }
 
             return NotFound();
+        }
+
+
+        public IActionResult ApplicantDirectoryView()
+        {
+            return View();
         }
 
     }
