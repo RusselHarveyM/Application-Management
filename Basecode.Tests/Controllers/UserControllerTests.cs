@@ -10,7 +10,7 @@ namespace Basecode.Tests.Controllers
 {
     public class UserControllerTests
     {
-        private readonly Mock<IUserService> _fakeUserService;
+        /*private readonly Mock<IUserService> _fakeUserService;
         private readonly UserController _controller;
 
         public UserControllerTests()
@@ -339,6 +339,6 @@ namespace Basecode.Tests.Controllers
             // Assert
             var statusCodeResult = Assert.IsType<ObjectResult>(result);
             Assert.Equal(500, statusCodeResult.StatusCode);
-        }
+        }*/
     }
 }

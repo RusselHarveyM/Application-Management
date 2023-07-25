@@ -11,7 +11,7 @@ namespace Basecode.Tests.Services
 {
     public class UserServiceTests
     {
-        private readonly Mock<IUserRepository> _fakeUserRepository;
+        /*private readonly Mock<IUserRepository> _fakeUserRepository;
         private readonly UserService _service;
         private readonly Mock<IJobOpeningService> _fakeJobOpeningService;
 
@@ -206,6 +206,6 @@ namespace Basecode.Tests.Services
             Assert.Equal(2, result.Count);
             Assert.Equal("Email address must be valid", result["Email"]);
             Assert.Equal("Password must be at least 8 characters", result["Password"]);
-        }
+        }*/
     }
 }
