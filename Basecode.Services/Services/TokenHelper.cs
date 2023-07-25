@@ -73,6 +73,12 @@ public class TokenHelper
         }
     }
 
+    /// <summary>
+    /// Gets the claim value.
+    /// </summary>
+    /// <param name="token">The token.</param>
+    /// <param name="claimType">Type of the claim.</param>
+    /// <returns></returns>
     public string GetClaimValue(string token, string claimType)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -81,6 +87,12 @@ public class TokenHelper
         return jwtToken.Claims.FirstOrDefault(c => c.Type == claimType)?.Value;
     }
 
+    /// <summary>
+    /// Gets the identifier from token.
+    /// </summary>
+    /// <param name="token">The token.</param>
+    /// <param name="action">The action.</param>
+    /// <returns></returns>
     public int GetIdFromToken(string token, string action)
     {
         int userScheduleId = 0;
