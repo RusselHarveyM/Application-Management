@@ -20,6 +20,8 @@ namespace Basecode.Data.Repositories
         {
             _context.BackgroundCheck.Add(form);
             _context.SaveChanges();
+
+            return form.Id;
         }
 
         public IQueryable<BackgroundCheck> GetAll()
