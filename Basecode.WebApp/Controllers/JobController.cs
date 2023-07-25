@@ -12,14 +12,12 @@ namespace Basecode.WebApp.Controllers
     public class JobController : Controller
     {
         private readonly IJobOpeningService _jobOpeningService;
-        private readonly IUserService _userService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly UserManager<IdentityUser> _userManager;
 
-        public JobController(IJobOpeningService jobOpeningService, IUserService userService, UserManager<IdentityUser> userManager)
+        public JobController(IJobOpeningService jobOpeningService, UserManager<IdentityUser> userManager)
         {
             _jobOpeningService = jobOpeningService;
-            _userService = userService;
             _userManager = userManager;
         }
 
