@@ -27,7 +27,7 @@ namespace Basecode.Services.Interfaces
         /// </summary>
         /// <param name="user">The user.</param>
         /// <returns></returns>
-        LogContent Create(User user);
+        Task<LogContent> Create(UserViewModel user);
 
         /// <summary>
         /// Retrieves a specific user based on the provided ID.

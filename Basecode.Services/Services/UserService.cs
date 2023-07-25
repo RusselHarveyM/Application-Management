@@ -1,4 +1,5 @@
-﻿using Basecode.Data.Interfaces;
+﻿using AutoMapper;
+using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
 using Basecode.Data.Repositories;
 using Basecode.Data.ViewModels;
@@ -18,15 +19,16 @@ namespace Basecode.Services.Services
     {
         private readonly IUserRepository _repository;
         private readonly IJobOpeningService _jobOpeningService;
-
+        private readonly IMapper _mapper;
         /// <summary>
         /// Initializes a new instance of the <see cref="UserService"/> class.
         /// </summary>
         /// <param name="repository">The repository.</param>
-        public UserService(IUserRepository repository, IJobOpeningService jobOpeningService)
+        public UserService(IUserRepository repository, IJobOpeningService jobOpeningService, IMapper mapper)
         {
             _repository = repository;
             _jobOpeningService = jobOpeningService;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -54,14 +56,15 @@ namespace Basecode.Services.Services
         /// </summary>
         /// <param name="user">The user.</param>
         /// <response code="400">User details are invalid</response>
-        public LogContent Create(User user)
+        public async Task<LogContent> Create(UserViewModel user)
         {
             LogContent logContent = new LogContent();
             logContent = CheckUser(user);
 
             if (logContent.Result == false)
             {
-                _repository.Create(user);
+                var mapUser = _mapper.Map<User>(user);
+                await _repository.Create(mapUser);
             }
 
             return logContent;

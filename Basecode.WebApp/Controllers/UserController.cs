@@ -66,7 +66,7 @@ namespace Basecode.WebApp.Controllers
         {
             try
             {
-                var userModel = new User();
+                var userModel = new UserViewModel();
                 return PartialView("~/Views/User/_AddView.cshtml", userModel);
             }
             catch (Exception e)
@@ -83,7 +83,7 @@ namespace Basecode.WebApp.Controllers
         /// <returns>Redirect to the Index() action to display the list of users.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(User user)
+        public async Task<IActionResult> Create(UserViewModel user)
         {
             try
             {
@@ -95,7 +95,7 @@ namespace Basecode.WebApp.Controllers
                 }
 
                 // Create the new user
-                var data = _service.Create(user);
+                var data = await _service.Create(user);
                 
                 if (!data.Result)
                 {

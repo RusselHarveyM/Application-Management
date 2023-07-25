@@ -26,7 +26,7 @@ namespace Basecode.Data.Interfaces
         /// Adds a new user into the User table.
         /// </summary>
         /// <param name="user">Represents the user to be added.</param>
-        void Create(User user);
+        Task Create(User user);
 
         /// <summary>
         /// Retrieves a user from the User table based on the specified ID.

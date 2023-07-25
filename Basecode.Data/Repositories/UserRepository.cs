@@ -46,10 +46,46 @@ namespace Basecode.Data.Repositories
         /// Adds a new user into the User table.
         /// </summary>
         /// <param name="user">Represents the user to be added.</param>
-        public void Create(User user)
+        public async Task Create(User user)
         {
-            _context.User.Add(user);
-            _context.SaveChanges();
+            var identityUser = new IdentityUser
+            {
+                UserName = user.Email,
+                Email = user.Email,
+            };
+            var result = await _userManager.CreateAsync(identityUser, user.Password.ToString().Trim());
+
+            if (result.Succeeded)
+            {
+                bool checkIfRoleExists = await _roleManager.RoleExistsAsync(user.Role);
+                //If role not found then create and add user
+                if (checkIfRoleExists)
+                {
+                    await _userManager.AddToRoleAsync(identityUser, user.Role);
+                }
+                else
+                {
+                    var createRole = await CreateRole(user.Role);
+                    if (createRole.Succeeded)
+                    {
+                        await _userManager.AddToRoleAsync(identityUser, user.Role);
+                    }
+                }
+                user.AspId = identityUser.Id;
+                // Add the new 'User' to your custom 'User' table
+                await _context.User.AddAsync(user);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    // Log or handle each error message as needed
+                    Console.WriteLine($"Error Code: {error.Code}, Description: {error.Description}");
+                }
+                // Handle the case where user creation failed
+                throw new Exception("Creation failed");
+            }
         }
 
         /// <summary>
