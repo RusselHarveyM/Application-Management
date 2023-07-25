@@ -280,11 +280,11 @@ namespace Basecode.WebApp.Controllers
         /// <param name="id">Integer representing the ID of the user to be deleted.</param>
         /// <returns>A partial view and User object.</returns>
         [HttpGet]
-        public ActionResult DeleteView(int id)
+        public async Task<ActionResult> DeleteView(int id)
         {
             try
             {
-                var data = _service.GetById(id);
+                var data = await _service.GetByIdAsync(id);
 
                 if (data == null)
                 {
@@ -309,11 +309,11 @@ namespace Basecode.WebApp.Controllers
         /// <returns>Redirect to the Index() action to display the updated list of users.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                var user = _service.GetById(id);
+                var user = await _service.GetByIdAsync(id);
 
                 if (user == null)
                 {
@@ -321,7 +321,7 @@ namespace Basecode.WebApp.Controllers
                     return NotFound();
                 }
 
-                _service.Delete(user);
+                await _service.Delete(user);
                 _logger.Trace("Successfully deleted user [" + id + "].");
                 return RedirectToAction("Index");
             }

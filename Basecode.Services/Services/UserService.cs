@@ -81,7 +81,15 @@ namespace Basecode.Services.Services
         {
             return _repository.GetById(id);
         }
-
+        /// <summary>
+        /// Gets the by identifier asynchronous.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
+        public async Task<User> GetByIdAsync(int id)
+        {
+            return await _repository.GetByIdAsync(id);
+        }
 
         public User GetByEmail(string email)
         {
@@ -115,9 +123,9 @@ namespace Basecode.Services.Services
         /// Deletes the specified user.
         /// </summary>
         /// <param name="user">The user.</param>
-        public void Delete(User user)
+        public async Task Delete(User user)
         {
-            _repository.Delete(user);
+            await _repository.Delete(user);
         }
 
         /// <summary>

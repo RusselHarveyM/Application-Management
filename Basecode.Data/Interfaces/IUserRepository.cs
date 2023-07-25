@@ -37,6 +37,12 @@ namespace Basecode.Data.Interfaces
         /// </returns>
         User GetById(int id);
 
+        /// <summary>
+        /// Gets the by identifier asynchronous.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
+        Task<User> GetByIdAsync(int id);
 
         /// <summary>
         /// Gets the by email.
@@ -55,7 +61,7 @@ namespace Basecode.Data.Interfaces
         /// Deletes the specified user.
         /// </summary>
         /// <param name="user">The user.</param>
-        void Delete(User user);
+        Task Delete(User user);
 
         /// <summary>
         /// Gets the job openings assigned to the user.
@@ -71,15 +77,6 @@ namespace Basecode.Data.Interfaces
         /// <returns></returns>
         IdentityUser FindUser(string userName);
 
-        /// <summary>
-        /// Registers the user to ASP.
-        /// </summary>
-        /// <param name="username">The username.</param>
-        /// <param name="password">The password.</param>
-        /// <param name="email">The email.</param>
-        /// <param name="role">The role.</param>
-        /// <returns></returns>
-        Task RegisterUserToAsp(string username, string password, string email, string role);
         /// <summary>
         /// Creates the role.
         /// </summary>

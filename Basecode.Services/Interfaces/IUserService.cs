@@ -38,7 +38,12 @@ namespace Basecode.Services.Interfaces
         /// </returns>
         User GetById(int id);
 
-
+        /// <summary>
+        /// Gets the by identifier asynchronous.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
+        Task<User> GetByIdAsync(int id);
         /// <summary>
         /// Gets the by email.
         /// </summary>
@@ -57,7 +62,7 @@ namespace Basecode.Services.Interfaces
         /// Deletes the specified user.
         /// </summary>
         /// <param name="user">The user.</param>
-        void Delete(User user);
+        Task Delete(User user);
 
         /// <summary>
         /// Gets the validation errors.
