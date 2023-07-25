@@ -66,9 +66,7 @@ namespace Basecode.Data.Interfaces
         /// <summary>
         /// Gets the job openings assigned to the user.
         /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        IEnumerable<JobOpeningBasicViewModel> GetLinkedJobOpenings(int userId);
+        IEnumerable<JobOpeningBasicViewModel> GetLinkedJobOpenings(string userAspId);
 
         /// <summary>
         /// Finds the user.

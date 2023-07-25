@@ -85,7 +85,7 @@ namespace Basecode.Services.Interfaces
         /// </summary>
         /// <param name="userId">The user identifier.</param>
         /// <returns></returns>
-        List<JobOpeningBasicViewModel> GetLinkedJobOpenings(int userId);
+        List<JobOpeningBasicViewModel> GetLinkedJobOpenings(string userAspId);
 
         /// <summary>
         /// Finds the user.

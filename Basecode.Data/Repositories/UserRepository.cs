@@ -144,10 +144,10 @@ namespace Basecode.Data.Repositories
         /// </summary>
         /// <param name="userId">The user identifier.</param>
         /// <returns></returns>
-        public IEnumerable<JobOpeningBasicViewModel> GetLinkedJobOpenings(int userId)
+        public IEnumerable<JobOpeningBasicViewModel> GetLinkedJobOpenings(string userAspId)
         {
             return _context.User
-                   .Where(u => u.Id == userId)
+                   .Where(u => u.AspId == userAspId)
                    .SelectMany(u => u.JobOpenings)
                    .Select(j => new JobOpeningBasicViewModel
                    {

@@ -15,18 +15,18 @@ namespace Basecode.WebApp.Controllers
         private readonly IApplicantService _applicantService;
         private readonly IExaminationService _examinationService;
         private readonly IInterviewService _interviewService;
+        private readonly UserManager<IdentityUser> _userManager;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
-        private readonly SignInManager<IdentityUser> _signInManager;
 
-        public SchedulerController(IUserScheduleService userScheduleService, IUserService userService, SignInManager<IdentityUser> signInManager, 
-            IApplicantService applicantService, IInterviewService interviewService, IExaminationService examinationService)
+        public SchedulerController(IUserScheduleService userScheduleService, IUserService userService, IApplicantService applicantService, 
+            IInterviewService interviewService, IExaminationService examinationService, UserManager<IdentityUser> userManager)
         {
             _userScheduleService = userScheduleService;
             _userService = userService;
             _applicantService = applicantService;
-            _signInManager = signInManager;
             _interviewService = interviewService;
             _examinationService = examinationService;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -37,8 +37,8 @@ namespace Basecode.WebApp.Controllers
         {
             try
             {
-                int userId = 1;     // temporary until User auth is sorted out
-                var jobOpenings = _userService.GetLinkedJobOpenings(userId);
+                var userAspId = _userManager.GetUserId(User);
+                var jobOpenings = _userService.GetLinkedJobOpenings(userAspId);
                 var applicants = _applicantService.GetApplicantsWithStatuses();
                 var schedulerFormData = new SchedulerDataViewModel();
 

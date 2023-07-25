@@ -181,9 +181,9 @@ namespace Basecode.Services.Services
         /// </summary>
         /// <param name="userId">The user identifier.</param>
         /// <returns></returns>
-        public List<JobOpeningBasicViewModel> GetLinkedJobOpenings(int userId)
+        public List<JobOpeningBasicViewModel> GetLinkedJobOpenings(string userAspId)
         {
-            return _repository.GetLinkedJobOpenings(userId).ToList();
+            return _repository.GetLinkedJobOpenings(userAspId).ToList();
         }
         /// <summary>
         /// Finds the user asynchronous.
