@@ -115,6 +115,27 @@ namespace Basecode.WebApp.Controllers
         }
 
         /// <summary>
+        /// Updates the job opening assignments.
+        /// </summary>
+        /// <param name="assignedUserIds">The assigned user ids.</param>
+        /// <param name="jobOpeningId">The job opening identifier.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public IActionResult AssignUserViewUpdate(List<string> assignedUserIds, int jobOpeningId)
+        {
+            try
+            {
+                _jobOpeningService.UpdateJobOpeningUsers(jobOpeningId, assignedUserIds);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _logger.Error(ErrorHandling.DefaultException(e.Message));
+                return StatusCode(500, "Something went wrong.");
+            }
+        }
+
+        /// <summary>
         /// Shorts the ListView.
         /// </summary>
         /// <returns></returns>

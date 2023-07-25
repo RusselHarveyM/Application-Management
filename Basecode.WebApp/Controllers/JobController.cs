@@ -237,7 +237,7 @@ namespace Basecode.WebApp.Controllers
         // /// <param name="jobOpeningId">The job opening identifier.</param>
         // /// <returns></returns>
         // [HttpPost]
-        // public IActionResult UpdateJobOpeningAssignments(List<int> assignedUserIds, int jobOpeningId)
+        // public IActionResult UpdateJobOpeningAssignments(List<string> assignedUserIds, int jobOpeningId)
         // {
         //     try
         //     {

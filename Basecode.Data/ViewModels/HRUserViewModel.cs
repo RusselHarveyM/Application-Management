@@ -6,5 +6,8 @@
         public string Fullname { get; set; }
         public string Email { get; set; }
         public bool IsLinkedToJobOpening { get; set; }
+        
+        public string AspId { get; set; }
+
     }
 }
