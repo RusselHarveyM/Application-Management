@@ -58,7 +58,7 @@ namespace Basecode.Services.Services
         /// <param name="jobOpening">The job opening to create.</param>
         /// <param name="createdBy">The user who created the job opening.</param>
         /// <returns>The log content and the new job opening's id.</returns>
-        public (LogContent, int) Create(JobOpeningViewModel jobOpening, User user, string createdBy)
+        public (LogContent, int) Create(JobOpeningViewModel jobOpening, string createdBy)
         {
             LogContent logContent = new LogContent();
             int jobOpeningId = 0;
@@ -71,7 +71,6 @@ namespace Basecode.Services.Services
                 jobOpeningModel.CreatedTime = DateTime.Now;
                 jobOpeningModel.UpdatedBy = createdBy;
                 jobOpeningModel.UpdatedTime = DateTime.Now;
-                jobOpeningModel.Users.Add(user);
 
                 jobOpeningId = _repository.AddJobOpening(jobOpeningModel);
             }
@@ -192,7 +191,7 @@ namespace Basecode.Services.Services
         /// </summary>
         /// <param name="jobOpeningId">The job opening id.</param>
         /// <returns>A list of user ids.</returns>
-        public List<int> GetLinkedUserIds(int jobOpeningId)
+        public List<string> GetLinkedUserIds(int jobOpeningId)
         {
             return _repository.GetLinkedUserIds(jobOpeningId).ToList();
         }
@@ -202,7 +201,7 @@ namespace Basecode.Services.Services
         /// </summary>
         /// <param name="jobOpeningId">The job opening id.</param>
         /// <param name="assignedUserIds">The assigned user ids.</param>
-        public void UpdateJobOpeningUsers(int jobOpeningId, List<int> assignedUserIds)
+        public void UpdateJobOpeningUsers(int jobOpeningId, List<string> assignedUserIds)
         {
             _repository.UpdateJobOpeningUsers(jobOpeningId, assignedUserIds);
         }

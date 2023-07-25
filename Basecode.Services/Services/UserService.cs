@@ -169,7 +169,7 @@ namespace Basecode.Services.Services
                 Id = user.Id,
                 Fullname = user.Fullname,
                 Email = user.Email,
-                IsLinkedToJobOpening = linkedUserIds.Contains(user.Id)
+                IsLinkedToJobOpening = linkedUserIds.Contains(user.AspId)
             }).ToList();
 
             return usersWithLinkStatus;
