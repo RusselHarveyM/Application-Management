@@ -13,26 +13,16 @@ using System.Threading.Tasks;
 
 namespace Basecode.Services.Services
 {
+
     public class ApplicationService : ErrorHandling, IApplicationService
     {
+
         private readonly IApplicationRepository _repository;
-        private readonly IJobOpeningService _jobOpeningService;
-        private readonly IApplicantService _applicantService;
         private readonly IMapper _mapper;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicationService" /> class.
-        /// </summary>
-        /// <param name="repository">The repository.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="jobOpeningService">The job opening service.</param>
-        /// <param name="applicantService">The applicant service.</param>
-        /// <param name="emailService">The Email Service</param>
-        public ApplicationService(IApplicationRepository repository, IMapper mapper, IJobOpeningService jobOpeningService, IApplicantService applicantService)
+        public ApplicationService(IApplicationRepository repository, IMapper mapper)
         {
             _repository = repository;
-            _jobOpeningService = jobOpeningService;
-            _applicantService = applicantService;
             _mapper = mapper;
         }
 
@@ -43,6 +33,16 @@ namespace Basecode.Services.Services
         public void Create(Application application)
         {
             _repository.CreateApplication(application);
+        }
+
+        /// <summary>
+        /// Creates the specified application.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        /// <returns></returns>
+        public Guid CreateWithId(Application application)
+        {
+            return _repository.CreateApplication(application);
         }
 
         /// <summary>
@@ -61,17 +61,22 @@ namespace Basecode.Services.Services
                 return null;
             }
 
-            var job = _jobOpeningService.GetById(application.JobOpeningId);
-            var applicant = _applicantService.GetApplicantById(application.ApplicantId);
+            //var job = _jobOpeningService.GetById(application.JobOpeningId);
+            //var applicant = _applicantService.GetApplicantById(application.ApplicantId);
 
             var applicationViewModel = _mapper.Map<ApplicationViewModel>(application);
-            applicationViewModel.JobOpeningTitle = job.Title;
-            applicationViewModel.ApplicantName = $"{applicant.Firstname} {applicant.Lastname}";
+            applicationViewModel.JobOpeningTitle = application.JobOpening.Title;
+            applicationViewModel.ApplicantName = $"{application.Applicant.Firstname} {application.Applicant.Lastname}";
 
             return applicationViewModel;
         }
 
 
+        /// <summary>
+        /// Gets the application by identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         public Application GetApplicationById(Guid id)
         {
             var application = _repository.GetById(id);
@@ -84,6 +89,11 @@ namespace Basecode.Services.Services
             return application;
         }
 
+        /// <summary>
+        /// Gets the shorlisted applicatons.
+        /// </summary>
+        /// <param name="stage">The stage.</param>
+        /// <returns></returns>
         public List<Application> GetShorlistedApplicatons(string stage)
         {
             var data = _repository.GetAll()
@@ -103,17 +113,12 @@ namespace Basecode.Services.Services
         /// <returns></returns>
         public LogContent Update(Application application)
         {
-            var existingApplication = _repository.GetById(application.Id);
-
             LogContent logContent = new LogContent();
-            logContent = CheckApplication(existingApplication);
+            logContent = CheckApplication(application);
 
             if (logContent.Result == false)
             {
-                existingApplication.Status = application.Status;
-                existingApplication.UpdateTime = DateTime.Now;
-
-                _repository.UpdateApplication(existingApplication);
+                _repository.UpdateApplication(application);
             }
 
             return logContent;
@@ -132,7 +137,7 @@ namespace Basecode.Services.Services
         /// <summary>
         /// Gets the application id based on the applicant id.
         /// </summary>
-        /// <param name="applicantId"></param>
+        /// <param name="applicantId">The applicant identifier.</param>
         /// <returns></returns>
         public Guid GetApplicationIdByApplicantId(int applicantId)
         {

@@ -15,21 +15,15 @@ namespace Basecode.WebApp.Controllers
         private readonly IApplicantService _applicantService;
         private readonly IJobOpeningService _jobOpeningService;
         private readonly IUserService _userService;
-        private readonly IApplicationService _applicationService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
-        private readonly IEmailService _emailService;
+        private readonly IDashboardService _dashboardService;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DashboardController"/> class.
-        /// </summary>
-        /// <param name="applicantService">The applicant service.</param>
-        public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService, IUserService userService, IEmailService emailService, IApplicationService applicationService)
+        public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService, IUserService userService, IDashboardService  dashboardService )
         {
             _applicantService = applicantService;
             _jobOpeningService = jobOpeningService;
             _userService = userService;
-            _applicationService = applicationService;
-            _emailService = emailService;
+            _dashboardService = dashboardService;
         }
 
         /// <summary>
@@ -56,6 +50,11 @@ namespace Basecode.WebApp.Controllers
             }
         }
 
+        /// <summary>
+        /// Assigns the users view.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult AssignUsersView(int id)
         {
@@ -116,13 +115,17 @@ namespace Basecode.WebApp.Controllers
             }
         }
 
+        /// <summary>
+        /// Shorts the ListView.
+        /// </summary>
+        /// <returns></returns>
         public IActionResult ShortListView()
         {
             try
             {
                 var shortlistedModel = new ShortListedViewModel();
-                shortlistedModel.HRShortlisted = _applicationService.GetShorlistedApplicatons("HR Shortlisted");
-                shortlistedModel.TechShortlisted = _applicationService.GetShorlistedApplicatons("Technical Shortlisted");
+                shortlistedModel.HRShortlisted = _dashboardService.GetShorlistedApplicatons("HR Shortlisted");
+                shortlistedModel.TechShortlisted = _dashboardService.GetShorlistedApplicatons("Technical Shortlisted");
 
                 return View(shortlistedModel);
             }
@@ -133,6 +136,11 @@ namespace Basecode.WebApp.Controllers
             }
         }
 
+        /// <summary>
+        /// Views the details.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult ViewDetails(int id)
         {
@@ -159,6 +167,29 @@ namespace Basecode.WebApp.Controllers
             }
         }
 
+        /// <summary>
+        /// Views the details update.
+        /// </summary>
+        /// <param name="appId">The application identifier.</param>
+        /// <param name="email">The email.</param>
+        /// <param name="status">The status.</param>
+        /// <returns></returns>
+        public async Task<IActionResult> ViewDetailsUpdate(Guid appId, string email, string status)
+        {
+            var application = _dashboardService.GetApplicationById(appId);
+            var foundUser = _userService.GetByEmail(email);
+
+            await _dashboardService.UpdateStatus(application, foundUser, status);
+
+            return RedirectToAction("ShortListView");
+        }
+
+
+        /// <summary>
+        /// Downloads the file.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         public IActionResult DownloadFile(int id)
         {
             var applicant = _applicantService.GetApplicantByIdAll(id);

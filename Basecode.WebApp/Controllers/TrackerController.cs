@@ -11,22 +11,22 @@ namespace Basecode.WebApp.Controllers
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly IApplicantService _applicantService;
         private readonly IUserService _userService;
+        private readonly ITrackService _trackService;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TrackerController"/> class.
-        /// </summary>
-        /// <param name="applicationService">The application service.</param>
-        public TrackerController(IApplicationService applicationService, IApplicantService applicantService, IUserService userService)
+        public TrackerController(IApplicationService applicationService, IApplicantService applicantService, IUserService userService, ITrackService trackService)
         {
             _applicationService = applicationService;
             _applicantService = applicantService;
             _userService = userService;
+            _trackService = trackService;
         }
 
         /// <summary>
         /// Indexes this instance.
         /// </summary>
-        /// <returns>A view of the tracker page</returns>
+        /// <returns>
+        /// A view of the tracker page
+        /// </returns>
         public IActionResult Index()
         {
             return View();
@@ -36,7 +36,9 @@ namespace Basecode.WebApp.Controllers
         /// Retrieves an application with the given Id
         /// </summary>
         /// <param name="id">The application ID.</param>
-        /// <returns>A view with either the tracker result table or an error message</returns>
+        /// <returns>
+        /// A view with either the tracker result table or an error message
+        /// </returns>
         [HttpGet]
         public IActionResult ResultView(Guid id)
         {
@@ -62,6 +64,14 @@ namespace Basecode.WebApp.Controllers
             }
         }
 
+        /// <summary>
+        /// Changes the status.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="appId">The application identifier.</param>
+        /// <param name="status">The status.</param>
+        /// <param name="choice">The choice.</param>
+        /// <returns></returns>
         [Route("Tracker/ChangeStatus/{userId}/{appId}/{status}/{choice}")]
         public IActionResult ChangeStatus(int userId,Guid appId, string status, string choice)
         {
@@ -73,7 +83,7 @@ namespace Basecode.WebApp.Controllers
 
                 if(application != null && user != null)
                 {
-                    _applicantService.UpdateApplication(application, user, choice, status);
+                    _trackService.UpdateApplicationStatusByEmailResponse(application, user, choice, status);
                 }
 
                 return RedirectToAction("ChangeStatusView");
@@ -86,6 +96,10 @@ namespace Basecode.WebApp.Controllers
         }
 
 
+        /// <summary>
+        /// Changes the status view.
+        /// </summary>
+        /// <returns></returns>
         public IActionResult ChangeStatusView()
         {
             return View();

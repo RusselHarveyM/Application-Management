@@ -33,6 +33,10 @@ namespace Basecode.WebApp
             services.AddScoped<IAssignInterviewerService, AssignInterviewerService>();
             services.AddScoped<IUserScheduleService, UserScheduleService>();
             services.AddScoped<IBackgroundCheckService, BackgroundCheckService>();
+            services.AddScoped<IEmailSchedulerService, EmailSchedulerService>();
+            services.AddScoped<IEmailSendingService, EmailSendingService>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IDashboardService, DashboardService>();
 
             // Repositories
             services.AddScoped<IUserRepository, UserRepository>();

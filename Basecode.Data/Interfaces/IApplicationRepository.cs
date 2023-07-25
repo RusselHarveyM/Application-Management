@@ -7,9 +7,6 @@ using System.Threading.Tasks;
 
 namespace Basecode.Data.Interfaces
 {
-    /// <summary>
-    /// Defines methods for managing application data.
-    /// </summary>
     public interface IApplicationRepository
     {
         /// <summary>
@@ -50,7 +47,7 @@ namespace Basecode.Data.Interfaces
         /// <summary>
         /// Gets the application id based on the applicant id.
         /// </summary>
-        /// <param name="applicantId"></param>
+        /// <param name="applicantId">The applicant identifier.</param>
         /// <returns></returns>
         Guid GetApplicationIdByApplicantId(int applicantId);
 

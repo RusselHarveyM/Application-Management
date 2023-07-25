@@ -5,9 +5,6 @@ using static Basecode.Services.Services.ErrorHandling;
 
 namespace Basecode.Services.Interfaces
 {
-    /// <summary>
-    /// Defines methods for managing job openings.
-    /// </summary>
     public interface IJobOpeningService
     {
         /// <summary>
@@ -22,9 +19,12 @@ namespace Basecode.Services.Interfaces
         /// Creates a new job opening.
         /// </summary>
         /// <param name="jobOpening">The job opening to create.</param>
+        /// <param name="user">The user who created the job opening.</param>
         /// <param name="createdBy">The user who created the job opening.</param>
-        /// <returns>The log content and the new job opening's id.</returns>
-        (LogContent, int) Create(JobOpeningViewModel jobOpening, string createdBy);
+        /// <returns>
+        /// The log content and the new job opening's id.
+        /// </returns>
+        (LogContent, int) Create(JobOpeningViewModel jobOpening, User user, string createdBy);
 
         /// <summary>
         /// Gets a job opening by its ID.

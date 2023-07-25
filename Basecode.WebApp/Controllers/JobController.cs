@@ -15,15 +15,13 @@ namespace Basecode.WebApp.Controllers
     public class JobController : Controller
     {
         private readonly IJobOpeningService _jobOpeningService;
+        private readonly IUserService _userService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="JobController" /> class.
-        /// </summary>
-        /// <param name="jobOpeningService">The job opening service.</param>
-        public JobController(IJobOpeningService jobOpeningService)
+        public JobController(IJobOpeningService jobOpeningService, IUserService userService)
         {
             _jobOpeningService = jobOpeningService;
+            _userService = userService;
         }
 
         /// <summary>
@@ -118,10 +116,9 @@ namespace Basecode.WebApp.Controllers
             try
             {
                 string createdBy = User.Identity?.Name ?? "person1";
+                var user = _userService.GetByEmail("russelharvey.mercado@cit.edu");
                 int createdByUser = 1;  // temporary until User auth is sorted out
-                (ErrorHandling.LogContent logContent, int jobOpeningId) data = _jobOpeningService.Create(jobOpening, "insert your dummy email here");
-
-                //var data = _jobOpeningService.Create(jobOpening, "russelharvey.mercado@cit.edu");
+                (ErrorHandling.LogContent logContent, int jobOpeningId) data = _jobOpeningService.Create(jobOpening, user, "russelharvey.mercado@cit.edu");
 
                 //Checks for any validation warning
                 if (!data.logContent.Result && data.jobOpeningId > 0)
@@ -215,7 +212,6 @@ namespace Basecode.WebApp.Controllers
         /// </returns>
         [HttpPost]
         [Authorize]
-
         public IActionResult Delete(int id)
         {
             try
@@ -239,6 +235,12 @@ namespace Basecode.WebApp.Controllers
             }
         }
 
+        /// <summary>
+        /// Updates the job opening assignments.
+        /// </summary>
+        /// <param name="assignedUserIds">The assigned user ids.</param>
+        /// <param name="jobOpeningId">The job opening identifier.</param>
+        /// <returns></returns>
         [HttpPost]
         public IActionResult UpdateJobOpeningAssignments(List<int> assignedUserIds, int jobOpeningId)
         {

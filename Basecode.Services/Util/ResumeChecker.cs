@@ -22,6 +22,12 @@ namespace Basecode.Services.Util
         }
 
 
+        /// <summary>
+        /// Parses the resume.
+        /// </summary>
+        /// <param name="resume">The resume.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ApplicationException">API key not found in configuration.</exception>
         private async Task<string> ParseResume(byte[] resume)
         {
 
@@ -57,6 +63,13 @@ namespace Basecode.Services.Util
             return result;
         }
 
+        /// <summary>
+        /// Checks the resume.
+        /// </summary>
+        /// <param name="jobPosition">The job position.</param>
+        /// <param name="resume">The resume.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ApplicationException">OpenAI API key not found in configuration.</exception>
         public async Task<string> CheckResume(string jobPosition, byte[] resume)
         {
             var parsedResume = await ParseResume(resume);
