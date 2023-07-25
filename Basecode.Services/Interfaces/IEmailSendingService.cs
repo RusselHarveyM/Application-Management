@@ -98,5 +98,15 @@ namespace Basecode.Services.Interfaces
         /// <param name="job">The job.</param>
         /// <returns></returns>
         Task SendRegretEmail(Applicant applicant, string job);
+
+        /// <summary>
+        /// Sends the schedule to applicant.
+        /// </summary>
+        Task SendScheduleToApplicant(UserSchedule userSchedule, int userScheduleId, Applicant applicant, string meetingType);
+
+        /// <summary>
+        /// Sends the schedules to interviewer.
+        /// </summary>
+        Task SendSchedulesToInterviewer(string fullname, string userEmail, string jobOpeningTitle, DateOnly date, string scheduledTimes, string meetingType);
     }
 }

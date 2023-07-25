@@ -270,5 +270,41 @@ namespace Basecode.Services.Services
 
             return logContent;
         }
+
+        public static LogContent CheckUserSchedule(UserSchedule schedule)
+        {
+            LogContent logContent = new LogContent();
+            if (schedule == null)
+            {
+                logContent.SetError("400", "No data found");
+                return logContent;
+            }
+            if (schedule.Schedule == default(DateTime))
+            {
+                logContent.SetError("400", "Schedule date is required but has no value.");
+                return logContent;
+            }
+            if (schedule.UserId <= 0)
+            {
+                logContent.SetError("400", "UserId is invalid.");
+                return logContent;
+            }
+            if (schedule.ApplicationId == Guid.Empty)
+            {
+                logContent.SetError("400", "ApplicationId is invalid.");
+                return logContent;
+            }
+            if (string.IsNullOrEmpty(schedule.Type))
+            {
+                logContent.SetError("400", "Schedule Type is required but has no value.");
+                return logContent;
+            }
+            if (string.IsNullOrEmpty(schedule.Status))
+            {
+                logContent.SetError("400", "Schedule Status is required but has no value.");
+                return logContent;
+            }
+            return logContent;
+        }
     }
 }

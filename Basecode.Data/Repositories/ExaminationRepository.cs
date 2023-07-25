@@ -23,5 +23,14 @@ namespace Basecode.Data.Repositories
                 .Where(exam => exam.Application.JobOpeningId == jobOpeningId);
         }
 
+        /// <summary>
+        /// Adds the examination.
+        /// </summary>
+        /// <param name="examination">The examination.</param>
+        public void AddExamination(Examination examination)
+        {
+            _context.Examination.Add(examination);
+            _context.SaveChanges();
+        }
     }
 }

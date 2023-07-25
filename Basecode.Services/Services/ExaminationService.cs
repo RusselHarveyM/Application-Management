@@ -15,10 +15,38 @@ namespace Basecode.Services.Services
             _applicationService = applicationService;
         }
 
+        /// <summary>
+        /// Gets the examinations by the job opening ID
+        /// </summary>
+        /// <param name="jobOpeningId">The job opening ID.</param>
+        /// <returns></returns>
         public List<Examination> GetExaminationsByJobOpeningId(int jobOpeningId)
         {
             return _repository.GetExaminationsByJobOpeningId(jobOpeningId).ToList();
         }
 
+        /// <summary>
+        /// Adds the examination.
+        /// </summary>
+        /// <param name="schedule">The schedule.</param>
+        /// <returns></returns>
+        public LogContent AddExamination(UserSchedule schedule)
+        {
+            LogContent logContent = CheckUserSchedule(schedule);
+
+            if (logContent.Result == false)
+            {
+                var examination = new Examination
+                {
+                    ApplicationId = schedule.ApplicationId,
+                    UserId = schedule.UserId,
+                    Date = schedule.Schedule,
+                };
+
+                _repository.AddExamination(examination);
+            }
+
+            return logContent;
+        }
     }
 }
