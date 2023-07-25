@@ -5,8 +5,6 @@
     Layout = "/Views/Shared/_Admin.cshtml";
 }
 
-@*Add font awesome for this page*@
-<script src="https://kit.fontawesome.com/d1f67a892f.js" crossorigin="anonymous"></script>
 @*Add stylesheet for the User List*@
 <link rel="stylesheet" href="~/css/user/UserList.css" />
 @*Add stylesheet for the modals*@
@@ -37,6 +35,7 @@
         <div class="col">
             <a class="btn btn-primary" role="button">All</a>
             <a class="btn btn-primary" role="button">Human Resources</a>
+            <a class="btn btn-primary" role="button">Technical</a>
             <a class="btn btn-primary" role="button">Deployment Team</a>
         </div>
 
@@ -59,6 +58,7 @@
                     <th>Email Address</th>
                     <th></th>
                     <th></th>
+                    <th></th>
                 </tr>
 
                 @if (Model.Count() > 0)
@@ -72,8 +72,9 @@
                             <td>@user.Fullname</td>
                             <td>@user.Username</td>
                             <td>@user.Email</td>
-                            <td><a class="btn btn-edit" role="button" onclick="showEditModal(@user.Id)"><i class="fa-regular fa-pen-to-square icon-white"></i> EDIT</a></td>
-                            <td><a class="btn btn-delete" role="button" onclick="showDeleteModal(@user.Id)"><i class="fa-solid fa-trash-can icon-white"></i> DELETE</a></td>
+                            <td><a style="margin-left:56%" class="btn btn-edit" role="button"  onclick="showAssignModal(@user.Id)"><i class="fa-regular fa fa-hand-pointer-o icon-white"></i>ASSIGN</a></td>
+                            <td><a style="margin-left:56%" class="btn btn-edit" role="button" onclick="showEditModal(@user.Id)"><i class="fa-regular fa-pen-to-square icon-white"></i> EDIT</a></td>
+                            <td><a style="margin-left:20%" class="btn btn-delete" role="button" onclick="showDeleteModal(@user.Id)"><i class="fa-solid fa-trash-can icon-white"></i> DELETE</a></td>
                         </tr>
                     }
                 }
@@ -87,6 +88,7 @@
         </div>
     </div>
 </div>
+<div id="assignModalContainer"></div>
 <div id="addModalContainer"></div>
 <div id="editModalContainer"></div>
 <div id="deleteModalContainer"></div>

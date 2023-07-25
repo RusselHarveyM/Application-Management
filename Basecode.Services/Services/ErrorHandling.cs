@@ -1,6 +1,8 @@
 ﻿using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Security.Policy;
 using System.Text.RegularExpressions;
 
 namespace Basecode.Services.Services
@@ -197,6 +199,22 @@ namespace Basecode.Services.Services
             return logContent;
         }
 
+        public static LogContent CheckUser(UserViewModel user)
+        {
+            LogContent logContent = new LogContent();
+
+            string emailPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+            Match match = Regex.Match(user.Email, emailPattern);
+
+            if (!match.Success)
+            {
+                logContent.SetError("400", "The Email Address format is invalid.");
+                return logContent;
+            }
+
+            return logContent;
+        }
+
         public static LogContent CheckUser(User user)
         {
             LogContent logContent = new LogContent();
@@ -219,6 +237,88 @@ namespace Basecode.Services.Services
             if (existingApplication == null)
             {
                 logContent.SetError("404", "Existing application not found.");
+            }
+            return logContent;
+        }
+
+        public static LogContent CheckBackground(BackgroundCheckFormViewModel backgroundCheck)
+        {
+            LogContent logContent = new LogContent();
+            if(backgroundCheck == null)
+            {
+                logContent.SetError("400", "No data found");
+            }else if (string.IsNullOrEmpty(backgroundCheck.Email))
+            {
+                logContent.SetError("400", "Email is required but has no value.");
+            }
+            else if (string.IsNullOrEmpty(backgroundCheck.Firstname))
+            {
+                logContent.SetError("400", "Firstname is required but has no value.d");
+            }
+            else if (string.IsNullOrEmpty(backgroundCheck.Lastname))
+            {
+                logContent.SetError("400", "Lastname is required but has no value.");
+            }
+            else if (string.IsNullOrEmpty(backgroundCheck.PhoneNumber))
+            {
+                logContent.SetError("400", "Phonenumber is required but has no value.");
+            }
+            else if (string.IsNullOrEmpty(backgroundCheck.Q1))
+            {
+                logContent.SetError("400", "Q1 is required but has no value.");
+            }
+            else if (string.IsNullOrEmpty(backgroundCheck.Q2))
+            {
+                logContent.SetError("400", "Q2 is required but has no value.");
+            }
+            else if (string.IsNullOrEmpty(backgroundCheck.Q3))
+            {
+                logContent.SetError("400", "Q3 is required but has no value.");
+            }
+            else if (string.IsNullOrEmpty(backgroundCheck.Q4))
+            {
+                logContent.SetError("400", "Q4 is required but has no value.");
+            }
+            else if (string.IsNullOrEmpty(backgroundCheck.Relationship))
+            {
+                logContent.SetError("400", "Q5 is required but has no value.");
+            }
+
+            return logContent;
+        }
+
+        public static LogContent CheckUserSchedule(UserSchedule schedule)
+        {
+            LogContent logContent = new LogContent();
+            if (schedule == null)
+            {
+                logContent.SetError("400", "No data found");
+                return logContent;
+            }
+            if (schedule.Schedule == default(DateTime))
+            {
+                logContent.SetError("400", "Schedule date is required but has no value.");
+                return logContent;
+            }
+            if (schedule.UserId <= 0)
+            {
+                logContent.SetError("400", "UserId is invalid.");
+                return logContent;
+            }
+            if (schedule.ApplicationId == Guid.Empty)
+            {
+                logContent.SetError("400", "ApplicationId is invalid.");
+                return logContent;
+            }
+            if (string.IsNullOrEmpty(schedule.Type))
+            {
+                logContent.SetError("400", "Schedule Type is required but has no value.");
+                return logContent;
+            }
+            if (string.IsNullOrEmpty(schedule.Status))
+            {
+                logContent.SetError("400", "Schedule Status is required but has no value.");
+                return logContent;
             }
             return logContent;
         }

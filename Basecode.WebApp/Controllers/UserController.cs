@@ -2,6 +2,7 @@
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
 using Basecode.Services.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using NLog;
@@ -9,18 +10,25 @@ using System.Text;
 
 namespace Basecode.WebApp.Controllers
 {
+    [Authorize]
     public class UserController : Controller
     {
         private readonly IUserService _service;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly IJobOpeningService _jobOpeningService;
+        private readonly IAssignInterviewerService _assignInterviewerService;
+        private readonly IEmailSchedulerService _emailSchedulerService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserController"/> class.
         /// </summary>
         /// <param name="service">The User service.</param>
-        public UserController(IUserService service)
+        public UserController(IUserService service, IJobOpeningService jobOpeningService, IAssignInterviewerService assignInterviewer, IEmailSchedulerService emailSchedulerService)
         {
             _service = service;
+            _jobOpeningService = jobOpeningService;
+            _assignInterviewerService = assignInterviewer;
+            _emailSchedulerService = emailSchedulerService;
         }
 
         /// <summary>
@@ -35,7 +43,7 @@ namespace Basecode.WebApp.Controllers
 
                 if (data.IsNullOrEmpty())
                 {
-                    _logger.Error("No users found.");
+                    _logger.Info("No users found.");
                     return View(new List<UserViewModel>());
                 }
 
@@ -58,7 +66,7 @@ namespace Basecode.WebApp.Controllers
         {
             try
             {
-                var userModel = new User();
+                var userModel = new UserViewModel();
                 return PartialView("~/Views/User/_AddView.cshtml", userModel);
             }
             catch (Exception e)
@@ -75,18 +83,19 @@ namespace Basecode.WebApp.Controllers
         /// <returns>Redirect to the Index() action to display the list of users.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(User user)
+        public async Task<IActionResult> Create(UserViewModel user)
         {
             try
             {
                 // Validate through data annotations
                 if (!ModelState.IsValid)
                 {
+                    _logger.Warn("Submitted User failed at least one data annotation validation.");
                     return BadRequest(ModelState);
                 }
 
                 // Create the new user
-                var data = _service.Create(user);
+                var data = await _service.Create(user);
                 
                 if (!data.Result)
                 {
@@ -94,7 +103,7 @@ namespace Basecode.WebApp.Controllers
                     return Ok();
                 }
 
-                _logger.Trace(ErrorHandling.SetLog(data));
+                _logger.Warn(ErrorHandling.SetLog(data));
                 ModelState.AddModelError("Email", "The Email Address format is invalid.");
 
                 // Call the service method to get the validation errors
@@ -123,7 +132,7 @@ namespace Basecode.WebApp.Controllers
 
                 if (data == null)
                 {
-                    _logger.Trace("User [" + id + "] not found.");
+                    _logger.Error("User [" + id + "] not found.");
                     return NotFound();
                 }
 
@@ -151,6 +160,7 @@ namespace Basecode.WebApp.Controllers
                 // Validate through data annotations
                 if (!ModelState.IsValid)
                 {
+                    _logger.Warn("Submitted User failed at least one data annotation validation.");
                     return BadRequest(ModelState);
                 }
 
@@ -163,7 +173,7 @@ namespace Basecode.WebApp.Controllers
                     return Ok();
                 }
 
-                _logger.Trace(ErrorHandling.SetLog(data));
+                _logger.Warn(ErrorHandling.SetLog(data));
                 ModelState.AddModelError("Email", "The Email Address format is invalid.");
 
                 // Call the service method to get the validation errors
@@ -178,21 +188,107 @@ namespace Basecode.WebApp.Controllers
             }
         }
 
+        [HttpGet]
+        public ActionResult AssignView(int id)
+        {
+            try
+            {
+                var jobOpenings = _jobOpeningService.GetJobs();
+                var data = _service.GetById(id);
+                //var jobOpenings = _jobOpeningService.GetJobs();
+
+                if (data == null)
+                {
+                    _logger.Error("User [" + id + "] not found.");
+                    return NotFound();
+                }
+
+                var viewModel = new AssignViewModel
+                {
+                    UserId = id,
+                    JobOpenings = jobOpenings
+                };
+                _logger.Trace("Successfully retrieved user by ID: [" + id + "].");
+                return PartialView("~/Views/User/_AssignView.cshtml", viewModel);
+            }
+            catch (Exception e)
+            {
+                _logger.Error(ErrorHandling.DefaultException(e.Message));
+                return StatusCode(500, "Something went wrong.");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Assign(int UserId, int jobOpeningId)
+        {
+            try
+            {
+                //Get User Id
+                var data = _service.GetById(UserId);
+                var email = data.Email;
+
+                //Get Job Opening
+                var jobOpenings = _jobOpeningService.GetById(jobOpeningId);
+                var jobposition = jobOpenings.Title;
+
+                var checkJobs = _assignInterviewerService.GetJobs();
+                foreach( var job in checkJobs ) 
+                { 
+                    if( job.JobPosition == jobposition && job.Email == email)
+                    {
+                        _logger.Error("Interviewer already assigned to [" + jobposition + "]");
+                        return RedirectToAction("Index");
+                    }
+                }
+                // Perform the assignment
+                _assignInterviewerService.Create(jobposition, email);
+
+                // Use switch case for different roles
+                switch (data.Role)
+                {
+                    case "Deployment Team":
+                        _emailSchedulerService.ScheduleInterview(email, data.Fullname, data.Username, data.Password, jobposition);
+                        break;
+
+                    case "Human Resources":
+                        _emailSchedulerService.ScheduleForHR(email, data.Fullname, data.Username, data.Password, jobposition);
+                        break;
+
+                    case "Technical":
+                        _emailSchedulerService.ScheduleForTechnical(email, data.Fullname, data.Username, data.Password, jobposition);
+                        break;
+
+                    default:
+                        // Handle the default case if the role doesn't match any case
+                        break;
+                }
+
+                // Return success status
+                return RedirectToAction("Index");
+            }
+            catch (Exception e)
+            {
+                _logger.Error(ErrorHandling.DefaultException(e.Message));
+                return StatusCode(500, "Something went wrong.");
+            }
+        }
+
         /// <summary>
         /// Displays the modal for deleting an existing user.
         /// </summary>
         /// <param name="id">Integer representing the ID of the user to be deleted.</param>
         /// <returns>A partial view and User object.</returns>
         [HttpGet]
-        public ActionResult DeleteView(int id)
+        public async Task<ActionResult> DeleteView(int id)
         {
             try
             {
-                var data = _service.GetById(id);
+                var data = await _service.GetByIdAsync(id);
 
                 if (data == null)
                 {
-                    _logger.Trace("User [" + id + "] not found.");
+                    _logger.Error("User [" + id + "] not found.");
                     return NotFound();
                 }
 
@@ -213,19 +309,19 @@ namespace Basecode.WebApp.Controllers
         /// <returns>Redirect to the Index() action to display the updated list of users.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                var user = _service.GetById(id);
+                var user = await _service.GetByIdAsync(id);
 
                 if (user == null)
                 {
-                    _logger.Trace("User [" + id + "] not found.");
+                    _logger.Error("User [" + id + "] not found.");
                     return NotFound();
                 }
 
-                _service.Delete(user);
+                await _service.Delete(user);
                 _logger.Trace("Successfully deleted user [" + id + "].");
                 return RedirectToAction("Index");
             }

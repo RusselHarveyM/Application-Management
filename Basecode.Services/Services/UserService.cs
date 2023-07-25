@@ -1,8 +1,10 @@
-﻿using Basecode.Data.Interfaces;
+﻿using AutoMapper;
+using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
 using Basecode.Data.Repositories;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
@@ -16,14 +18,17 @@ namespace Basecode.Services.Services
     public class UserService : ErrorHandling, IUserService
     {
         private readonly IUserRepository _repository;
-
+        private readonly IJobOpeningService _jobOpeningService;
+        private readonly IMapper _mapper;
         /// <summary>
         /// Initializes a new instance of the <see cref="UserService"/> class.
         /// </summary>
         /// <param name="repository">The repository.</param>
-        public UserService(IUserRepository repository)
+        public UserService(IUserRepository repository, IJobOpeningService jobOpeningService, IMapper mapper)
         {
             _repository = repository;
+            _jobOpeningService = jobOpeningService;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -51,14 +56,15 @@ namespace Basecode.Services.Services
         /// </summary>
         /// <param name="user">The user.</param>
         /// <response code="400">User details are invalid</response>
-        public LogContent Create(User user)
+        public async Task<LogContent> Create(UserViewModel user)
         {
             LogContent logContent = new LogContent();
             logContent = CheckUser(user);
 
             if (logContent.Result == false)
             {
-                _repository.Create(user);
+                var mapUser = _mapper.Map<User>(user);
+                await _repository.Create(mapUser);
             }
 
             return logContent;
@@ -74,6 +80,20 @@ namespace Basecode.Services.Services
         public User GetById(int id)
         {
             return _repository.GetById(id);
+        }
+        /// <summary>
+        /// Gets the by identifier asynchronous.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
+        public async Task<User> GetByIdAsync(int id)
+        {
+            return await _repository.GetByIdAsync(id);
+        }
+
+        public User GetByEmail(string email)
+        {
+            return _repository.GetByEmail(email);
         }
 
         /// <summary>
@@ -103,9 +123,9 @@ namespace Basecode.Services.Services
         /// Deletes the specified user.
         /// </summary>
         /// <param name="user">The user.</param>
-        public void Delete(User user)
+        public async Task Delete(User user)
         {
-            _repository.Delete(user);
+            await _repository.Delete(user);
         }
 
         /// <summary>
@@ -131,5 +151,76 @@ namespace Basecode.Services.Services
             return validationErrors;
         }
 
+        /// <summary>
+        /// Gets all users and their link status to a job opening.
+        /// </summary>
+        /// <param name="jobOpeningId">The job opening id.</param>
+        /// <returns></returns>
+        public List<HRUserViewModel> GetAllUsersWithLinkStatus(int jobOpeningId)
+        {
+            var allUsers = _repository.RetrieveAll();
+
+            // Get the users linked to the specified JobOpening
+            var linkedUserIds = _jobOpeningService.GetLinkedUserIds(jobOpeningId); // Replace _jobOpeningRepository with your actual repository instance to get linked users
+
+            // Create a new HRUserViewModel list with link status
+            var usersWithLinkStatus = allUsers.Select(user => new HRUserViewModel
+            {
+                Id = user.Id,
+                Fullname = user.Fullname,
+                Email = user.Email,
+                IsLinkedToJobOpening = linkedUserIds.Contains(user.Id)
+            }).ToList();
+
+            return usersWithLinkStatus;
+        }
+
+        /// <summary>
+        /// Gets the linked job openings.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns></returns>
+        public List<JobOpeningBasicViewModel> GetLinkedJobOpenings(int userId)
+        {
+            return _repository.GetLinkedJobOpenings(userId).ToList();
+        }
+        /// <summary>
+        /// Finds the user asynchronous.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="password">The password.</param>
+        /// <returns></returns>
+        public Task<IdentityUser> FindUserAsync(string userName, string password)
+        {
+            return _repository.FindUserAsync(userName, password);
+        }
+        /// <summary>
+        /// Creates the role.
+        /// </summary>
+        /// <param name="roleName">Name of the role.</param>
+        /// <returns></returns>
+        public async Task<IdentityResult> CreateRole(string roleName)
+        {
+            return await _repository.CreateRole(roleName);
+        }
+        /// <summary>
+        /// Finds the user.
+        /// </summary>
+        /// <param name="username">The username.</param>
+        /// <param name="password">The password.</param>
+        /// <returns></returns>
+        public async Task<IdentityUser> FindUser(string username, string password)
+        {
+            return await _repository.FindUser(username, password);
+        }
+        /// <summary>
+        /// Finds the user.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <returns></returns>
+        public IdentityUser FindUser(string userName)
+        {
+            return _repository.FindUser(userName);
+        }
     }
 }

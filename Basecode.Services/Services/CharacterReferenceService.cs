@@ -43,7 +43,7 @@ namespace Basecode.Services.Services
 
             return logContent;
         }
-
+    
         public List<CharacterReference> GetReferencesByApplicantId(int applicantId) 
         {
             var data = _repository.GetAll()
@@ -57,6 +57,16 @@ namespace Basecode.Services.Services
                 }).ToList();
 
             return data;
+        }
+
+        public CharacterReference GetCharacterReferenceById(int characterReferenceId)
+        {
+            return _repository.GetCharacterReferenceById(characterReferenceId) ?? throw new Exception("No data found");
+        }
+
+        public int GetApplicantIdByCharacterReferenceId(int characterReferenceId)
+        {
+            return _repository.GetAll().Where(m => m.Id == characterReferenceId).Select(m => m.ApplicantId).SingleOrDefault();
         }
     }
 }

@@ -155,11 +155,7 @@
     <a asp-action="Index" class="back-btn">Go Back</a>
     <div class = "admin-btn">
         @*Admin view*@
-        <form asp-controller="Job" asp-action="Delete" method="post">
-            <input type="hidden" name="id" value="@Model.Id" />
-            <input type="submit" value="Delete" class="delete-button" />
-        </form>
-        <a class="update-button" asp-controller="Job" asp-action="UpdateView" asp-route-id="@Model.Id">Update</a>
+        <partial name="_LoginPartialJobView">
     </div>
 </div>
 

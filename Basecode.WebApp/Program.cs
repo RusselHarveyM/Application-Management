@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Basecode.Data;
 
 namespace Basecode.WebApp
 {
@@ -14,7 +17,7 @@ namespace Basecode.WebApp
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .ConfigureAppConfiguration(SetUpConfiguration)
-                .UseStartup<Startup>();
+                .UseStartup<StartupWebApp>();
 
         private static void SetUpConfiguration(WebHostBuilderContext builderCtx, IConfigurationBuilder config)
         {

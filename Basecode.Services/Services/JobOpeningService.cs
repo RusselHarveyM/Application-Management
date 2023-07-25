@@ -1,8 +1,12 @@
 ﻿using AutoMapper;
 using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
+using Basecode.Data.Repositories;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
+using Basecode.Services.Util;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,6 +47,8 @@ namespace Basecode.Services.Services
                 .Select(m => _mapper.Map<JobOpeningViewModel>(m))
                 .ToList();
 
+
+
             return data;
         }
 
@@ -51,10 +57,11 @@ namespace Basecode.Services.Services
         /// </summary>
         /// <param name="jobOpening">The job opening to create.</param>
         /// <param name="createdBy">The user who created the job opening.</param>
-        /// <returns></returns>
-        public LogContent Create(JobOpeningViewModel jobOpening, string createdBy)
+        /// <returns>The log content and the new job opening's id.</returns>
+        public (LogContent, int) Create(JobOpeningViewModel jobOpening, User user, string createdBy)
         {
             LogContent logContent = new LogContent();
+            int jobOpeningId = 0;
 
             logContent = CheckJobOpening(jobOpening);
             if (logContent.Result == false)
@@ -64,11 +71,12 @@ namespace Basecode.Services.Services
                 jobOpeningModel.CreatedTime = DateTime.Now;
                 jobOpeningModel.UpdatedBy = createdBy;
                 jobOpeningModel.UpdatedTime = DateTime.Now;
+                jobOpeningModel.Users.Add(user);
 
-                _repository.AddJobOpening(jobOpeningModel);
+                jobOpeningId = _repository.AddJobOpening(jobOpeningModel);
             }
 
-            return logContent;
+            return (logContent, jobOpeningId);
         }
 
         /// <summary>
@@ -98,6 +106,11 @@ namespace Basecode.Services.Services
                 .FirstOrDefault();
 
             return data;
+        }
+
+        public JobOpening GetByIdClean(int id)
+        {
+            return _repository.GetJobOpeningById(id);
         }
 
         /// <summary>
@@ -141,6 +154,57 @@ namespace Basecode.Services.Services
         {
             var job = _mapper.Map<JobOpening>(jobOpening);
             _repository.DeleteJobOpening(job);
+        }
+
+        /// <summary>
+        /// Gets all job opening ids.
+        /// </summary>
+        /// <returns></returns>
+        public List<int> GetAllJobOpeningIds()
+        {
+            return _repository.GetAllJobOpeningIds();
+        }
+
+        /// <summary>
+        /// Gets the jobs with related applications.
+        /// </summary>
+        /// <returns>A list of JobOpeningViewModels.</returns>
+        public List<JobOpeningViewModel> GetJobsWithApplications()
+        {
+            var data = _repository.GetJobsWithApplications()
+                .Select(m => _mapper.Map<JobOpeningViewModel>(m))
+                .ToList();
+            return data;
+        }
+
+        /// <summary>
+        /// Gets the job opening title by its id.
+        /// </summary>
+        /// <param name="id">The job opening id.</param>
+        /// <returns>The job opening title.</returns>
+        public string GetJobOpeningTitleById(int id)
+        {
+            return _repository.GetJobOpeningTitleById(id);
+        }
+
+        /// <summary>
+        /// Gets the related user ids.
+        /// </summary>
+        /// <param name="jobOpeningId">The job opening id.</param>
+        /// <returns>A list of user ids.</returns>
+        public List<int> GetLinkedUserIds(int jobOpeningId)
+        {
+            return _repository.GetLinkedUserIds(jobOpeningId).ToList();
+        }
+
+        /// <summary>
+        /// Updates the many-to-many relationship between User and JobOpening.
+        /// </summary>
+        /// <param name="jobOpeningId">The job opening id.</param>
+        /// <param name="assignedUserIds">The assigned user ids.</param>
+        public void UpdateJobOpeningUsers(int jobOpeningId, List<int> assignedUserIds)
+        {
+            _repository.UpdateJobOpeningUsers(jobOpeningId, assignedUserIds);
         }
     }
 }

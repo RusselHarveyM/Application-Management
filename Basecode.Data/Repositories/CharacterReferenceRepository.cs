@@ -26,5 +26,10 @@ namespace Basecode.Data.Repositories
         {
             return this.GetDbSet<CharacterReference>();
         }
+
+        public CharacterReference? GetCharacterReferenceById(int characterReferenceId)
+        {
+            return _context.CharacterReference.Find(characterReferenceId);
+        }
     }
 }

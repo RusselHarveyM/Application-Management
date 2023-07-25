@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,6 +20,15 @@ namespace Basecode.Data.Models
         /// </summary>
         [Key]
         public int Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the ASP identifier.
+        /// </summary>
+        /// <value>
+        /// The ASP identifier.
+        /// </value>
+        [ForeignKey("IdentityUser")]
+        public string AspId { get; set; }
 
         /// <summary>
         /// Represents the full name of a user.
@@ -50,9 +61,8 @@ namespace Basecode.Data.Models
         /// </summary>
         [Required(ErrorMessage = "The password is required.")]
         [MaxLength(20, ErrorMessage = "Maximum length for the password is 20 characters.")]
-        [RegularExpression(
-            @"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$",
-            ErrorMessage = "The password must have at least eight characters, one letter, and one number")]
+        [RegularExpression("^(?=.*[^a-zA-Z0-9])(?=.*[0-9])(?=.*[A-Z]).{8,}$",
+        ErrorMessage = "Passwords must have at least one non-alphanumeric character, one digit, and one uppercase letter, and should be at least 8 characters long.")]
         public string Password { get; set; }
 
         /// <summary>
@@ -61,5 +71,18 @@ namespace Basecode.Data.Models
         [Required]
         [StringLength(50)]
         public string Role { get; set; }
+
+        /// <summary>
+        /// Collection navigation for related JobOpenings
+        /// </summary>
+        public ICollection<JobOpening> JobOpenings { get; set; } = new List<JobOpening>();
+        
+        /// <summary>
+        /// Gets or sets the identity user.
+        /// </summary>
+        /// <value>
+        /// The identity user.
+        /// </value>
+        public IdentityUser IdentityUser { get; set; }
     }
 }

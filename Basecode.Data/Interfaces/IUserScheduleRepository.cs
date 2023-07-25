@@ -1,0 +1,26 @@
+﻿using Basecode.Data.Models;
+
+namespace Basecode.Data.Interfaces
+{
+    public interface IUserScheduleRepository
+    {
+        /// <summary>
+        /// Creates a UserSchedule.
+        /// </summary>
+        /// <param name="userSchedule"></param>
+        int AddUserSchedule(UserSchedule userSchedule);
+
+        /// <summary>
+        /// Gets the user schedule by identifier.
+        /// </summary>
+        /// <param name="userScheduleId">The user schedule identifier.</param>
+        /// <returns></returns>
+        UserSchedule GetUserScheduleById(int userScheduleId);
+
+        /// <summary>
+        /// Updates the schedule.
+        /// </summary>
+        /// <param name="userSchedule">The user schedule.</param>
+        void UpdateUserSchedule(UserSchedule userSchedule);
+    }
+}

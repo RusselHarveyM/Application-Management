@@ -27,7 +27,7 @@
         gap: 20px;
     }
     .view-button {
-        background-color: red;
+        background-color: #DA2C43;
         color: white;
         border: none;
         padding: 10px 20px;
@@ -138,9 +138,7 @@
 <div class="jobContainer">
     <h1>Search <span style="color: red;">Jobs</span>
         @*Admin View*@
-        <a asp-action="CreateView">
-        <button class="view-button">Add Job</button>
-        </a>
+        <partial name="_LoginPartialJobIndex">
     </h1>
     <div class="searchFilter">
         <div id="searchJob">

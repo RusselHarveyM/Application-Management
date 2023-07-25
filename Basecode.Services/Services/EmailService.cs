@@ -17,7 +17,9 @@ namespace Basecode.Services.Services
         /// <param name="recipient">The email address of the recipient.</param>
         /// <param name="subject">The subject of the email.</param>
         /// <param name="body">The body of the email.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
+        /// <returns>
+        /// A task representing the asynchronous operation.
+        /// </returns>
         public async Task SendEmail(string recipient, string subject, string body)
         {
             using (var smtpClient = new SmtpClient("smtp-mail.outlook.com", 587))
@@ -32,6 +34,7 @@ namespace Basecode.Services.Services
                     mailMessage.To.Add(recipient);
                     mailMessage.Subject = subject;
                     mailMessage.Body = body;
+                    mailMessage.IsBodyHtml = true;
 
                     await smtpClient.SendMailAsync(mailMessage);
                 }
