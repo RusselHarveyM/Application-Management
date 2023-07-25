@@ -1,35 +1,28 @@
 ﻿using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
-using Basecode.Services.Services;
 using Basecode.WebApp.Controllers;
-using Castle.Components.DictionaryAdapter.Xml;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Moq;
-using NLog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit.Sdk;
-using static Basecode.Services.Services.ErrorHandling;
+using Microsoft.AspNetCore.Identity;
 
 namespace Basecode.Tests.Controllers
 {
     public class JobControllerTests
     {
         private readonly Mock<IJobOpeningService> _fakeJobOpeningService;
-        private readonly Mock<IUserService> _fakseUserService;
+        private readonly Mock<UserManager<IdentityUser>> _fakeUserManager;
+
         private readonly JobController _controller;
 
         public JobControllerTests()
         {
             _fakeJobOpeningService = new Mock<IJobOpeningService>();
-            _fakseUserService = new Mock<IUserService>();
-            _controller = new JobController(_fakeJobOpeningService.Object, _fakseUserService.Object);
+            _fakeUserManager = new Mock<UserManager<IdentityUser>>(Mock.Of<IUserStore<IdentityUser>>(), null, null, null, null, null, null, null, null);
+    
+            _controller = new JobController(_fakeJobOpeningService.Object, _fakeUserManager.Object);
         }
+
 
         [Fact]
         public void Index_HasJobs_ReturnsJobs()
@@ -162,19 +155,20 @@ namespace Basecode.Tests.Controllers
 
 
         [Fact]
-        public void Create_Exception_ReturnsServerError()
+        public async Task Create_Exception_ReturnsServerError()
         {
             // Arrange
             var jobOpening = new JobOpeningViewModel();
-            _fakeJobOpeningService.Setup(service => service.Create(jobOpening, It.IsAny<User>(), It.IsAny<string>())).Throws(new Exception());
+            _fakeJobOpeningService.Setup(service => service.Create(jobOpening, It.IsAny<string>())).Throws(new Exception());
 
             // Act
-            var result = _controller.Create(jobOpening);
+            var result = await _controller.Create(jobOpening);
 
             // Assert
             var statusCodeResult = Assert.IsType<ObjectResult>(result);
             Assert.Equal(500, statusCodeResult.StatusCode);
         }
+
 
         [Fact]
         public void UpdateView_ExistingId_ReturnsViewResult()
