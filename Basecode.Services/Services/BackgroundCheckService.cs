@@ -16,16 +16,20 @@ namespace Basecode.Services.Services
     {
         private readonly IBackgroundCheckRepository _repository;
         private readonly ICharacterReferenceService _characterReferenceService;
+        private readonly ITrackService _trackService;
+        private readonly IApplicantService _applicantService;
         private readonly IMapper _mapper;
 
-
-        public BackgroundCheckService(IBackgroundCheckRepository repository, ICharacterReferenceService characterReferenceService, IMapper mapper)
+        public BackgroundCheckService(IBackgroundCheckRepository repository, ICharacterReferenceService characterReferenceService, IMapper mapper, ITrackService trackService, IApplicantService applicantService)
         {
             _repository = repository;
             _characterReferenceService = characterReferenceService;
             _mapper = mapper;
+            _trackService = trackService;
+            _applicantService = applicantService;
         }
-        public LogContent Create(BackgroundCheckFormViewModel form)
+
+        public async Task<LogContent> Create(BackgroundCheckFormViewModel form)
         {
             LogContent logContent = new LogContent();
 
@@ -34,7 +38,13 @@ namespace Basecode.Services.Services
             {
                 var newForm = _mapper.Map<BackgroundCheck>(form);
                 newForm.AnsweredDate = DateTime.Now;
-                _repository.Create(newForm);
+
+                var backgroundId = _repository.Create(newForm);
+
+                var result = _repository.GetById(backgroundId);
+                var applicant = _applicantService.GetApplicantById(result.CharacterReference.ApplicantId);
+
+                await _trackService.GratitudeNotification(applicant, result);
             }
             return logContent;
         }

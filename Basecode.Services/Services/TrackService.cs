@@ -175,5 +175,16 @@ namespace Basecode.Services.Services
             //Notify Applicant who is not shortlisted upon application
             await _emailSendingService.SendRegretEmail(applicant, job);
         }
+
+        /// <summary>
+        /// Notifies a reference for successful submission of form.
+        /// </summary>
+        /// <param name="applicant">The applicant.</param>
+        /// <param name="reference">The reference.</param>
+        public async Task GratitudeNotification(Applicant applicant, BackgroundCheck reference)
+        {
+            //Notify reference for successfully submitting the form
+            await _emailSendingService.SendGratitudeEmail(applicant, reference);
+        }
     }
 }

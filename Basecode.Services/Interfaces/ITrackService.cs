@@ -61,5 +61,13 @@ namespace Basecode.Services.Interfaces
         /// <param name="job">The job position.</param>
         /// <returns></returns>
         Task RegretNotification(Applicant applicant, string job);
+
+        /// <summary>
+        /// Sends gratitude notification.
+        /// </summary>
+        /// <param name="applicant">The applicant.</param>
+        /// <param name="reference">The reference.</param>
+        /// <returns></returns>
+        Task GratitudeNotification(Applicant applicant, BackgroundCheck reference);
     }
 }

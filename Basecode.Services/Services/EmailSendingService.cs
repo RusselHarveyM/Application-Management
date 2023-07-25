@@ -280,6 +280,11 @@ namespace Basecode.Services.Services
             await _emailService.SendEmail(userEmail, $"Alliance Software Inc. {meetingType} Schedules", body);
         }
 
+        /// <summary>
+        /// Sends the gratitude email.
+        /// </summary>
+        /// <param name="applicant">The applicant.</param>
+        /// <param name="reference">The reference.</param>
         public async Task SendRequestReference(CharacterReference reference, Applicant applicant)
         {
             var url = "https://localhost:49940/BackgroundCheck/Index";
@@ -295,6 +300,25 @@ namespace Basecode.Services.Services
                                      $"<br> <a href=\"{url}\">Character Reference Form</a> ");
 
             await _emailService.SendEmail(reference.Email, $"Character Reference Form Request", body);
+        }
+
+        public async Task SendGratitudeEmail(Applicant applicant, BackgroundCheck reference)
+        {
+            var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
+            var templateContent = File.ReadAllText(templatePath);
+            var body = templateContent
+                .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+                .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+                .Replace("{{HEADLINE}}", "Character Reference Form Completion")
+                .Replace("{{BODY}}", $"Dear Mr/Ms. {reference.Lastname},<br>" +
+                                     $"<br> I hope this email finds you well. I wanted to extend my heartfelt appreciation for taking the time to complete the Character Reference Form on behalf of Mr/Ms. {applicant.Firstname} {applicant.Lastname}. <br>" +
+                                     $"<br> Your thoughtful and positive feedback has been received and will play a crucial role in the evaluation process for Mr/Ms. {applicant.Lastname}'s application. Character references are incredibly valuable in providing insights into an individual's personal attributes and qualities, and your input will help us make an informed decision. <br>" +
+                                     $"<br> We understand that providing a character reference requires time and effort, and we are truly grateful for your support in this matter. Your willingness to vouch for Mr/Ms. {applicant.Lastname}'s character speaks volumes about your relationship with them, and it is a testament to their strengths and character. <br>" +
+                                     $"<br> If you have any questions or need any further information about the application process, please do not hesitate to reach out to us. Your assistance in this matter is invaluable, and we are here to assist you in any way we can. <br>" +
+                                     $"<br> Once again, thank you for being a part of Mr/Ms. {applicant.Lastname}'s journey through this process. We truly appreciate your contribution to our decision-making process." +
+                                     $"<br> Best regards,");
+
+            await _emailService.SendEmail(reference.Email, "Alliance Software Inc. Background Check", body);
         }
     }
 }
