@@ -279,5 +279,22 @@ namespace Basecode.Services.Services
 
             await _emailService.SendEmail(userEmail, $"Alliance Software Inc. {meetingType} Schedules", body);
         }
+
+        public async Task SendRequestReference(CharacterReference reference, Applicant applicant)
+        {
+            var url = "https://localhost:49940/BackgroundCheck/Index";
+            var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
+            var templateContent = File.ReadAllText(templatePath);
+            var body = templateContent
+                .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+                .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+                .Replace("{{HEADLINE}}", "Character Reference")
+                .Replace("{{BODY}}", $"Dear {reference.Name},<br>" +
+                                     $"<br> I hope this email finds you well. We appreciate your willingness to provide a character reference for the applicant, {applicant.Firstname} {applicant.Lastname}<br/>" +
+                                     $"<br> To proceed with the application process, we kindly request you to complete the Character Reference Form by following the link below:<br/>" +
+                                     $"<br> <a href=\"{url}\">Character Reference Form</a> ");
+
+            await _emailService.SendEmail(reference.Email, $"Character Reference Form Request", body);
+        }
     }
 }
