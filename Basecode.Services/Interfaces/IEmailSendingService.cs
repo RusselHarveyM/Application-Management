@@ -22,42 +22,6 @@ namespace Basecode.Services.Interfaces
                                    string interviewerPassword, string jobPosition);
 
         /// <summary>
-        /// Sends the interview notif2weeks.
-        /// </summary>
-        /// <param name="interviewerEmail">The interviewer email.</param>
-        /// <param name="intervierwerFullName">Full name of the intervierwer.</param>
-        /// <param name="interviewerUsername">The interviewer username.</param>
-        /// <param name="interviewerPassword">The interviewer password.</param>
-        /// <param name="jobPosition">The job position.</param>
-        /// <returns></returns>
-        Task SendInterviewNotif2weeks(string interviewerEmail, string intervierwerFullName, string interviewerUsername,
-                                      string interviewerPassword, string jobPosition);
-
-        /// <summary>
-        /// Sends the hr notif2weeks.
-        /// </summary>
-        /// <param name="interviewerEmail">The interviewer email.</param>
-        /// <param name="intervierwerFullName">Full name of the intervierwer.</param>
-        /// <param name="interviewerUsername">The interviewer username.</param>
-        /// <param name="interviewerPassword">The interviewer password.</param>
-        /// <param name="jobPosition">The job position.</param>
-        /// <returns></returns>
-        Task SendHrNotif2weeks(string interviewerEmail, string intervierwerFullName, string interviewerUsername,
-                               string interviewerPassword, string jobPosition);
-
-        /// <summary>
-        /// Sends the technical notif2weeks.
-        /// </summary>
-        /// <param name="interviewerEmail">The interviewer email.</param>
-        /// <param name="intervierwerFullName">Full name of the intervierwer.</param>
-        /// <param name="interviewerUsername">The interviewer username.</param>
-        /// <param name="interviewerPassword">The interviewer password.</param>
-        /// <param name="jobPosition">The job position.</param>
-        /// <returns></returns>
-        Task SendTechnicalNotif2weeks(string interviewerEmail, string intervierwerFullName, string interviewerUsername,
-                                      string interviewerPassword, string jobPosition);
-
-        /// <summary>
         /// Sends the unique identifier email.
         /// </summary>
         /// <param name="application">The application.</param>
