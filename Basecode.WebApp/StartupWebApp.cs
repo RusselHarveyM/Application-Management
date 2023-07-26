@@ -72,6 +72,8 @@ namespace Basecode.WebApp
             //RecurringJob.AddOrUpdate<IShortlistingService>("shortlisting", service => service.ShortlistApplications(), "0 8 1,15 * *");
             // FOR TESTING ONLY: run shortlisting method every minute
             //RecurringJob.AddOrUpdate<IShortlistingService>("shortlisting", service => service.ShortlistApplications(), Cron.Minutely);
+
+            RecurringJob.AddOrUpdate<IEmailSendingService>("auto-reminder", service => service.SendAutomatedReminder(), "0 0 7 * *");
         }
     }
 }

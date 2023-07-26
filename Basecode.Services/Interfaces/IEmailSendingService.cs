@@ -21,6 +21,8 @@ namespace Basecode.Services.Interfaces
         Task SendInterviewNotification(string interviewerEmail, string intervierwerFullName, string interviewerUsername,
                                    string interviewerPassword, string jobPosition, string role);
 
+       Task SendAutomatedReminder();
+
         /// <summary>
         /// Sends the unique identifier email.
         /// </summary>

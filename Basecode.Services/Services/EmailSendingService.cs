@@ -1,4 +1,5 @@
-﻿using Basecode.Data.Models;
+﻿using Basecode.Data.Interfaces;
+using Basecode.Data.Models;
 using Basecode.Services.Interfaces;
 using System.Web;
 
@@ -10,11 +11,13 @@ namespace Basecode.Services.Services
         private readonly IEmailService _emailService;
         private readonly TokenHelper _tokenHelper;
         private const string SecretKey = "CDC1CAAACAA3269755F5EC44C7202F0055C9C322AEB5C4B6103F6E9C11EF136F";
+        private readonly IUserRepository _userRepository;
 
-        public EmailSendingService(IEmailService emailService)
+        public EmailSendingService(IEmailService emailService, IUserRepository userRepository)
         {
             _emailService = emailService;
             _tokenHelper = new TokenHelper(SecretKey);
+            _userRepository = userRepository;
         }
 
         /// <summary>
@@ -40,6 +43,46 @@ namespace Basecode.Services.Services
                                      $"<br> Your Credentials Email: {interviewerEmail} Password: {interviewerPassword}<br>");
 
             await _emailService.SendEmail(interviewerEmail, role, body);
+        }
+
+        public async Task SendAutomatedReminder()
+        {
+            // Implement the logic for HR to plot their schedules
+            // This method will be executed every two weeks
+            var allUser = _userRepository.RetrieveAll();
+            foreach (var user in allUser)
+            {
+                if (user.Role == "Human Resources")
+                {
+                    //Notify Interviewer for their Task
+                    var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
+                    var templateContent = File.ReadAllText(templatePath);
+                    var body = templateContent
+                        .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+                        .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+                        .Replace("{{HEADLINE}}", "Reminder to the Human Resource Team")
+                        .Replace("{{BODY}}", $"Dear {user.Username},<br>" +
+                                             $"<br> Human Resource team do plot your schedules.<br>" +
+                                             $"Please do access your account to see the details in the website");
+
+                    await this._emailService.SendEmail(user.Email, "Reminder for the Human Resource Team", body);
+                }
+                else
+                {
+                    //Notify Interviewer for their Task
+                    var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
+                    var templateContent = File.ReadAllText(templatePath);
+                    var body = templateContent
+                        .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+                        .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+                        .Replace("{{HEADLINE}}", "Reminder to the assigned Interviewer")
+                        .Replace("{{BODY}}", $"Dear {user.Username},<br>" +
+                                             $"<br> Reminder! You have a assigned job position to interview.<br>" +
+                                             $"Please do access your account to see the details in the website");
+
+                    await this._emailService.SendEmail(user.Email, "Reminder for the interviewer", body);
+                }
+            }
         }
 
         /// <summary>
