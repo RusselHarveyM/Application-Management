@@ -36,7 +36,7 @@ namespace Basecode.WebApp.Controllers
             {
                 var userAspId = _userManager.GetUserId(User);
                 var jobOpenings = _userService.GetLinkedJobOpenings(userAspId);
-                var applicants = _applicantService.GetApplicantsWithStatuses();
+                var applicants = _applicantService.GetApplicantsWithRejectedOrNoSchedule();
                 var schedulerFormData = new SchedulerDataViewModel();
 
                 SchedulerViewModel viewModel = new SchedulerViewModel()

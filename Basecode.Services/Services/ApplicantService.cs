@@ -149,18 +149,28 @@ namespace Basecode.Services.Services
         }
 
         /// <summary>
-        /// Gets the applicants and statuses.
+        /// Gets the applicants with rejected or no schedule.
         /// </summary>
         /// <returns></returns>
-        public List<ApplicantStatusViewModel> GetApplicantsWithStatuses()
+        public List<ApplicantStatusViewModel> GetApplicantsWithRejectedOrNoSchedule()
         {
+            var rejectedApplicantIds = _repository.GetAll()
+                .Where(applicant => applicant.Application.UserSchedule.Status == "rejected")
+                .Select(applicant => applicant.Id)
+                .ToList();
+
             return _repository.GetAll()
+                .Where(applicant =>
+                    // Applicants with no UserSchedule record at all
+                    applicant.Application.UserSchedule == null ||
+                    // Applicants with UserSchedule records having "rejected" status
+                    rejectedApplicantIds.Contains(applicant.Id))
                 .Select(applicant => new ApplicantStatusViewModel
                 {
                     Id = applicant.Id,
                     Firstname = applicant.Firstname,
                     Lastname = applicant.Lastname,
-                    Status = applicant.Application.Status, // Retrieve the Status from the related Application
+                    Status = applicant.Application.Status,
                     JobOpeningId = applicant.Application.JobOpeningId,
                 })
                 .ToList();
