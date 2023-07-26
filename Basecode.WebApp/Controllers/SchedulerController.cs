@@ -30,7 +30,7 @@ namespace Basecode.WebApp.Controllers
         /// Displays the HR Scheduler.
         /// </summary>
         [HttpGet]
-        public IActionResult CreateView()
+        public IActionResult Create()
         {
             try
             {
@@ -84,22 +84,24 @@ namespace Basecode.WebApp.Controllers
         /// <summary>
         /// Accepts the schedule.
         /// </summary>
-        [Route("Scheduler/AcceptSchedule/{token:string}")]
+        [Route("Scheduler/AcceptSchedule/{token}")]
         public IActionResult AcceptSchedule(string token)
         {
             try
             {
+                ViewBag.IsScheduleAccepted = false;
                 int userScheduleId = _tokenHelper.GetIdFromToken(token, "accept");
                 if (userScheduleId == 0)
                 {
                     _logger.Warn("Invalid or expired token.");
-                    return Unauthorized("Invalid or expired token.");
+                    return View();
                 }
 
                 var data = _userScheduleService.AcceptSchedule(userScheduleId);
                 if (!data.Result)
                 {
                     _logger.Trace("User Schedule [" + userScheduleId + "] has been successfully accepted.");
+                    ViewBag.IsScheduleAccepted = true;
                 }
 
                 return View();
@@ -114,44 +116,26 @@ namespace Basecode.WebApp.Controllers
         /// <summary>
         /// Rejects the schedule.
         /// </summary>
-        [Route("Scheduler/RejectSchedule/{token:string}")]
-        public IActionResult RejectSchedule(string token)
+        [Route("Scheduler/RejectSchedule/{token}")]
+        public async Task<IActionResult> RejectSchedule(string token)
         {
             try
             {
-                int userScheduleId = 0;
-
-                if (_tokenHelper.ValidateToken(token, "reject"))
+                ViewBag.IsScheduleRejected = false;
+                int userScheduleId = _tokenHelper.GetIdFromToken(token, "reject");
+                if (userScheduleId == 0)
                 {
-                    var idClaim = _tokenHelper.GetClaimValue(token, "id");
-                    if (int.TryParse(idClaim, out int id))
-                    {
-                        userScheduleId = id;
-                    }
-                }
-                else
-                {
-                    _logger.Warn("Invalid token.");
-                    return Unauthorized();
+                    _logger.Warn("Invalid or expired token.");
+                    return View();
                 }
 
-                var userSchedule = _userScheduleService.GetUserScheduleById(userScheduleId);
-
-                if (userSchedule == null)
+                var data = await _userScheduleService.RejectSchedule(userScheduleId);
+                if (!data.Result)
                 {
-                    _logger.Error("Schedule is not found");
-                    return NotFound();
+                    _logger.Trace("User Schedule [" + userScheduleId + "] has been successfully rejected.");
+                    ViewBag.IsScheduleRejected = true;
                 }
 
-                if (userSchedule.Status == "rejected")
-                {
-
-                }
-
-                // Perform the rejection logic here
-                // Update the status of the UserSchedule to "rejected"
-                //userSchedule.Status = "rejected";
-                //_userScheduleService.UpdateUserSchedule(userSchedule);
                 return View();
             }
             catch (Exception e)
