@@ -16,6 +16,7 @@ namespace Basecode.WebApp.Controllers
         }    
         public IActionResult Index()
         {
+            _logger.Trace("Redirecting to Admin Create Role");
             return View();
         }
 
@@ -36,6 +37,7 @@ namespace Basecode.WebApp.Controllers
 
                     if(result.Succeeded || result! == null)
                     {
+                        _logger.Trace("Role Created Successfully");
                         return RedirectToAction("Index", "Admin");
                     }
                 }
