@@ -88,6 +88,13 @@ namespace Basecode.Services.Interfaces
         List<string> GetLinkedUserIds(int jobOpeningId);
 
         /// <summary>
+        /// Retrieves the list of user IDs associated with a specific job opening user.
+        /// </summary>
+        /// <param name="jobOpeningId">The ID of the job opening..</param>
+        /// <returns>A list of integers. </returns>
+        List<int> GetUserById(int jobOpeningId);
+
+        /// <summary>
         /// Updates the many-to-many relationship between User and JobOpening.
         /// </summary>
         /// <param name="jobOpeningId">The job opening id.</param>

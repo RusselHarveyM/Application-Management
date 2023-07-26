@@ -68,6 +68,8 @@ namespace Basecode.Data.Interfaces
         /// <returns></returns>
         IQueryable<string> GetLinkedUserIds(int jobOpeningId);
 
+        IQueryable<int> GetUserById(int jobOpeningId);
+
         /// <summary>
         /// Updates the job opening users.
         /// </summary>

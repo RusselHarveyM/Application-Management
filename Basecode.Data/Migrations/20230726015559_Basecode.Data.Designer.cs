@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Basecode.Data.Migrations
 {
     [DbContext(typeof(BasecodeContext))]
-    [Migration("20230725031536_Basecode.Data")]
+    [Migration("20230726015559_Basecode.Data")]
     partial class BasecodeData
     {
         /// <inheritdoc />
@@ -121,27 +121,6 @@ namespace Basecode.Data.Migrations
                     b.HasIndex("JobOpeningId");
 
                     b.ToTable("Application");
-                });
-
-            modelBuilder.Entity("Basecode.Data.Models.AssignInterviewer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("JobPosition")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AssignInterviewer");
                 });
 
             modelBuilder.Entity("Basecode.Data.Models.BackgroundCheck", b =>

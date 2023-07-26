@@ -30,7 +30,6 @@ namespace Basecode.WebApp
             services.AddScoped<IExaminationService, ExaminationService>();
             services.AddScoped<IShortlistingService, ShortlistingService>();
             services.AddScoped<ITrackService, TrackService>();
-            services.AddScoped<IAssignInterviewerService, AssignInterviewerService>();
             services.AddScoped<IUserScheduleService, UserScheduleService>();
             services.AddScoped<IBackgroundCheckService, BackgroundCheckService>();
             services.AddScoped<IInterviewService, InterviewService>();
@@ -49,7 +48,6 @@ namespace Basecode.WebApp
             services.AddScoped<IResponsibilityRepository, ResponsibilityRepository>();
             services.AddScoped<ICharacterReferenceRepository, CharacterReferenceRepository>();
             services.AddScoped<IExaminationRepository, ExaminationRepository>();
-            services.AddScoped<IAssignInterviewerRepository, AssignInterviewerRepository>();
             services.AddScoped<IUserScheduleRepository, UserScheduleRepository>();
             services.AddScoped<IBackgroundCheckRepository, BackgroundCheckRepository>();
             services.AddScoped<IInterviewRepository, InterviewRepository>();

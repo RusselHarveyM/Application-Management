@@ -77,20 +77,6 @@ namespace Basecode.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AssignInterviewer",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    JobPosition = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AssignInterviewer", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Interview",
                 columns: table => new
                 {
@@ -585,9 +571,6 @@ namespace Basecode.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
-
-            migrationBuilder.DropTable(
-                name: "AssignInterviewer");
 
             migrationBuilder.DropTable(
                 name: "BackgroundCheck");
