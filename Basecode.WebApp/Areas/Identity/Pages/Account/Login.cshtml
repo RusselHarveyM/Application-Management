@@ -6,12 +6,28 @@
     ViewData["Login"] = "Login page";
 }
 
+<style>
+    /* Remove default list styles */
+    .error-style ul {
+        list-style: none;
+        padding-left: 0;
+    }
+
+     /* Align the list to the leftmost position */
+    .error-style ul li {
+        text-indent: -1em;
+        padding-left: 1em;
+     }
+</style>
+
 <div class="container d-flex align-items-center justify-content-center p-3 form-parent">
     <div class="row w-100">
         <div class="col-md-6 col-sm-12 align-self-center">
             <h1 class="mb-3 text-center sign-font">Sign-in</h1>
             <form id="formSubmit" method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger error-style" style="padding:5px;"></div>
+                <div class="row p-2 text-center">
+                    <div asp-validation-summary="ModelOnly" class="text-danger error-style"></div>
+                </div>
                 <div class="row">
                     <div class="form-group p-1 bg-light">
                         <label asp-for="Input.Email" class="control-label text-black text-strong mb-1">Email</label>
