@@ -1,5 +1,6 @@
 ﻿using Basecode.Data.Models;
 using Basecode.Services.Interfaces;
+using System.Web;
 
 namespace Basecode.Services.Services
 {
@@ -7,9 +8,13 @@ namespace Basecode.Services.Services
     public class EmailSendingService : IEmailSendingService
     {
         private readonly IEmailService _emailService;
+        private readonly TokenHelper _tokenHelper;
+        private const string SecretKey = "CDC1CAAACAA3269755F5EC44C7202F0055C9C322AEB5C4B6103F6E9C11EF136F";
+
         public EmailSendingService(IEmailService emailService)
         {
             _emailService = emailService;
+            _tokenHelper = new TokenHelper(SecretKey);
         }
 
         /// <summary>
@@ -245,8 +250,13 @@ namespace Basecode.Services.Services
         /// </summary>
         public async Task SendScheduleToApplicant(UserSchedule userSchedule, int userScheduleId, Applicant applicant, string meetingType)
         {
-            var ACCEPT_URL = "https://localhost:53813/Scheduler/AcceptSchedule";
-            var REJECT_URL = "https://localhost:53813/Scheduler/RejectSchedule";
+            string acceptToken = _tokenHelper.GenerateToken("accept", userScheduleId);
+            string rejectToken = _tokenHelper.GenerateToken("reject", userScheduleId);
+
+            string baseUrl = "https://localhost:53813";
+            var acceptUrl = $"{baseUrl}/Scheduler/AcceptSchedule/{HttpUtility.UrlEncode(acceptToken)}";
+            var rejectUrl = $"{baseUrl}/Scheduler/RejectSchedule/{HttpUtility.UrlEncode(rejectToken)}";
+
             var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
             var templateContent = File.ReadAllText(templatePath);
             var body = templateContent
@@ -256,8 +266,8 @@ namespace Basecode.Services.Services
                 .Replace("{{BODY}}", $"Dear {applicant.Firstname},<br>" +
                                      $"<br> Your {meetingType} has been scheduled for {userSchedule.Schedule}.<br/>" +
                                      $"<br> Please click the button to accept or reject the schedule:<br/>" +
-                                     $"<br> <a href=\"{ACCEPT_URL}?userScheduleId={userScheduleId}\">Accept</a> " +
-                                     $"<a href=\"{REJECT_URL}?userScheduleId={userScheduleId}\">Reject</a>");
+                                     $"<br> <a href=\"{acceptUrl}\">Accept</a> " +
+                                     $"<a href=\"{rejectUrl}\">Reject</a>");
 
             await _emailService.SendEmail(applicant.Email, $"Alliance Software Inc. Application {meetingType} Schedule", body);
         }

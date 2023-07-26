@@ -322,5 +322,21 @@ namespace Basecode.Services.Services
             }
             return logContent;
         }
+
+        public static LogContent CheckAcceptedSchedule(UserSchedule schedule)
+        {
+            LogContent logContent = new LogContent();
+            if (schedule == null)
+            {
+                logContent.SetError("404", "Schedule is not found.");
+                return logContent;
+            }
+            if (schedule.Status == "accepted")
+            {
+                logContent.SetError("401", "Schedule has already been accepted.");
+                return logContent;
+            }
+            return logContent;
+        }
     }
 }

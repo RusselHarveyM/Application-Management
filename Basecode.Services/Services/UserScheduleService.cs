@@ -14,10 +14,12 @@ namespace Basecode.Services.Services
         private readonly IApplicantService _applicantService;
         private readonly IUserService _userService;
         private readonly IJobOpeningService _jobOpeningService;
+        private readonly IInterviewService _interviewService;
+        private readonly IExaminationService _examinationService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        public UserScheduleService(IUserScheduleRepository repository, IEmailSendingService emailSendingService, IApplicationService applicationService,
-            IApplicantService applicantService, IUserService userService, IJobOpeningService jobOpeningService)
+        public UserScheduleService(IUserScheduleRepository repository, IEmailSendingService emailSendingService, IApplicationService applicationService, IApplicantService applicantService,
+            IUserService userService, IJobOpeningService jobOpeningService, IInterviewService interviewService, IExaminationService examinationService)
         {
             _repository = repository;
             _emailSendingService = emailSendingService;
@@ -25,6 +27,8 @@ namespace Basecode.Services.Services
             _applicantService = applicantService;
             _userService = userService;
             _jobOpeningService = jobOpeningService;
+            _interviewService = interviewService;
+            _examinationService = examinationService;
         }
 
         /// <summary>
@@ -146,6 +150,42 @@ namespace Basecode.Services.Services
             }
 
             await _emailSendingService.SendSchedulesToInterviewer(user.Fullname, user.Email, jobOpeningTitle, formData.Date, scheduledTimes, meetingType);
+        }
+
+        /// <summary>
+        /// Accepts the schedule.
+        /// </summary>
+        /// <param name="userScheduleId">The user schedule identifier.</param>
+        /// <returns></returns>
+        public LogContent AcceptSchedule(int userScheduleId)
+        {
+            var userSchedule = GetUserScheduleById(userScheduleId);
+            LogContent logContent = CheckAcceptedSchedule(userSchedule);
+
+            if (logContent.Result == false)
+            {
+                if (userSchedule.Type == "For HR Interview" || userSchedule.Type == "For Technical Interview")
+                {
+                    var interviewData = _interviewService.AddInterview(userSchedule);
+                    if (!interviewData.Result)
+                    {
+                        _logger.Trace("Successfully created a new Interview record.");
+                    }
+                }
+                else
+                {
+                    var examData = _examinationService.AddExamination(userSchedule);
+                    if (!examData.Result)
+                    {
+                        _logger.Trace("Successfully created a new Examination record.");
+                    }
+                }
+
+                userSchedule.Status = "accepted";
+                logContent = UpdateUserSchedule(userSchedule);
+            }
+
+            return logContent;
         }
     }
 }
