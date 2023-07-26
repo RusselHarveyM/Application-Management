@@ -216,5 +216,15 @@ namespace Basecode.Data.Repositories
             var userDB = GetDbSet<IdentityUser>().Where(x => x.UserName.ToLower().Equals(userName.ToLower())).AsNoTracking().FirstOrDefault();
             return userDB;
         }
+
+        /// <summary>
+        /// Gets the user by ASP identifier.
+        /// </summary>
+        /// <param name="aspId">The ASP identifier.</param>
+        /// <returns></returns>
+        public User GetUserByAspId(string aspId)
+        {
+            return _context.User.Where(u => u.AspId == aspId).FirstOrDefault();
+        }
     }
 }

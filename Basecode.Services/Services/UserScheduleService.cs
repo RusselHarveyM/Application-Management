@@ -35,9 +35,8 @@ namespace Basecode.Services.Services
         /// Adds the schedules from the HR Scheduler.
         /// </summary>
         /// <param name="formData">The HR Scheduler form data.</param>
-        public async Task AddUserSchedules(SchedulerDataViewModel formData)
+        public async Task AddUserSchedules(SchedulerDataViewModel formData, int userId)
         {
-            int userId = 1; // Temporary until auth has been sorted out
             List<int> successfullyAddedApplicantIds = new List<int>();
 
             foreach (var schedule in formData.ApplicantSchedules)

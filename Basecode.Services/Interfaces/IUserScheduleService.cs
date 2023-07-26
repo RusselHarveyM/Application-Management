@@ -11,7 +11,7 @@ namespace Basecode.Services.Interfaces
         /// </summary>
         /// <param name="formData">The form data.</param>
         /// <returns></returns>
-        Task AddUserSchedules(SchedulerDataViewModel formData);
+        Task AddUserSchedules(SchedulerDataViewModel formData, int userId);
 
         /// <summary>
         /// Creates a UserSchedule.

@@ -113,5 +113,12 @@ namespace Basecode.Services.Interfaces
         /// <param name="password">The password.</param>
         /// <returns></returns>
         Task<IdentityUser> FindUserAsync(string userName, string password);
+
+        /// <summary>
+        /// Gets the user identifier by ASP identifier.
+        /// </summary>
+        /// <param name="aspId">The ASP identifier.</param>
+        /// <returns></returns>
+        int GetUserIdByAspId(string aspId);
     }
 }

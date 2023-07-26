@@ -223,5 +223,15 @@ namespace Basecode.Services.Services
         {
             return _repository.FindUser(userName);
         }
+
+        /// <summary>
+        /// Gets the user identifier by ASP identifier.
+        /// </summary>
+        /// <param name="aspId">The ASP identifier.</param>
+        /// <returns></returns>
+        public int GetUserIdByAspId(string aspId)
+        {
+            return _repository.GetUserByAspId(aspId).Id;
+        }
     }
 }

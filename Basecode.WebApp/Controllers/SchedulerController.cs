@@ -70,8 +70,9 @@ namespace Basecode.WebApp.Controllers
                     _logger.Warn("Model has validation error(s).");
                     return View(formData);
                 }
-
-                await _userScheduleService.AddUserSchedules(formData);
+                var userAspId = _userManager.GetUserId(User);
+                int userId = _userService.GetUserIdByAspId(userAspId);
+                await _userScheduleService.AddUserSchedules(formData, userId);
                 return RedirectToAction("Index", "Dashboard");
             }
             catch (Exception e)
