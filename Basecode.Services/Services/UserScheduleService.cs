@@ -93,7 +93,6 @@ namespace Basecode.Services.Services
         /// <param name="meetingType">Type of the meeting.</param>
         public async Task SendScheduleToApplicant(UserSchedule userSchedule, int userScheduleId, int applicantId, string meetingType)
         {
-            meetingType = meetingType[(meetingType.Split()[0].Length + 1)..];   // Remove "For " from meeting type
             var applicant = _applicantService.GetApplicantById(applicantId);
             await _emailSendingService.SendScheduleToApplicant(userSchedule, userScheduleId, applicant, meetingType);
         }
@@ -135,7 +134,6 @@ namespace Basecode.Services.Services
         /// <param name="userId">The user identifier.</param>
         public async Task SendSchedulesToInterviewer(SchedulerDataViewModel formData, int userId, List<int> successfullyAddedApplicantIds)
         {
-            string meetingType = formData.Type[(formData.Type.Split()[0].Length + 1)..];   // Remove "For " from meeting type
             string jobOpeningTitle = _jobOpeningService.GetJobOpeningTitleById(formData.JobOpeningId);
             var user = _userService.GetById(userId);
             string scheduledTimes = "";
@@ -149,7 +147,7 @@ namespace Basecode.Services.Services
                 }
             }
 
-            await _emailSendingService.SendSchedulesToInterviewer(user.Fullname, user.Email, jobOpeningTitle, formData.Date, scheduledTimes, meetingType);
+            await _emailSendingService.SendSchedulesToInterviewer(user.Fullname, user.Email, jobOpeningTitle, formData.Date, scheduledTimes, formData.Type);
         }
 
         /// <summary>
@@ -160,11 +158,11 @@ namespace Basecode.Services.Services
         public LogContent AcceptSchedule(int userScheduleId)
         {
             var userSchedule = GetUserScheduleById(userScheduleId);
-            LogContent logContent = CheckAcceptedSchedule(userSchedule);
+            LogContent logContent = CheckUserScheduleStatus(userSchedule);
 
             if (logContent.Result == false)
             {
-                if (userSchedule.Type == "For HR Interview" || userSchedule.Type == "For Technical Interview")
+                if (userSchedule.Type == "HR Interview" || userSchedule.Type == "Technical Interview")
                 {
                     var interviewData = _interviewService.AddInterview(userSchedule);
                     if (!interviewData.Result)
@@ -186,6 +184,38 @@ namespace Basecode.Services.Services
             }
 
             return logContent;
+        }
+
+        /// <summary>
+        /// Rejects the schedule.
+        /// </summary>
+        /// <param name="userScheduleId">The user schedule identifier.</param>
+        /// <returns></returns>
+        public async Task<LogContent> RejectSchedule(int userScheduleId)
+        {
+            var userSchedule = GetUserScheduleById(userScheduleId);
+            LogContent logContent = CheckUserScheduleStatus(userSchedule);
+
+            if (logContent.Result == false)
+            {
+                userSchedule.Status = "rejected";
+                logContent = UpdateUserSchedule(userSchedule);
+                await SendRejectedScheduleNoticeToInterviewer(userSchedule);
+            }
+  
+            return logContent;
+        }
+
+        /// <summary>
+        /// Informs the interviewer that a schedule has been rejected.
+        /// </summary>
+        /// <param name="userSchedule">The user schedule.</param>
+        public async Task SendRejectedScheduleNoticeToInterviewer(UserSchedule userSchedule)
+        {
+            User user = _userService.GetById(userSchedule.UserId);
+            Applicant applicant = _applicantService.GetApplicantByApplicationId(userSchedule.ApplicationId);
+            string applicantFullName = applicant.Firstname + " " + applicant.Lastname;
+            await _emailSendingService.SendRejectedScheduleNoticeToInterviewer(user.Email, user.Fullname, userSchedule, applicantFullName);
         }
     }
 }

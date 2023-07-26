@@ -53,5 +53,19 @@ namespace Basecode.Services.Interfaces
         /// <param name="userScheduleId">The user schedule identifier.</param>
         /// <returns></returns>
         LogContent AcceptSchedule(int userScheduleId);
+
+        /// <summary>
+        /// Rejects the schedule.
+        /// </summary>
+        /// <param name="userScheduleId">The user schedule identifier.</param>
+        /// <returns></returns>
+        Task<LogContent> RejectSchedule(int userScheduleId);
+
+        /// <summary>
+        /// Informs the interviewer that a schedule has been rejected.
+        /// </summary>
+        /// <param name="userSchedule">The user schedule.</param>
+        /// <returns></returns>
+        Task SendRejectedScheduleNoticeToInterviewer(UserSchedule userSchedule);
     }
 }
