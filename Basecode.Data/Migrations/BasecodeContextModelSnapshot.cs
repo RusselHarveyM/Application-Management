@@ -120,27 +120,6 @@ namespace Basecode.Data.Migrations
                     b.ToTable("Application");
                 });
 
-            modelBuilder.Entity("Basecode.Data.Models.AssignInterviewer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("JobPosition")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AssignInterviewer");
-                });
-
             modelBuilder.Entity("Basecode.Data.Models.BackgroundCheck", b =>
                 {
                     b.Property<int>("Id")

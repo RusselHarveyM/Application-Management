@@ -26,7 +26,6 @@ namespace Basecode.WebApp
 
             // Add services to the container.
             services.AddControllersWithViews();
-            services.AddScoped<IEmailService, EmailService>();
 
             // Add Hangfire services.
             services.AddHangfire(configuration => configuration
