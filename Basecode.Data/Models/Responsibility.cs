@@ -15,7 +15,5 @@ namespace Basecode.Data.Models
 
         [Required(ErrorMessage = "The Description is required.")]
         public string Description { get; set; }
-
-        public JobOpening JobOpening { get; set; } = null!;
     }
 }
