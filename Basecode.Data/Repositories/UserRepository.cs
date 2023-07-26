@@ -138,10 +138,9 @@ namespace Basecode.Data.Repositories
                 if (removeOldRole.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(identityUser, user.Role);
+                    await _context.SaveChangesAsync();
                 }
             }
-            
-            await _context.SaveChangesAsync();
         }
 
         /// <summary>
