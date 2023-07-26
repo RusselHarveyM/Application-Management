@@ -84,7 +84,7 @@ namespace Basecode.WebApp.Controllers
         /// <summary>
         /// Accepts the schedule.
         /// </summary>
-        [Route("Scheduler/AcceptSchedule/{token}")]
+        [Route("Scheduler/AcceptSchedule/{token:string}")]
         public IActionResult AcceptSchedule(string token)
         {
             try
@@ -92,8 +92,8 @@ namespace Basecode.WebApp.Controllers
                 int userScheduleId = _tokenHelper.GetIdFromToken(token, "accept");
                 if (userScheduleId == 0)
                 {
-                    _logger.Warn("Invalid token.");
-                    return Unauthorized("Invalid token.");
+                    _logger.Warn("Invalid or expired token.");
+                    return Unauthorized("Invalid or expired token.");
                 }
 
                 var data = _userScheduleService.AcceptSchedule(userScheduleId);
@@ -114,7 +114,7 @@ namespace Basecode.WebApp.Controllers
         /// <summary>
         /// Rejects the schedule.
         /// </summary>
-        [Route("Scheduler/RejectSchedule/{token}")]
+        [Route("Scheduler/RejectSchedule/{token:string}")]
         public IActionResult RejectSchedule(string token)
         {
             try
