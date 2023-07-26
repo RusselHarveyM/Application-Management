@@ -165,5 +165,15 @@ namespace Basecode.Services.Services
                 })
                 .ToList();
         }
+
+        /// <summary>
+        /// Gets the applicant by application identifier.
+        /// </summary>
+        /// <param name="applicationId">The application identifier.</param>
+        /// <returns></returns>
+        public Applicant GetApplicantByApplicationId(Guid applicationId)
+        {
+            return _repository.GetApplicantByApplicationId(applicationId);
+        }
     }
 }

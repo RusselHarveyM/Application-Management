@@ -52,5 +52,12 @@ namespace Basecode.Data.Repositories
                 .Where(applicant => applicant.Application.JobOpeningId == jobOpeningId);
             return applicants;
         }
+
+        public Applicant GetApplicantByApplicationId(Guid applicationId)
+        {
+            var applicant = _context.Applicant
+                .FirstOrDefault(applicant => applicant.Application.Id == applicationId);
+            return applicant;
+        }
     }
 }

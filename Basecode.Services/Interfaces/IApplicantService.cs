@@ -61,5 +61,12 @@ namespace Basecode.Services.Interfaces
         /// </summary>
         /// <returns></returns>
         List<ApplicantStatusViewModel> GetApplicantsWithStatuses();
+
+        /// <summary>
+        /// Gets the applicant by application identifier.
+        /// </summary>
+        /// <param name="applicationId">The application identifier.</param>
+        /// <returns></returns>
+        Applicant GetApplicantByApplicationId(Guid applicationId);
     }
 }
