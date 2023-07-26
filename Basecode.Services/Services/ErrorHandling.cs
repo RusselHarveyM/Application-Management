@@ -323,7 +323,7 @@ namespace Basecode.Services.Services
             return logContent;
         }
 
-        public static LogContent CheckAcceptedSchedule(UserSchedule schedule)
+        public static LogContent CheckUserScheduleStatus(UserSchedule schedule)
         {
             LogContent logContent = new LogContent();
             if (schedule == null)
@@ -334,6 +334,11 @@ namespace Basecode.Services.Services
             if (schedule.Status == "accepted")
             {
                 logContent.SetError("401", "Schedule has already been accepted.");
+                return logContent;
+            }
+            if (schedule.Status == "rejected")
+            {
+                logContent.SetError("401", "Schedule has already been rejected.");
                 return logContent;
             }
             return logContent;
