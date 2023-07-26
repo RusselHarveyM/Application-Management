@@ -26,7 +26,7 @@ namespace Basecode.Services.Services
         /// <param name="interviewerPassword">The interviewer password.</param>
         /// <param name="jobPosition">The job position.</param>
         public async Task SendInterviewNotification(string interviewerEmail, string intervierwerFullName, string interviewerUsername,
-                               string interviewerPassword, string jobPosition)
+                               string interviewerPassword, string jobPosition, string role)
         {
             //Notify Interviewer for their Task
             var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
@@ -39,7 +39,7 @@ namespace Basecode.Services.Services
                                      $"<br> The Job Position you being assigned to interview is the {jobPosition}. Please see details below.<br>" +
                                      $"<br> Your Credentials Email: {interviewerEmail} Password: {interviewerPassword}<br>");
 
-            await _emailService.SendEmail(interviewerEmail, "Alliance Software Inc. Hello Deployment Team", body);
+            await _emailService.SendEmail(interviewerEmail, role, body);
         }
 
         /// <summary>

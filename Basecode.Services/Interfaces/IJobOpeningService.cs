@@ -87,6 +87,8 @@ namespace Basecode.Services.Interfaces
         /// </returns>
         List<string> GetLinkedUserIds(int jobOpeningId);
 
+        List<int> GetUserById(int jobOpeningId);
+
         /// <summary>
         /// Updates the many-to-many relationship between User and JobOpening.
         /// </summary>

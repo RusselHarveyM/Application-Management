@@ -69,6 +69,13 @@ namespace Basecode.Data.Repositories
                             .SelectMany(j => j.Users.Select(u => u.AspId));
         }
 
+        public IQueryable<int> GetUserById(int jobOpeningId)
+        {
+            return _context.JobOpening
+                            .Where(j => j.Id == jobOpeningId)
+                            .SelectMany(j => j.Users.Select(u => u.Id));
+        }
+
         public void UpdateJobOpeningUsers(int jobOpeningId, List<string> assignedUserIds)
         {
             var jobOpening = _context.JobOpening

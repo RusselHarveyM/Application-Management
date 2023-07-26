@@ -19,7 +19,7 @@ namespace Basecode.Services.Interfaces
         /// <param name="jobPosition">The job position.</param>
         /// <returns></returns>
         Task SendInterviewNotification(string interviewerEmail, string intervierwerFullName, string interviewerUsername,
-                                   string interviewerPassword, string jobPosition);
+                                   string interviewerPassword, string jobPosition, string role);
 
         /// <summary>
         /// Sends the unique identifier email.

@@ -16,8 +16,8 @@ namespace Basecode.Services.Interfaces
         /// <param name="interviewerUsername">The interviewer username.</param>
         /// <param name="interviewerPassword">The interviewer password.</param>
         /// <param name="jobPosition">The job position.</param>
-        void ScheduleDT(string interviewerEmail, string intervierwerFullName, string interviewerUsername,
-                           string interviewerPassword, string jobPosition);
+        void ScheduleForDT(string interviewerEmail, string intervierwerFullName, string interviewerUsername,
+                           string interviewerPassword, string jobPositione);
 
         /// <summary>
         /// Schedules for hr.
