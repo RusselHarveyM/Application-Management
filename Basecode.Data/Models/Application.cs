@@ -17,5 +17,6 @@ namespace Basecode.Data.Models
 
         public JobOpening JobOpening { get; set; } = null!;
         public Applicant Applicant { get; set; } = null!;
+        public UserSchedule? UserSchedule { get; set; }
     }
 }
