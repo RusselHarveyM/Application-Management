@@ -119,13 +119,28 @@ namespace Basecode.Data.Repositories
         /// Updates an existing user in the User table.
         /// </summary>
         /// <param name="user">Represents the user with updated information.</param>
-        public async Task Update(User user)
+        public async Task Update(User user, string oldRole)
         {
             var identityUser = await _userManager.FindByIdAsync(user.AspId);
-            //var newMail = await _userManager.ChangeEmailAsync()
-            var token = await _userManager.GeneratePasswordResetTokenAsync(identityUser);
-
-            var result = await _userManager.ResetPasswordAsync(identityUser, token, user.Password);
+            if (identityUser != null)
+            {
+                //Update identity user mail
+                identityUser.Email = user.Email;
+                identityUser.NormalizedEmail = user.Email.Normalize();
+                identityUser.UserName = user.Email.ToLower();
+                await _userManager.UpdateAsync(identityUser);
+                //Update identity user password
+                var passwordToken = await _userManager.GeneratePasswordResetTokenAsync(identityUser);
+                await _userManager.ResetPasswordAsync(identityUser, passwordToken, user.Password);
+                //Update role
+                await CreateRole(user.Role);
+                var removeOldRole = await _userManager.RemoveFromRoleAsync(identityUser, oldRole);
+                if (removeOldRole.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(identityUser, user.Role);
+                }
+            }
+            
             await _context.SaveChangesAsync();
         }
 

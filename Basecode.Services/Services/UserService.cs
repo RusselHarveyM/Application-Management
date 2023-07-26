@@ -108,13 +108,13 @@ namespace Basecode.Services.Services
             if (logContent.Result == false)
             {
                 var userToBeUpdated = await _repository.GetByIdAsync(user.Id);
-                var oldPassword = userToBeUpdated.Password;
+                var oldRole = userToBeUpdated.Role;
                 userToBeUpdated.Fullname = user.Fullname;
                 userToBeUpdated.Username = user.Username;
                 userToBeUpdated.Email = user.Email;
                 userToBeUpdated.Password = user.Password;
                 userToBeUpdated.Role = user.Role;
-                await _repository.Update(userToBeUpdated);
+                await _repository.Update(userToBeUpdated, oldRole);
             }
 
             return logContent;
