@@ -13,7 +13,7 @@ namespace Basecode.Data.Models
         [Key]
         public int Id { get; set; }
 
-        [ForeignKey("CharacterReference")]
+        [ForeignKey("CharReferenceId")]
         public int CharReferenceId { get; set; }
         public int UserHRId { get; set; }
         public string Firstname { get; set; }
@@ -27,6 +27,7 @@ namespace Basecode.Data.Models
         public string? Q3 { get; set; }
         public string? Q4 { get; set; }
         public bool IsSeen { get; set; }
-        public CharacterReference CharacterReference { get; set; }
+
+        public CharacterReference CharacterReference { get; set; } = null!;
     }
 }

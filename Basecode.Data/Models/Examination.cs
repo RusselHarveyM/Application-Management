@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-
-namespace Basecode.Data.Models
+﻿namespace Basecode.Data.Models
 {
     public class Examination
     {
@@ -14,5 +11,6 @@ namespace Basecode.Data.Models
         public string? Result { get; set; }
 
         public Application Application { get; set; } = null!;
+        public User User { get; set; } = null!;
     }
 }

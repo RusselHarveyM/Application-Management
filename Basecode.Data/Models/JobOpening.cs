@@ -21,8 +21,8 @@ namespace Basecode.Data.Models
 
         public DateTime UpdatedTime { get; set; }
 
-        public List<Qualification> Qualifications { get; set; }
-        public List<Responsibility> Responsibilities { get; set; }
+        public ICollection<Qualification> Qualifications { get; } = new List<Qualification>();
+        public ICollection<Responsibility> Responsibilities { get; } = new List<Responsibility>();
         public ICollection<Application> Applications { get; } = new List<Application>();
         public ICollection<User> Users { get; } = new List<User>();
     }

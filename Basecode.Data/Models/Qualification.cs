@@ -13,5 +13,7 @@ namespace Basecode.Data.Models
         public int JobOpeningId { get; set; }
 
         public string Description { get; set; }
+
+        public JobOpening JobOpening { get; set; } = null!;
     }
 }
