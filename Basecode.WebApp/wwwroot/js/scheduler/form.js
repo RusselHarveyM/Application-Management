@@ -29,7 +29,7 @@ $('#jobOpeningDropdown').on('change', function () {
         $('#applicantDropdown').empty().trigger("change");      // Clear options
         $('#applicantDropdown').append('<option></option>');    // Add placeholder
 
-        // Show applicants whose statuses match the meeting type (ex. HR Interview)
+        // Show applicants whose statuses match the meeting type (ex. HR Interview) for the job opening
         applicants.forEach(function (applicant) {
             if (applicant.JobOpeningId == jobOpeningId && applicant.Status == $('#meetingTypeDropdown').val())
                 $('#applicantDropdown').append(`<option value=${applicant.Id}>${applicant.Firstname} ${applicant.Lastname}</option>`);
@@ -50,7 +50,7 @@ $('#meetingTypeDropdown').on('change', function () {
         $('#applicantDropdown').empty().trigger("change");      // Clear options
         $('#applicantDropdown').append('<option></option>');    // Add placeholder
 
-        // Show applicants whose statuses match the meeting type (ex. HR Interview)
+        // Show applicants whose statuses match the meeting type (ex. HR Interview) for the job opening
         applicants.forEach(function (applicant) {
             if (applicant.Status == meetingType && applicant.JobOpeningId == $('#jobOpeningDropdown').val())
                 $('#applicantDropdown').append(`<option value=${applicant.Id}>${applicant.Firstname} ${applicant.Lastname}</option>`);
@@ -123,6 +123,19 @@ function AddToDropdown(applicant) {
     $('#applicantDropdown').append(optionHtml);
 }
 
+function getCurrentDate() {
+    var today = new Date();
+    var day = String(today.getDate()).padStart(2, '0');
+    var month = String(today.getMonth() + 1).padStart(2, '0');
+    var year = today.getFullYear();
+    return year + '-' + month + '-' + day;
+}
+
+// Set the minimum date for the date input to the current date
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('date').setAttribute('min', getCurrentDate());
+});
+
 $('#scheduleForm').submit(function (event) {
     event.preventDefault();
 
@@ -139,12 +152,11 @@ $('#scheduleForm').submit(function (event) {
 
     var formData = {
         JobOpeningId: $('#jobOpeningDropdown').val(),
-        Type: $('#meetingTypeDropdown').val(),
+        Type: $('#meetingTypeDropdown').val().split(' ').slice(1).join(' '), // Remove "For " from string
         Date: $('#date').val(),
         ApplicantSchedules: applicantSchedules 
     };
 
-    // Make an AJAX POST request to the controller endpoint
     $.ajax({
         url: $('#scheduleForm').attr('action'),
         type: 'POST',
@@ -157,7 +169,7 @@ $('#scheduleForm').submit(function (event) {
             if (response.status === 400) {
                 var errors = response.responseJSON.value;
 
-                // Iterate over the errors and display them
+                // Display custom validation errors
                 $.each(errors, function (key, value) {
                     $('#' + key + 'Error').text(value);
                 });
