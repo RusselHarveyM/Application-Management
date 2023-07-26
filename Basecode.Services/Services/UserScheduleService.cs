@@ -53,17 +53,59 @@ namespace Basecode.Services.Services
                     Status = "pending",
                 };
 
-                (LogContent logContent, int userScheduleId) data = AddUserSchedule(userSchedule);
-
-                if (!data.logContent.Result && data.userScheduleId != -1)
+                int existingId = GetIdIfUserScheduleExists(applicationId);
+                if (existingId != -1)   // Update "rejected" schedule to "pending"
                 {
-                    _logger.Trace("Successfully created a new UserSchedule record.");
-                    await SendScheduleToApplicant(userSchedule, data.userScheduleId, schedule.ApplicantId, formData.Type);
-                    successfullyAddedApplicantIds.Add(schedule.ApplicantId);
+                    successfullyAddedApplicantIds = await HandleExistingSchedule(userSchedule, existingId, schedule.ApplicantId, successfullyAddedApplicantIds);
+                }
+                else    // Create new schedule
+                {
+                    successfullyAddedApplicantIds = await HandleNewSchedule(userSchedule, schedule.ApplicantId, successfullyAddedApplicantIds);
                 }
             }
 
             await SendSchedulesToInterviewer(formData, userId, successfullyAddedApplicantIds);
+        }
+
+        /// <summary>
+        /// Handles the existing schedule.
+        /// </summary>
+        private async Task<List<int>> HandleExistingSchedule(UserSchedule userSchedule, int existingId, int applicantId, List<int> successfullyAddedApplicantIds)
+        {
+            LogContent logContent = UpdateUserSchedule(userSchedule, existingId);
+            if (logContent.Result == false)
+            {
+                _logger.Trace("Successfully updated User Schedule [ " + existingId + " ]");
+                await SendScheduleToApplicant(userSchedule, existingId, applicantId, userSchedule.Type);
+                successfullyAddedApplicantIds.Add(applicantId);
+            }
+            return successfullyAddedApplicantIds;
+        }
+
+        /// <summary>
+        /// Handles the new schedule.
+        /// </summary>
+        private async Task<List<int>> HandleNewSchedule(UserSchedule userSchedule, int applicantId, List<int> successfullyAddedApplicantIds)
+        {
+            (LogContent logContent, int userScheduleId) data = AddUserSchedule(userSchedule);
+
+            if (!data.logContent.Result && data.userScheduleId != -1)
+            {
+                _logger.Trace("Successfully created a new UserSchedule record.");
+                await SendScheduleToApplicant(userSchedule, data.userScheduleId, applicantId, userSchedule.Type);
+                successfullyAddedApplicantIds.Add(applicantId);
+            }
+            return successfullyAddedApplicantIds;
+        }
+
+        /// <summary>
+        /// Gets the identifier if user schedule exists.
+        /// </summary>
+        /// <param name="applicationId">The application identifier.</param>
+        /// <returns>The user schedule identifier.</returns>
+        public int GetIdIfUserScheduleExists(Guid applicationId)
+        {
+            return _repository.GetIdIfUserScheduleExists(applicationId);
         }
 
         /// <summary>
@@ -110,15 +152,15 @@ namespace Basecode.Services.Services
         /// <summary>
         /// Updates the schedule.
         /// </summary>
-        /// <param name="userSchedule">The user schedule.</param>
-        /// <returns></returns>
-        public LogContent UpdateUserSchedule(UserSchedule userSchedule)
+        public LogContent UpdateUserSchedule(UserSchedule userSchedule, int? idToSetAsPending = null)
         {
             LogContent logContent = CheckUserSchedule(userSchedule);
 
             if (logContent.Result == false)
             {
-                var scheduleToBeUpdated = _repository.GetUserScheduleById(userSchedule.Id);
+                int idToUpdate = idToSetAsPending ?? userSchedule.Id;
+
+                var scheduleToBeUpdated = _repository.GetUserScheduleById(idToUpdate);
                 scheduleToBeUpdated.Schedule = userSchedule.Schedule;
                 scheduleToBeUpdated.Status = userSchedule.Status;
                 _repository.UpdateUserSchedule(scheduleToBeUpdated);
@@ -202,7 +244,7 @@ namespace Basecode.Services.Services
                 logContent = UpdateUserSchedule(userSchedule);
                 await SendRejectedScheduleNoticeToInterviewer(userSchedule);
             }
-  
+
             return logContent;
         }
 

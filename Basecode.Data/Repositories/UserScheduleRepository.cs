@@ -43,5 +43,16 @@ namespace Basecode.Data.Repositories
             _context.UserSchedule.Update(userSchedule);
             _context.SaveChanges();
         }
+
+        /// <summary>
+        /// Gets the identifier if user schedule exists.
+        /// </summary>
+        /// <param name="applicationId">The application identifier.</param>
+        /// <returns></returns>
+        public int GetIdIfUserScheduleExists(Guid applicationId)
+        {
+            var id = _context.UserSchedule.FirstOrDefault(schedule => schedule.ApplicationId == applicationId);
+            return id != null ? id.Id : -1;
+        }
     }
 }

@@ -37,7 +37,7 @@ namespace Basecode.Services.Interfaces
         /// </summary>
         /// <param name="userSchedule">The user schedule.</param>
         /// <returns></returns>
-        LogContent UpdateUserSchedule(UserSchedule userSchedule);
+        LogContent UpdateUserSchedule(UserSchedule userSchedule, int? idToSetAsPending = null);
 
         /// <summary>
         /// Sends the schedules to interviewer.
@@ -67,5 +67,12 @@ namespace Basecode.Services.Interfaces
         /// <param name="userSchedule">The user schedule.</param>
         /// <returns></returns>
         Task SendRejectedScheduleNoticeToInterviewer(UserSchedule userSchedule);
+
+        /// <summary>
+        /// Gets the identifier if user schedule exists.
+        /// </summary>
+        /// <param name="applicationId">The application identifier.</param>
+        /// <returns></returns>
+        int GetIdIfUserScheduleExists(Guid applicationId);
     }
 }
