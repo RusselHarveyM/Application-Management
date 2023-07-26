@@ -19,7 +19,7 @@ public class TokenHelper
     /// <param name="id">The identifier to store.</param>
     /// <param name="expirationMinutes">The expiration minutes.</param>
     /// <returns></returns>
-    public string GenerateToken(string action, int id, int expirationMinutes = 30)
+    public string GenerateToken(string action, int id, int expirationHours = 72)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(_key);
@@ -30,7 +30,7 @@ public class TokenHelper
                 new Claim("action", action),
                 new Claim("id", id.ToString())
             }),
-            Expires = DateTime.UtcNow.AddMinutes(expirationMinutes),
+            Expires = DateTime.UtcNow.AddHours(expirationHours),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
 
