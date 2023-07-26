@@ -200,6 +200,11 @@ namespace Basecode.Services.Services
             return _repository.GetLinkedUserIds(jobOpeningId).ToList();
         }
 
+        /// <summary>
+        /// Retrieves the list of user IDs associated with a specific job opening user.
+        /// </summary>
+        /// <param name="jobOpeningId">The ID of the job opening..</param>
+        /// <returns>A list of integers. </returns>
         public List<int> GetUserById(int jobOpeningId)
         {
             return _repository.GetUserById(jobOpeningId).ToList();

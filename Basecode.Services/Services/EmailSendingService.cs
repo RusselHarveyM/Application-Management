@@ -28,6 +28,7 @@ namespace Basecode.Services.Services
         /// <param name="interviewerUsername">The interviewer username.</param>
         /// <param name="interviewerPassword">The interviewer password.</param>
         /// <param name="jobPosition">The job position.</param>
+        /// <param name="role">The role</param>
         public async Task SendInterviewNotification(string interviewerEmail, string intervierwerFullName, string interviewerUsername,
                                string interviewerPassword, string jobPosition, string role)
         {
@@ -45,6 +46,10 @@ namespace Basecode.Services.Services
             await _emailService.SendEmail(interviewerEmail, role, body);
         }
 
+        /// <summary>
+        /// Sends automated reminders to users based on their roles and assigned tasks.
+        /// This method will be executed every two weeks to remind users of their pending tasks.
+        /// </summary>
         public async Task SendAutomatedReminder()
         {
             // Implement the logic for HR to plot their schedules

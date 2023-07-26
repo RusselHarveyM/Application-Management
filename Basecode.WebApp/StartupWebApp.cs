@@ -73,6 +73,10 @@ namespace Basecode.WebApp
             // FOR TESTING ONLY: run shortlisting method every minute
             //RecurringJob.AddOrUpdate<IShortlistingService>("shortlisting", service => service.ShortlistApplications(), Cron.Minutely);
 
+            /// <summary>
+            /// Sets up a recurring Hangfire job to send automated reminders using the IEmailSendingService.
+            /// The job will trigger every 2 weeks.
+            /// </summary>
             RecurringJob.AddOrUpdate<IEmailSendingService>("auto-reminder", service => service.SendAutomatedReminder(), "0 0 7 * *");
         }
     }

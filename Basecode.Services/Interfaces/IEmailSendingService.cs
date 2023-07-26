@@ -17,11 +17,15 @@ namespace Basecode.Services.Interfaces
         /// <param name="interviewerUsername">The interviewer username.</param>
         /// <param name="interviewerPassword">The interviewer password.</param>
         /// <param name="jobPosition">The job position.</param>
+        /// <param name="role">The role</param>
         /// <returns></returns>
         Task SendInterviewNotification(string interviewerEmail, string intervierwerFullName, string interviewerUsername,
                                    string interviewerPassword, string jobPosition, string role);
 
-       Task SendAutomatedReminder();
+        /// <summary>
+        /// Sends automated reminders to users based on their roles and assigned tasks.
+        /// This asynchronous method will be executed periodically to remind users of their pending tasks.
+        Task SendAutomatedReminder();
 
         /// <summary>
         /// Sends the unique identifier email.
