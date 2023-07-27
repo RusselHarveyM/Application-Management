@@ -59,5 +59,23 @@ namespace Basecode.Data.Repositories
                 .FirstOrDefault(applicant => applicant.Application.Id == applicationId);
             return applicant;
         }
+
+        public List<(string Name, string Email, string Title)> GetApplicantNameAndJobTitle()
+        {
+            var result = _context.Applicant
+                .Join(_context.Application,
+                    applicant => applicant.Id,
+                    application => application.ApplicantId,
+                    (applicant, application) => new { Applicant = applicant, Application = application })
+                .Join(_context.JobOpening,
+                    applicantApplication => applicantApplication.Application.JobOpeningId,
+                    jobOpening => jobOpening.Id,
+                    (applicantApplication, jobOpening) => new { ApplicantApplication = applicantApplication, JobOpening = jobOpening })
+                .Select(joinedTables => new { joinedTables.ApplicantApplication.Applicant, joinedTables.JobOpening.Title })
+                .ToList();
+
+            var nameAndTitleList = result.Select(x => (Name: $"{x.Applicant.Firstname} {x.Applicant.Middlename} {x.Applicant.Lastname}".Trim(), x.Applicant.Email, x.Title)).ToList();
+            return nameAndTitleList;
+        }
     }
 }

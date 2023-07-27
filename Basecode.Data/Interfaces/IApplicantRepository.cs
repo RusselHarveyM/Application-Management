@@ -43,5 +43,7 @@ namespace Basecode.Data.Interfaces
         /// <param name="applicationId">The application identifier.</param>
         /// <returns></returns>
         Applicant GetApplicantByApplicationId(Guid applicationId);
+
+        List<(string Name, string Email, string Title)> GetApplicantNameAndJobTitle();
     }
 }

@@ -5,6 +5,7 @@ using Basecode.Data.Repositories;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
 using Basecode.Services.Util;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -186,6 +187,11 @@ namespace Basecode.Services.Services
         public Applicant GetApplicantByApplicationId(Guid applicationId)
         {
             return _repository.GetApplicantByApplicationId(applicationId);
+        }
+
+        public List<(string Name, string Email, string Title)> GetApplicantNameAndJobTitle()
+        {
+            return _repository.GetApplicantNameAndJobTitle();
         }
     }
 }

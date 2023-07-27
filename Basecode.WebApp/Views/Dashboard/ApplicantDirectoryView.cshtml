@@ -1,3 +1,38 @@
 ﻿@{
     Layout = "/Views/Shared/_Admin.cshtml";
 }
+
+<div class="container">
+    <div class="container d-flex flex-row align-content-start justify-content-start">
+        <div class="d-flex flex-column me-5">
+            <a style="color: #FF0000; text-decoration: none;">APPLICANTS</a>
+            <hr class="container opacity-100" style="height: 5px; color: #FF0000;" />
+        </div>
+        <a>SHORTLISTS</a>
+    </div>
+    <div class="container d-flex flex-row align-content-center justify-content-start">
+        <table class="table table-striped">
+            <thead class="text-center">
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Job Applied</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody class="text-center">
+                @foreach (var applicant in Model)
+                {
+                    <tr>
+                        <td>@applicant.Item1</td>
+                        <td>@applicant.Item2</td>
+                        <td>@applicant.Item3</td>
+                        <td>
+                            <button type="button" class="btn" style="background-color: #FF0000; color: white;">View Details</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

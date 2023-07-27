@@ -1,4 +1,5 @@
-﻿using Basecode.Data.ViewModels;
+﻿using Basecode.Data.Models;
+using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
 using Basecode.Services.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -210,7 +211,8 @@ namespace Basecode.WebApp.Controllers
 
         public IActionResult ApplicantDirectoryView()
         {
-            return View();
+            var applicant = _applicantService.GetApplicantNameAndJobTitle();
+            return View(applicant);
         }
 
     }
