@@ -82,26 +82,7 @@ namespace Basecode.WebApp.Controllers
                 }
 
                 _logger.Trace("Successfully created AssignUsersViewModel for JobOpening [" + id + "].");
-
-                // Use switch case for different roles
-                //switch (data.Role)
-                //{
-                //    case "Deployment Team":
-                //        _emailService.ScheduleInterview(data.Email, data.Fullname, data.Username, data.Password, jobOpenings.Title);
-                //        break;
-
-                //    case "Human Resources":
-                //        _emailService.ScheduleForHR(data.Email, data.Fullname, data.Username, data.Password, jobOpenings.Title);
-                //        break;
-
-                //    case "Technical":
-                //        _emailService.ScheduleForTechnical(data.Email, data.Fullname, data.Username, data.Password, jobOpenings.Title);
-                //        break;
-
-                //    default:
-                //        // Handle the default case if the role doesn't match any case
-                //        break;
-                //}
+                
 
                 return PartialView("~/Views/Dashboard/_AssignUsersView.cshtml", viewModel);
             }

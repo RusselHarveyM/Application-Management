@@ -159,6 +159,7 @@ namespace Basecode.Services.Services
                 .Select(applicant => applicant.Id)
                 .ToList();
 
+            if(rejectedApplicantIds.Count > 0)
             return _repository.GetAll()
                 .Where(applicant =>
                     // Applicants with no UserSchedule record at all
@@ -174,6 +175,7 @@ namespace Basecode.Services.Services
                     JobOpeningId = applicant.Application.JobOpeningId,
                 })
                 .ToList();
+            return new List<ApplicantStatusViewModel>();
         }
 
         /// <summary>

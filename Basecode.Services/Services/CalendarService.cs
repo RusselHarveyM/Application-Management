@@ -23,6 +23,7 @@ public class CalendarService : ICalendarService
     {
         var tokens = JObject.Parse(File.ReadAllText(tokensFile));
         var user = _config["GraphApi:ObjectId"];
+        
         var restClient = new RestClient($"https://graph.microsoft.com/v1.0/users/{user}/calendar/events");
         var restRequest = new RestRequest();
 
