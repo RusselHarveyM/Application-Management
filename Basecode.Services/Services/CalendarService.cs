@@ -1,5 +1,6 @@
 ﻿using Basecode.Data.Dto;
 using Basecode.Services.Interfaces;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Graph.Models;
 using Newtonsoft.Json;
@@ -11,12 +12,14 @@ namespace Basecode.Domain;
 public class CalendarService : ICalendarService
 {
     private readonly IConfiguration _config;
-    private string tokensFile = @"C:\Users\Lenovo\Documents\vs_projects\newtemp\Application-Management\Basecode.WebApp\tokens.json";
-    
+    private readonly IWebHostEnvironment _environment;
+    private string tokensFile;
 
-    public CalendarService(IConfiguration config)
+    public CalendarService(IConfiguration config, IWebHostEnvironment environment)
     {
         _config = config;
+        _environment = environment;
+        tokensFile = _environment.ContentRootPath + @"\tokens.json";
     }
 
     public string CreateEvent(CalendarEvent calendarEvent)
