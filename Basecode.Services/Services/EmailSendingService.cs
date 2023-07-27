@@ -1,6 +1,7 @@
 ﻿using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
 using Basecode.Services.Interfaces;
+using Microsoft.Extensions.Configuration;
 using System.Web;
 
 namespace Basecode.Services.Services
@@ -9,15 +10,16 @@ namespace Basecode.Services.Services
     public class EmailSendingService : IEmailSendingService
     {
         private readonly IEmailService _emailService;
-        private readonly TokenHelper _tokenHelper;
-        private const string SecretKey = "CDC1CAAACAA3269755F5EC44C7202F0055C9C322AEB5C4B6103F6E9C11EF136F";
         private readonly IUserRepository _userRepository;
+        private readonly IConfiguration _config;
+        private readonly TokenHelper _tokenHelper;
 
-        public EmailSendingService(IEmailService emailService, IUserRepository userRepository)
+        public EmailSendingService(IEmailService emailService, IUserRepository userRepository, IConfiguration config)
         {
             _emailService = emailService;
-            _tokenHelper = new TokenHelper(SecretKey);
             _userRepository = userRepository;
+            _config = config;
+            _tokenHelper = new TokenHelper(_config["TokenHelper:SecretKey"]);
         }
 
         /// <summary>
