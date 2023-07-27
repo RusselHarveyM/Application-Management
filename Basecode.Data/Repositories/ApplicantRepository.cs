@@ -60,6 +60,11 @@ namespace Basecode.Data.Repositories
             return applicant;
         }
 
+        /// <summary>
+        /// This method retrieves a list of applicant names along with their corresponding email addresses and job titles.
+        /// It performs a series of database joins to retrieve the required information from the underlying data context.
+        /// </summary>
+        /// <returns>A list of tuples, each containing the applicant's full name, email address, and job title.</returns>
         public List<(string Name, string Email, string Title)> GetApplicantNameAndJobTitle()
         {
             var result = _context.Applicant

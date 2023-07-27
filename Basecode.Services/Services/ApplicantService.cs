@@ -189,6 +189,10 @@ namespace Basecode.Services.Services
             return _repository.GetApplicantByApplicationId(applicationId);
         }
 
+        /// <summary>
+        /// This method retrieves a list of applicant names along with their corresponding email addresses and job titles.
+        /// </summary>
+        /// <returns>A list of tuples, each containing the applicant's full name, email address, and job title.</returns>
         public List<(string Name, string Email, string Title)> GetApplicantNameAndJobTitle()
         {
             return _repository.GetApplicantNameAndJobTitle();

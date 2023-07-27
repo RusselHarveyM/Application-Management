@@ -208,7 +208,11 @@ namespace Basecode.WebApp.Controllers
             return NotFound();
         }
 
-
+        /// <summary>
+        /// Retrieves the data needed to display the Applicant Directory view, which includes a list of applicants along with their job titles,
+        /// and information about shortlisted applicants for HR and Technical positions.
+        /// </summary>
+        /// <returns>An IActionResult representing the Applicant Directory view populated with the required data.</returns>
         public IActionResult ApplicantDirectoryView()
         {
             try
