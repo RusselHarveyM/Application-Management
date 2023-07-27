@@ -135,7 +135,7 @@ namespace Basecode.Tests.Services
         public async Task Update_ValidationFailed_ReturnsLogContent()
         {
             // Arrange
-            var user = new UserViewModel { Email = "invalid@email" };
+            var user = new UserUpdateViewModel { Email = "invalid@email" };
 
             // Act
             var result = await _service.Update(user);
@@ -151,7 +151,7 @@ namespace Basecode.Tests.Services
         public async Task Update_ValidUserModel_ReturnsLogContent()
         {
             // Arrange
-            var userVm = new UserViewModel()
+            var userVm = new UserUpdateViewModel()
             {
                 Id = 1,
                 Fullname = "John Doe",

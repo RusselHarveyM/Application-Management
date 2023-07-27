@@ -133,9 +133,10 @@ namespace Basecode.WebApp.Controllers
                     _logger.Error("User [" + id + "] not found.");
                     return NotFound();
                 }
-                var vmData = new UserViewModel
+                var vmData = new UserUpdateViewModel
                 {
                     Id = data.Id,
+                    AspId = data.AspId,
                     Username = data.Username,
                     Fullname = data.Fullname,
                     Email = data.Email,
@@ -155,11 +156,11 @@ namespace Basecode.WebApp.Controllers
         /// <summary>
         /// Updates an existing user in the system.
         /// </summary>
-        /// <param name="user">User object representing the user with updated information.</param>
+        /// <param name="user">UserUpdateViewModel object representing the user with updated information.</param>
         /// <returns>Redirect to the Index() action to display the list of users.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(UserViewModel user)
+        public async Task<IActionResult> Update(UserUpdateViewModel user)
         {
             try
             {
