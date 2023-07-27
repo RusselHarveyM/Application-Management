@@ -11,7 +11,7 @@ namespace Basecode.Services.Interfaces
         /// </summary>
         /// <param name="formData">The form data.</param>
         /// <returns></returns>
-        Task AddUserSchedules(SchedulerDataViewModel formData);
+        Task AddUserSchedules(SchedulerDataViewModel formData, int userId);
 
         /// <summary>
         /// Creates a UserSchedule.
@@ -37,7 +37,7 @@ namespace Basecode.Services.Interfaces
         /// </summary>
         /// <param name="userSchedule">The user schedule.</param>
         /// <returns></returns>
-        LogContent UpdateUserSchedule(UserSchedule userSchedule);
+        LogContent UpdateUserSchedule(UserSchedule userSchedule, int? idToSetAsPending = null);
 
         /// <summary>
         /// Sends the schedules to interviewer.
@@ -53,5 +53,26 @@ namespace Basecode.Services.Interfaces
         /// <param name="userScheduleId">The user schedule identifier.</param>
         /// <returns></returns>
         LogContent AcceptSchedule(int userScheduleId);
+
+        /// <summary>
+        /// Rejects the schedule.
+        /// </summary>
+        /// <param name="userScheduleId">The user schedule identifier.</param>
+        /// <returns></returns>
+        Task<LogContent> RejectSchedule(int userScheduleId);
+
+        /// <summary>
+        /// Informs the interviewer that a schedule has been rejected.
+        /// </summary>
+        /// <param name="userSchedule">The user schedule.</param>
+        /// <returns></returns>
+        Task SendRejectedScheduleNoticeToInterviewer(UserSchedule userSchedule);
+
+        /// <summary>
+        /// Gets the identifier if user schedule exists.
+        /// </summary>
+        /// <param name="applicationId">The application identifier.</param>
+        /// <returns></returns>
+        int GetIdIfUserScheduleExists(Guid applicationId);
     }
 }

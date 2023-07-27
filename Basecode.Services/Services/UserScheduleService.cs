@@ -35,9 +35,8 @@ namespace Basecode.Services.Services
         /// Adds the schedules from the HR Scheduler.
         /// </summary>
         /// <param name="formData">The HR Scheduler form data.</param>
-        public async Task AddUserSchedules(SchedulerDataViewModel formData)
+        public async Task AddUserSchedules(SchedulerDataViewModel formData, int userId)
         {
-            int userId = 1; // Temporary until auth has been sorted out
             List<int> successfullyAddedApplicantIds = new List<int>();
 
             foreach (var schedule in formData.ApplicantSchedules)
@@ -53,17 +52,59 @@ namespace Basecode.Services.Services
                     Status = "pending",
                 };
 
-                (LogContent logContent, int userScheduleId) data = AddUserSchedule(userSchedule);
-
-                if (!data.logContent.Result && data.userScheduleId != -1)
+                int existingId = GetIdIfUserScheduleExists(applicationId);
+                if (existingId != -1)   // Update "rejected" schedule to "pending"
                 {
-                    _logger.Trace("Successfully created a new UserSchedule record.");
-                    await SendScheduleToApplicant(userSchedule, data.userScheduleId, schedule.ApplicantId, formData.Type);
-                    successfullyAddedApplicantIds.Add(schedule.ApplicantId);
+                    successfullyAddedApplicantIds = await HandleExistingSchedule(userSchedule, existingId, schedule.ApplicantId, successfullyAddedApplicantIds);
+                }
+                else    // Create new schedule
+                {
+                    successfullyAddedApplicantIds = await HandleNewSchedule(userSchedule, schedule.ApplicantId, successfullyAddedApplicantIds);
                 }
             }
 
             await SendSchedulesToInterviewer(formData, userId, successfullyAddedApplicantIds);
+        }
+
+        /// <summary>
+        /// Handles the existing schedule.
+        /// </summary>
+        private async Task<List<int>> HandleExistingSchedule(UserSchedule userSchedule, int existingId, int applicantId, List<int> successfullyAddedApplicantIds)
+        {
+            LogContent logContent = UpdateUserSchedule(userSchedule, existingId);
+            if (logContent.Result == false)
+            {
+                _logger.Trace("Successfully updated User Schedule [ " + existingId + " ]");
+                await SendScheduleToApplicant(userSchedule, existingId, applicantId, userSchedule.Type);
+                successfullyAddedApplicantIds.Add(applicantId);
+            }
+            return successfullyAddedApplicantIds;
+        }
+
+        /// <summary>
+        /// Handles the new schedule.
+        /// </summary>
+        private async Task<List<int>> HandleNewSchedule(UserSchedule userSchedule, int applicantId, List<int> successfullyAddedApplicantIds)
+        {
+            (LogContent logContent, int userScheduleId) data = AddUserSchedule(userSchedule);
+
+            if (!data.logContent.Result && data.userScheduleId != -1)
+            {
+                _logger.Trace("Successfully created a new UserSchedule record.");
+                await SendScheduleToApplicant(userSchedule, data.userScheduleId, applicantId, userSchedule.Type);
+                successfullyAddedApplicantIds.Add(applicantId);
+            }
+            return successfullyAddedApplicantIds;
+        }
+
+        /// <summary>
+        /// Gets the identifier if user schedule exists.
+        /// </summary>
+        /// <param name="applicationId">The application identifier.</param>
+        /// <returns>The user schedule identifier.</returns>
+        public int GetIdIfUserScheduleExists(Guid applicationId)
+        {
+            return _repository.GetIdIfUserScheduleExists(applicationId);
         }
 
         /// <summary>
@@ -93,7 +134,6 @@ namespace Basecode.Services.Services
         /// <param name="meetingType">Type of the meeting.</param>
         public async Task SendScheduleToApplicant(UserSchedule userSchedule, int userScheduleId, int applicantId, string meetingType)
         {
-            meetingType = meetingType[(meetingType.Split()[0].Length + 1)..];   // Remove "For " from meeting type
             var applicant = _applicantService.GetApplicantById(applicantId);
             await _emailSendingService.SendScheduleToApplicant(userSchedule, userScheduleId, applicant, meetingType);
         }
@@ -111,15 +151,15 @@ namespace Basecode.Services.Services
         /// <summary>
         /// Updates the schedule.
         /// </summary>
-        /// <param name="userSchedule">The user schedule.</param>
-        /// <returns></returns>
-        public LogContent UpdateUserSchedule(UserSchedule userSchedule)
+        public LogContent UpdateUserSchedule(UserSchedule userSchedule, int? idToSetAsPending = null)
         {
             LogContent logContent = CheckUserSchedule(userSchedule);
 
             if (logContent.Result == false)
             {
-                var scheduleToBeUpdated = _repository.GetUserScheduleById(userSchedule.Id);
+                int idToUpdate = idToSetAsPending ?? userSchedule.Id;
+
+                var scheduleToBeUpdated = _repository.GetUserScheduleById(idToUpdate);
                 scheduleToBeUpdated.Schedule = userSchedule.Schedule;
                 scheduleToBeUpdated.Status = userSchedule.Status;
                 _repository.UpdateUserSchedule(scheduleToBeUpdated);
@@ -135,7 +175,6 @@ namespace Basecode.Services.Services
         /// <param name="userId">The user identifier.</param>
         public async Task SendSchedulesToInterviewer(SchedulerDataViewModel formData, int userId, List<int> successfullyAddedApplicantIds)
         {
-            string meetingType = formData.Type[(formData.Type.Split()[0].Length + 1)..];   // Remove "For " from meeting type
             string jobOpeningTitle = _jobOpeningService.GetJobOpeningTitleById(formData.JobOpeningId);
             var user = _userService.GetById(userId);
             string scheduledTimes = "";
@@ -149,7 +188,7 @@ namespace Basecode.Services.Services
                 }
             }
 
-            await _emailSendingService.SendSchedulesToInterviewer(user.Fullname, user.Email, jobOpeningTitle, formData.Date, scheduledTimes, meetingType);
+            await _emailSendingService.SendSchedulesToInterviewer(user.Fullname, user.Email, jobOpeningTitle, formData.Date, scheduledTimes, formData.Type);
         }
 
         /// <summary>
@@ -160,11 +199,11 @@ namespace Basecode.Services.Services
         public LogContent AcceptSchedule(int userScheduleId)
         {
             var userSchedule = GetUserScheduleById(userScheduleId);
-            LogContent logContent = CheckAcceptedSchedule(userSchedule);
+            LogContent logContent = CheckUserScheduleStatus(userSchedule);
 
             if (logContent.Result == false)
             {
-                if (userSchedule.Type == "For HR Interview" || userSchedule.Type == "For Technical Interview")
+                if (userSchedule.Type == "HR Interview" || userSchedule.Type == "Technical Interview")
                 {
                     var interviewData = _interviewService.AddInterview(userSchedule);
                     if (!interviewData.Result)
@@ -186,6 +225,38 @@ namespace Basecode.Services.Services
             }
 
             return logContent;
+        }
+
+        /// <summary>
+        /// Rejects the schedule.
+        /// </summary>
+        /// <param name="userScheduleId">The user schedule identifier.</param>
+        /// <returns></returns>
+        public async Task<LogContent> RejectSchedule(int userScheduleId)
+        {
+            var userSchedule = GetUserScheduleById(userScheduleId);
+            LogContent logContent = CheckUserScheduleStatus(userSchedule);
+
+            if (logContent.Result == false)
+            {
+                userSchedule.Status = "rejected";
+                logContent = UpdateUserSchedule(userSchedule);
+                await SendRejectedScheduleNoticeToInterviewer(userSchedule);
+            }
+
+            return logContent;
+        }
+
+        /// <summary>
+        /// Informs the interviewer that a schedule has been rejected.
+        /// </summary>
+        /// <param name="userSchedule">The user schedule.</param>
+        public async Task SendRejectedScheduleNoticeToInterviewer(UserSchedule userSchedule)
+        {
+            User user = _userService.GetById(userSchedule.UserId);
+            Applicant applicant = _applicantService.GetApplicantByApplicationId(userSchedule.ApplicationId);
+            string applicantFullName = applicant.Firstname + " " + applicant.Lastname;
+            await _emailSendingService.SendRejectedScheduleNoticeToInterviewer(user.Email, user.Fullname, userSchedule, applicantFullName);
         }
     }
 }

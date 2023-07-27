@@ -30,13 +30,13 @@ namespace Basecode.WebApp.Controllers
         /// Displays the HR Scheduler.
         /// </summary>
         [HttpGet]
-        public IActionResult CreateView()
+        public IActionResult Create()
         {
             try
             {
                 var userAspId = _userManager.GetUserId(User);
                 var jobOpenings = _userService.GetLinkedJobOpenings(userAspId);
-                var applicants = _applicantService.GetApplicantsWithStatuses();
+                var applicants = _applicantService.GetApplicantsWithRejectedOrNoSchedule();
                 var schedulerFormData = new SchedulerDataViewModel();
 
                 SchedulerViewModel viewModel = new SchedulerViewModel()
@@ -70,8 +70,9 @@ namespace Basecode.WebApp.Controllers
                     _logger.Warn("Model has validation error(s).");
                     return View(formData);
                 }
-
-                await _userScheduleService.AddUserSchedules(formData);
+                var userAspId = _userManager.GetUserId(User);
+                int userId = _userService.GetUserIdByAspId(userAspId);
+                await _userScheduleService.AddUserSchedules(formData, userId);
                 return RedirectToAction("Index", "Dashboard");
             }
             catch (Exception e)
@@ -89,17 +90,19 @@ namespace Basecode.WebApp.Controllers
         {
             try
             {
+                ViewBag.IsScheduleAccepted = false;
                 int userScheduleId = _tokenHelper.GetIdFromToken(token, "accept");
                 if (userScheduleId == 0)
                 {
-                    _logger.Warn("Invalid token.");
-                    return Unauthorized("Invalid token.");
+                    _logger.Warn("Invalid or expired token.");
+                    return View();
                 }
 
                 var data = _userScheduleService.AcceptSchedule(userScheduleId);
                 if (!data.Result)
                 {
                     _logger.Trace("User Schedule [" + userScheduleId + "] has been successfully accepted.");
+                    ViewBag.IsScheduleAccepted = true;
                 }
 
                 return View();
@@ -115,43 +118,25 @@ namespace Basecode.WebApp.Controllers
         /// Rejects the schedule.
         /// </summary>
         [Route("Scheduler/RejectSchedule/{token}")]
-        public IActionResult RejectSchedule(string token)
+        public async Task<IActionResult> RejectSchedule(string token)
         {
             try
             {
-                int userScheduleId = 0;
-
-                if (_tokenHelper.ValidateToken(token, "reject"))
+                ViewBag.IsScheduleRejected = false;
+                int userScheduleId = _tokenHelper.GetIdFromToken(token, "reject");
+                if (userScheduleId == 0)
                 {
-                    var idClaim = _tokenHelper.GetClaimValue(token, "id");
-                    if (int.TryParse(idClaim, out int id))
-                    {
-                        userScheduleId = id;
-                    }
-                }
-                else
-                {
-                    _logger.Warn("Invalid token.");
-                    return Unauthorized();
+                    _logger.Warn("Invalid or expired token.");
+                    return View();
                 }
 
-                var userSchedule = _userScheduleService.GetUserScheduleById(userScheduleId);
-
-                if (userSchedule == null)
+                var data = await _userScheduleService.RejectSchedule(userScheduleId);
+                if (!data.Result)
                 {
-                    _logger.Error("Schedule is not found");
-                    return NotFound();
+                    _logger.Trace("User Schedule [" + userScheduleId + "] has been successfully rejected.");
+                    ViewBag.IsScheduleRejected = true;
                 }
 
-                if (userSchedule.Status == "rejected")
-                {
-
-                }
-
-                // Perform the rejection logic here
-                // Update the status of the UserSchedule to "rejected"
-                //userSchedule.Status = "rejected";
-                //_userScheduleService.UpdateUserSchedule(userSchedule);
                 return View();
             }
             catch (Exception e)

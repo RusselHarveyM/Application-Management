@@ -22,5 +22,12 @@ namespace Basecode.Data.Interfaces
         /// </summary>
         /// <param name="userSchedule">The user schedule.</param>
         void UpdateUserSchedule(UserSchedule userSchedule);
+
+        /// <summary>
+        /// Gets the identifier if user schedule exists.
+        /// </summary>
+        /// <param name="applicationId">The application identifier.</param>
+        /// <returns></returns>
+        int GetIdIfUserScheduleExists(Guid applicationId);
     }
 }

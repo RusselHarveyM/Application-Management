@@ -57,9 +57,16 @@ namespace Basecode.Services.Interfaces
         List<ApplicantStatusViewModel> GetApplicantsByJobOpeningId(int jobOpeningId);
 
         /// <summary>
-        /// Gets the applicants and their application statuses.
+        /// Gets the applicants with rejected or no schedule.
         /// </summary>
         /// <returns></returns>
-        List<ApplicantStatusViewModel> GetApplicantsWithStatuses();
+        List<ApplicantStatusViewModel> GetApplicantsWithRejectedOrNoSchedule();
+
+        /// <summary>
+        /// Gets the applicant by application identifier.
+        /// </summary>
+        /// <param name="applicationId">The application identifier.</param>
+        /// <returns></returns>
+        Applicant GetApplicantByApplicationId(Guid applicationId);
     }
 }

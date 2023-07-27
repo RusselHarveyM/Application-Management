@@ -86,5 +86,11 @@ namespace Basecode.Services.Interfaces
         /// <param name="reference">The reference.</param>
         /// <returns></returns>
         Task SendGratitudeEmail(Applicant applicant, BackgroundCheck reference);
+
+        /// <summary>
+        /// Informs the interviewer that a schedule has been rejected.
+        /// </summary>
+        /// <returns></returns>
+        Task SendRejectedScheduleNoticeToInterviewer(string email, string fullname, UserSchedule userSchedule, string applicantFullName);
     }
 }

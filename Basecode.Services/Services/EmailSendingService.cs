@@ -235,7 +235,7 @@ namespace Basecode.Services.Services
                                      $"<br> <a href=\"{acceptUrl}\">Accept</a> " +
                                      $"<a href=\"{rejectUrl}\">Reject</a>");
 
-            await _emailService.SendEmail(applicant.Email, $"Alliance Software Inc. Application {meetingType} Schedule", body);
+            await _emailService.SendEmail(applicant.Email, $"Alliance Software Inc. {meetingType} Schedule", body);
         }
 
         /// <summary>
@@ -278,6 +278,11 @@ namespace Basecode.Services.Services
             await _emailService.SendEmail(reference.Email, $"Character Reference Form Request", body);
         }
 
+        /// <summary>
+        /// Sends the gratitude email.
+        /// </summary>
+        /// <param name="applicant">The applicant.</param>
+        /// <param name="reference">The reference.</param>
         public async Task SendGratitudeEmail(Applicant applicant, BackgroundCheck reference)
         {
             var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
@@ -295,6 +300,29 @@ namespace Basecode.Services.Services
                                      $"<br> Best regards,");
 
             await _emailService.SendEmail(reference.Email, "Alliance Software Inc. Background Check", body);
+        }
+
+        /// <summary>
+        /// Informs the interviewer that a schedule has been rejected.
+        /// </summary>
+        public async Task SendRejectedScheduleNoticeToInterviewer(string email, string fullname, UserSchedule userSchedule, string applicantFullName)
+        {
+            var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
+            var templateContent = File.ReadAllText(templatePath);
+            var body = templateContent
+                .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+                .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+                .Replace("{{HEADLINE}}", $"Applicant {userSchedule.Type} Schedule Rejection")
+                .Replace("{{BODY}}", $"Dear {fullname},<br>" +
+                                     $"<br> We hope this email finds you well. We would like to inform you that the {userSchedule.Type} schedule that you set for Mr./Ms. {applicantFullName}" +
+                                     $" on {userSchedule.Schedule} has been rejected. Please reschedule the meeting through our HR Automation System. <br> " +
+                                     $"<br> To set a new schedule, please follow these steps: <br> 1. Log in to the HR Automation System using your credentials. <br> 2. Navigate to the HR Scheduler." +
+                                     $"<br> 3. Select the appropriate job opening, meeting type, and date. <br> 4. Add the applicant(s) you want to set a schedule for." +
+                                     $"<br> 5. Select a time for each applicant. <br> 6. Click the submit button. <br>" +
+                                     $"<br> Should you encounter any difficulties or require any support in the process, please do not hesitate to reach out to our support team, and we will be glad to assist you. <br>" +
+                                     $"<br><br> Best regards,");
+
+            await _emailService.SendEmail(email, $"Alliance Software Inc. {userSchedule.Type} Schedule Rejection", body);
         }
     }
 }

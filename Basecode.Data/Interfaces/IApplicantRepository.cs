@@ -36,5 +36,12 @@ namespace Basecode.Data.Interfaces
         /// <param name="jobOpeningId"></param>
         /// <returns></returns>
         IQueryable<Applicant> GetApplicantsByJobOpeningId(int jobOpeningId);
+
+        /// <summary>
+        /// Gets the applicant by application identifier.
+        /// </summary>
+        /// <param name="applicationId">The application identifier.</param>
+        /// <returns></returns>
+        Applicant GetApplicantByApplicationId(Guid applicationId);
     }
 }
