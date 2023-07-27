@@ -51,7 +51,7 @@ namespace Basecode.Services.Services
 
         public BackgroundCheck GetBackgroundByCharacterRefId(int characterRefId)
         {
-            var fetchData = _repository.GetAll().Where(m => m.CharReferenceId == characterRefId).FirstOrDefault();
+            var fetchData = _repository.GetAll().Where(m => m.CharacterReferenceId == characterRefId).FirstOrDefault();
 
             if (fetchData != null)
             {

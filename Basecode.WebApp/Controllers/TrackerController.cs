@@ -73,7 +73,7 @@ namespace Basecode.WebApp.Controllers
         /// <param name="choice">The choice.</param>
         /// <returns></returns>
         [Route("Tracker/ChangeStatus/{userId}/{appId}/{status}/{choice}")]
-        public IActionResult ChangeStatus(int userId,Guid appId, string status, string choice)
+        public async Task<IActionResult> ChangeStatus(int userId,Guid appId, string status, string choice)
         {
             try
             {
@@ -83,7 +83,8 @@ namespace Basecode.WebApp.Controllers
 
                 if(application != null && user != null)
                 {
-                    _trackService.UpdateApplicationStatusByEmailResponse(application, user, choice, status);
+                    var result = await _trackService.UpdateApplicationStatusByEmailResponse(application, user, choice, status);
+                    _applicationService.Update(result);
                 }
 
                 return RedirectToAction("ChangeStatusView");

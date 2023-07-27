@@ -12,9 +12,7 @@ namespace Basecode.Data.Models
     {
         [Key]
         public int Id { get; set; }
-
-        [ForeignKey("CharReferenceId")]
-        public int CharReferenceId { get; set; }
+        public int CharacterReferenceId { get; set; }
         public int UserHRId { get; set; }
         public string Firstname { get; set; }
         public string Lastname { get; set; }

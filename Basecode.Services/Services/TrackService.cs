@@ -12,11 +12,24 @@ namespace Basecode.Services.Services
     {
         private readonly IEmailSendingService _emailSendingService;
         private readonly ResumeChecker _resumeChecker;
+        private readonly List<string> _statuses;
 
         public TrackService(IEmailSendingService emailSendingService, ResumeChecker resumeChecker)
         {
             _emailSendingService = emailSendingService;
             _resumeChecker = resumeChecker;
+            _statuses = new List<string>
+            {
+                "NA",
+                "HR Shortlisted",
+                "For HR Screening",
+                "For HR Interview",
+                "For Technical Exam",
+                "For Technical Interview",
+                "Technical Shortlisted",
+                "Undergoing Background Check",
+                "For Final Interview"
+            };
         }
 
         /// <summary>
@@ -26,7 +39,8 @@ namespace Basecode.Services.Services
         /// <param name="applicant">The applicant.</param>
         /// <param name="jobOpening">The job opening.</param>
         /// <returns></returns>
-        public async Task<Application> CheckAndSendApplicationStatus(Application application, Applicant applicant, JobOpening jobOpening)
+        public async Task<Application> CheckAndSendApplicationStatus(Application application, Applicant applicant,
+            JobOpening jobOpening)
         {
             var result = await _resumeChecker.CheckResume(jobOpening.Title, applicant.CV);
 
@@ -40,7 +54,6 @@ namespace Basecode.Services.Services
 
             if (int.Parse(score.Replace("%", "")) > 60)
             {
-
                 return await UpdateApplicationStatus(application, jobOpening, "HR Shortlisted", "GUID");
             }
             else
@@ -67,7 +80,8 @@ namespace Basecode.Services.Services
                         await _emailSendingService.SendGUIDEmail(application);
                         break;
                     case "Approval":
-                        await _emailSendingService.SendApprovalEmail(user, application.Applicant, application.Id, newStatus);
+                        await _emailSendingService.SendApprovalEmail(user, application.Applicant, application.Id,
+                            newStatus);
                         break;
                     case "Rejected":
                         await _emailSendingService.SendRejectedEmail(application.Applicant, newStatus);
@@ -86,7 +100,8 @@ namespace Basecode.Services.Services
         /// <param name="newStatus">The new status.</param>
         /// <param name="mailType">Type of the mail.</param>
         /// <returns></returns>
-        public async Task<Application> UpdateApplicationStatus(Application application, User user, string newStatus, string mailType)
+        public async Task<Application> UpdateApplicationStatus(Application application, User user, string newStatus,
+            string mailType)
         {
             try
             {
@@ -111,7 +126,8 @@ namespace Basecode.Services.Services
         /// <param name="newStatus">The new status.</param>
         /// <param name="mailType">Type of the mail.</param>
         /// <returns></returns>
-        private async Task<Application> UpdateApplicationStatus(Application application, JobOpening jobOpening, string newStatus, string mailType)
+        private async Task<Application> UpdateApplicationStatus(Application application, JobOpening jobOpening,
+            string newStatus, string mailType)
         {
             try
             {
@@ -122,11 +138,10 @@ namespace Basecode.Services.Services
                 await UpdateTrackStatusEmail(application, jobOpening.Users.First(), newStatus, mailType);
                 return application;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return null;
             }
-           
         }
 
         /// <summary>
@@ -137,10 +152,18 @@ namespace Basecode.Services.Services
         /// <param name="choice">The choice (e.g., approved or rejected).</param>
         /// <param name="newStatus">The new status.</param>
         /// <returns></returns>
-        public async Task<Application> UpdateApplicationStatusByEmailResponse(Application application, User user, string choice, string newStatus)
+        public async Task<Application> UpdateApplicationStatusByEmailResponse(Application application, User user,
+            string choice, string status)
         {
+            var newStatus = "";
+
             if (choice.Equals("approved"))
             {
+                if (_statuses.Contains(status))
+                {
+                    var statusIndex = _statuses.IndexOf(status);
+                    newStatus = _statuses[statusIndex + 1];
+                }
                 return await UpdateApplicationStatus(application, user, newStatus, "Approval");
             }
             else

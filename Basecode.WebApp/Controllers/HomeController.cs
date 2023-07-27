@@ -14,13 +14,24 @@ namespace Basecode.Main.Controllers
     {
         private readonly IJobOpeningService _jobOpeningService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly IConfiguration _config;
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController" /> class.
         /// </summary>
         /// <param name="jobOpeningService">The job opening service.</param>
-        public HomeController(IJobOpeningService jobOpeningService)
+        public HomeController(IJobOpeningService jobOpeningService, IConfiguration config)
         {
             _jobOpeningService = jobOpeningService;
+            _config = config;
+        }
+
+        public ActionResult OauthRedirect()
+        {
+            var redirectUrl = "https://login.microsoftonline.com/common/adminconsent?" +
+                              "&state=automationsystem2" +
+                              "&redirect_uri=" + _config["GraphApi:Redirect_url"] +
+                              "&client_id=" + _config["GraphApi:ClientId"];
+            return Redirect(redirectUrl);
         }
 
         /// <summary>
