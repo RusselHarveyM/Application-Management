@@ -195,7 +195,7 @@ namespace Basecode.Tests.Controllers
             _controller.ModelState.AddModelError("User", "The Username field is required.");
 
             // Act
-            var result = await _controller.Update(new UserViewModel());
+            var result = await _controller.Update(new UserUpdateViewModel());
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
@@ -206,7 +206,7 @@ namespace Basecode.Tests.Controllers
         public async Task Update_ValidModelState_ReturnsOkResult()
         {
             // Arrange
-            var user = new UserViewModel();
+            var user = new UserUpdateViewModel();
             _fakeUserService.Setup(service => service.Update(user)).ReturnsAsync(new LogContent());
 
             // Act
@@ -225,7 +225,7 @@ namespace Basecode.Tests.Controllers
             logContent.Result = true;
             logContent.ErrorCode = "400";
             logContent.Message = "The Email Address format is invalid.";
-            var user = new UserViewModel();
+            var user = new UserUpdateViewModel();
             _fakeUserService.Setup(service => service.Update(user)).ReturnsAsync(logContent);
 
             // Act
@@ -244,7 +244,7 @@ namespace Basecode.Tests.Controllers
                 .Throws(new Exception());
 
             // Act
-            var result = await _controller.Update(new UserViewModel());
+            var result = await _controller.Update(new UserUpdateViewModel());
 
             // Assert
             var objectResult = Assert.IsType<ObjectResult>(result);

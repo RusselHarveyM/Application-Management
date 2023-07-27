@@ -55,9 +55,8 @@ namespace Basecode.Data.Interfaces
         /// Updates the specified user.
         /// </summary>
         /// <param name="user">The user.</param>
-        /// <param name="oldRole">The old role.</param>
         /// <returns></returns>
-        Task Update(User user, string oldRole);
+        Task Update(User user);
 
         /// <summary>
         /// Deletes the specified user.

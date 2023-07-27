@@ -52,11 +52,11 @@ namespace Basecode.Services.Interfaces
         User GetByEmail(string email);
 
         /// <summary>
-        /// Updates an existing user.
+        /// Updates the specified user.
         /// </summary>
-        /// <param name="user">Represents the user with updated information.</param>
+        /// <param name="user">The user.</param>
         /// <returns></returns>
-        Task<LogContent> Update(UserViewModel user);
+        Task<LogContent> Update(UserUpdateViewModel user);
 
         /// <summary>
         /// Deletes the specified user.

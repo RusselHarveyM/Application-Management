@@ -97,24 +97,19 @@ namespace Basecode.Services.Services
         }
 
         /// <summary>
-        /// Updates an existing user.
+        /// Updates the specified user.
         /// </summary>
-        /// <param name="user">Represents the user with updated information.</param>
-        public async Task<LogContent> Update(UserViewModel user)
+        /// <param name="user">The user.</param>
+        /// <returns></returns>
+        public async Task<LogContent> Update(UserUpdateViewModel user)
         {
             LogContent logContent = new LogContent();
             logContent = CheckUser(user);
 
             if (logContent.Result == false)
             {
-                var userToBeUpdated = await _repository.GetByIdAsync(user.Id);
-                var oldRole = userToBeUpdated.Role;
-                userToBeUpdated.Fullname = user.Fullname;
-                userToBeUpdated.Username = user.Username;
-                userToBeUpdated.Email = user.Email;
-                userToBeUpdated.Password = user.Password;
-                userToBeUpdated.Role = user.Role;
-                await _repository.Update(userToBeUpdated, oldRole);
+                var userToBeUpdated = _mapper.Map<User>(user);
+                await _repository.Update(userToBeUpdated);
             }
 
             return logContent;
