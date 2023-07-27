@@ -5,6 +5,7 @@ using Basecode.Data.Repositories;
 using Basecode.Services.Interfaces;
 using Basecode.Services.Services;
 using Basecode.Data.Models;
+using Basecode.Domain;
 using Basecode.Services.Util;
 
 namespace Basecode.WebApp
@@ -38,6 +39,7 @@ namespace Basecode.WebApp
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IDashboardService, DashboardService>();
             services.AddScoped<IAdminService, AdminService>();
+            services.AddScoped<ICalendarService, CalendarService>();
 
             // Repositories
             services.AddScoped<IUserRepository, UserRepository>();

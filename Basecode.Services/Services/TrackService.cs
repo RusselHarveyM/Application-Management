@@ -141,7 +141,9 @@ namespace Basecode.Services.Services
         {
             if (choice.Equals("approved"))
             {
+                
                 return await UpdateApplicationStatus(application, user, newStatus, "Approval");
+                
             }
             else
             {
