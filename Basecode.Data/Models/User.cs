@@ -84,5 +84,29 @@ namespace Basecode.Data.Models
         /// The identity user.
         /// </value>
         public IdentityUser IdentityUser { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user schedule.
+        /// </summary>
+        /// <value>
+        /// The user schedule.
+        /// </value>
+        public UserSchedule? UserSchedule { get; set; }
+
+        /// <summary>
+        /// Gets or sets the interview.
+        /// </summary>
+        /// <value>
+        /// The interview.
+        /// </value>
+        public Interview? Interview { get; set; }
+
+        /// <summary>
+        /// Gets or sets the examination.
+        /// </summary>
+        /// <value>
+        /// The examination.
+        /// </value>
+        public Examination? Examination { get; set; }
     }
 }

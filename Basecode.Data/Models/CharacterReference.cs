@@ -8,5 +8,7 @@
         public string Email { get; set; }
 
         public int ApplicantId { get; set; }
+        public Applicant Applicant { get; set; } = null!;
+        public BackgroundCheck? BackgroundCheck { get; set; }
     }
 }

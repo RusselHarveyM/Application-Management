@@ -37,7 +37,7 @@ namespace Basecode.Data.Models
 
         public byte[] CV { get; set; }
 
-        public List<CharacterReference> CharacterReferences { get; set; }
+        public ICollection<CharacterReference> CharacterReferences { get; set; } = new List<CharacterReference>();
 
         public Application? Application { get; set; }
     }

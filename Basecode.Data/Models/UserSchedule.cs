@@ -9,7 +9,7 @@
         public DateTime Schedule { get; set; }
         public string Status { get; set; } = "pending";
 
-        public User User { get; set; }
-        public Application Application { get; set; }
+        public User User { get; set; } = null!;
+        public Application Application { get; set; } = null!;
     }
 }

@@ -20,5 +20,8 @@ namespace Basecode.Data.Models
         public string? TeamsLink { get; set; }
         public string? Type { get; set; }
         public string? Result { get; set; }
+
+        public Application Application { get; set; } = null!;
+        public User User { get; set; } = null!;
     }
 }
