@@ -52,6 +52,7 @@ namespace Basecode.Services.Services
             if(result != null)
             {
                 _applicationService.Update(result);
+                await _trackService.UpdateTrackStatusEmail(application, user, status, "Approval");
             }
         }
     }

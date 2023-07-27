@@ -67,8 +67,6 @@ namespace Basecode.WebApp.Controllers
                 };
                 List<ApplicantStatusViewModel> applicants = _applicantService.GetApplicantsByJobOpeningId(id);
                 List<HRUserViewModel> users = _userService.GetAllUsersWithLinkStatus(id);
-                //var data = _userService.GetById(id);
-                //var jobOpenings = _jobOpeningService.GetById(id);
 
                 AssignUsersViewModel viewModel = new AssignUsersViewModel()
                 {
