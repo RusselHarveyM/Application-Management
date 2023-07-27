@@ -211,9 +211,27 @@ namespace Basecode.WebApp.Controllers
 
         public IActionResult ApplicantDirectoryView()
         {
-            var applicant = _applicantService.GetApplicantNameAndJobTitle();
-            return View(applicant);
-        }
+            try
+            {
+                var applicants = _applicantService.GetApplicantNameAndJobTitle();
 
+                var shortlistedModel = new ShortListedViewModel();
+                shortlistedModel.HRShortlisted = _dashboardService.GetShorlistedApplicatons("HR Shortlisted");
+                shortlistedModel.TechShortlisted = _dashboardService.GetShorlistedApplicatons("Technical Shortlisted");
+
+                var applicantDirectoryViewModel = new ApplicantDirectoryViewModel
+                {
+                    Applicants = applicants,
+                    Shortlists = shortlistedModel
+                };
+
+                return View(applicantDirectoryViewModel);
+            }
+            catch (Exception e)
+            {
+                _logger.Error(ErrorHandling.DefaultException(e.Message));
+                return StatusCode(500, "Something went wrong.");
+            }
+        }
     }
 }

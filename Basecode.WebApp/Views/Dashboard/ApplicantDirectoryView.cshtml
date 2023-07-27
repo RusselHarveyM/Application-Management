@@ -1,38 +1,64 @@
-﻿@{
+﻿@model Basecode.Data.ViewModels.ApplicantDirectoryViewModel
+
+@{
     Layout = "/Views/Shared/_Admin.cshtml";
 }
 
+<style>
+    /* Active nav link color */
+    .nav-tabs .nav-link.active {
+        color: #FF0000; /* Red color code */
+    }
+
+    /* Inactive nav link color */
+    .nav-tabs .nav-link:not(.active) {
+        color: black;
+    }
+</style>
+
 <div class="container">
-    <div class="container d-flex flex-row align-content-start justify-content-start">
-        <div class="d-flex flex-column me-5">
-            <a style="color: #FF0000; text-decoration: none;">APPLICANTS</a>
-            <hr class="container opacity-100" style="height: 5px; color: #FF0000;" />
+    <div class="container d-flex flex-column align-content-start justify-content-start">
+        <div class="container d-flex flex-row align-content-start justify-content-start">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">APPLICANTS</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">SHORTLISTS</button>
+                </li>
+            </ul>
         </div>
-        <a>SHORTLISTS</a>
-    </div>
-    <div class="container d-flex flex-row align-content-center justify-content-start">
-        <table class="table table-striped">
-            <thead class="text-center">
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Job Applied</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody class="text-center">
-                @foreach (var applicant in Model)
-                {
-                    <tr>
-                        <td>@applicant.Item1</td>
-                        <td>@applicant.Item2</td>
-                        <td>@applicant.Item3</td>
-                        <td>
-                            <button type="button" class="btn" style="background-color: #FF0000; color: white;">View Details</button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                <div class="container d-flex flex-row align-content-center justify-content-start">
+                    <table class="table table-striped">
+                        <thead class="text-center">
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Job Applied</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-center">
+                            @foreach (var applicant in Model.Applicants)
+                            {
+                                <tr>
+                                    <td>@applicant.Item1</td>
+                                    <td>@applicant.Item2</td>
+                                    <td>@applicant.Item3</td>
+                                    <td>
+                                        <button type="button" class="btn" style="background-color: #FF0000; color: white;">View Details</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+                @Html.Partial("_ShortListView", Model.Shortlists)
+            </div>
+        </div>
     </div>
 </div>
