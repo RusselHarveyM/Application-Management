@@ -10,13 +10,13 @@ namespace Basecode.Tests.Controllers
 {
     public class UserControllerTests
     {
-        /*private readonly Mock<IUserService> _fakeUserService;
+        private readonly Mock<IUserService> _fakeUserService;
         private readonly UserController _controller;
 
         public UserControllerTests()
         {
             _fakeUserService = new Mock<IUserService>();
-            _controller = new UserController(_fakeUserService.Object, null, null, null);
+            _controller = new UserController(_fakeUserService.Object, null, null);
         }
 
         [Fact]
@@ -81,13 +81,13 @@ namespace Basecode.Tests.Controllers
         }
 
         [Fact]
-        public void Create_InvalidModelState_ReturnsBadRequest()
+        public async Task Create_InvalidModelState_ReturnsBadRequest()
         {
             // Arrange
             _controller.ModelState.AddModelError("User", "The Username field is required.");
 
             // Act
-            var result = _controller.Create(new User());
+            var result = await _controller.Create(new UserViewModel());
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
@@ -95,14 +95,14 @@ namespace Basecode.Tests.Controllers
         }
 
         [Fact]
-        public void Create_ValidModelState_ReturnsOkResult()
+        public async Task Create_ValidModelState_ReturnsOkResult()
         {
             // Arrange
-            var user = new User();
-            _fakeUserService.Setup(service => service.Create(user)).Returns(new LogContent());
+            var user = new UserViewModel();
+            _fakeUserService.Setup(service => service.Create(user)).ReturnsAsync(new LogContent());
 
             // Act
-            var result = _controller.Create(user);
+            var result = await _controller.Create(user);
 
             // Assert
             Assert.NotNull(result);
@@ -110,18 +110,18 @@ namespace Basecode.Tests.Controllers
         }
 
         [Fact]
-        public void Create_ServiceValidationFailed_ReturnsBadRequest()
+        public async Task Create_ServiceValidationFailed_ReturnsBadRequest()
         {
             // Arrange
             LogContent logContent = new LogContent();
             logContent.Result = true;
             logContent.ErrorCode = "400";
             logContent.Message = "The Email Address format is invalid.";
-            var user = new User();
-            _fakeUserService.Setup(service => service.Create(user)).Returns(logContent);
+            var user = new UserViewModel();
+            _fakeUserService.Setup(service => service.Create(user)).ReturnsAsync(logContent);
 
             // Act
-            var result = _controller.Create(user);
+            var result = await _controller.Create(user);
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
@@ -129,14 +129,14 @@ namespace Basecode.Tests.Controllers
         }
 
         [Fact]
-        public void Create_FailedToGetErrors_ReturnsStatusCode500()
+        public async Task Create_FailedToGetErrors_ReturnsStatusCode500()
         {
             // Arrange
             _fakeUserService.Setup(service => service.GetValidationErrors(_controller.ModelState))
                 .Throws(new Exception());
 
             // Act
-            var result = _controller.Create(new User());
+            var result = await _controller.Create(new UserViewModel());
 
             // Assert
             var objectResult = Assert.IsType<ObjectResult>(result);
@@ -144,29 +144,29 @@ namespace Basecode.Tests.Controllers
         }
 
         [Fact]
-        public void UpdateView_NonexistentId_ReturnsNotFoundResult()
+        public async Task UpdateView_NonexistentId_ReturnsNotFoundResult()
         {
             // Arrange
             int id = 420;
             User? data = null;
-            _fakeUserService.Setup(service => service.GetById(id)).Returns(data);
+            _fakeUserService.Setup(service => service.GetByIdAsync(id)).ReturnsAsync(data);
 
             // Act
-            var result = _controller.UpdateView(id);
+            var result = await _controller.UpdateView(id);
 
             // Assert
             Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
-        public void UpdateView_ExistingId_ReturnsPartialViewResult()
+        public async Task UpdateView_ExistingId_ReturnsPartialViewResult()
         {
             // Arrange
             int id = 69;
-            _fakeUserService.Setup(service => service.GetById(id)).Returns(new User());
+            _fakeUserService.Setup(service => service.GetByIdAsync(id)).ReturnsAsync(new User());
 
             // Act
-            var result = _controller.UpdateView(id);
+            var result = await _controller.UpdateView(id);
 
             // Assert
             var partialViewResult = Assert.IsType<PartialViewResult>(result);
@@ -174,14 +174,14 @@ namespace Basecode.Tests.Controllers
         }
 
         [Fact]
-        public void UpdateView_ExceptionThrown_ReturnsStatusCode500()
+        public async Task UpdateView_ExceptionThrown_ReturnsStatusCode500()
         {
             // Arrange
             int id = 25;
-            _fakeUserService.Setup(service => service.GetById(id)).Throws(new Exception());
+            _fakeUserService.Setup(service => service.GetByIdAsync(id)).ThrowsAsync(new Exception());
 
             // Act
-            var result = _controller.UpdateView(id);
+            var result = await _controller.UpdateView(id);
 
             // Assert
             var objectResult = Assert.IsType<ObjectResult>(result);
@@ -189,13 +189,13 @@ namespace Basecode.Tests.Controllers
         }
 
         [Fact]
-        public void Update_InvalidModelState_ReturnsBadRequest()
+        public async Task Update_InvalidModelState_ReturnsBadRequest()
         {
             // Arrange
             _controller.ModelState.AddModelError("User", "The Username field is required.");
 
             // Act
-            var result = _controller.Update(new User());
+            var result = await _controller.Update(new UserUpdateViewModel());
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
@@ -203,14 +203,14 @@ namespace Basecode.Tests.Controllers
         }
 
         [Fact]
-        public void Update_ValidModelState_ReturnsOkResult()
+        public async Task Update_ValidModelState_ReturnsOkResult()
         {
             // Arrange
-            var user = new User();
-            _fakeUserService.Setup(service => service.Update(user)).Returns(new LogContent());
+            var user = new UserUpdateViewModel();
+            _fakeUserService.Setup(service => service.Update(user)).ReturnsAsync(new LogContent());
 
             // Act
-            var result = _controller.Update(user);
+            var result = await _controller.Update(user);
 
             // Assert
             Assert.NotNull(result);
@@ -218,18 +218,18 @@ namespace Basecode.Tests.Controllers
         }
 
         [Fact]
-        public void Update_ServiceValidationFailed_ReturnsBadRequest()
+        public async Task Update_ServiceValidationFailed_ReturnsBadRequest()
         {
             // Arrange
             LogContent logContent = new LogContent();
             logContent.Result = true;
             logContent.ErrorCode = "400";
             logContent.Message = "The Email Address format is invalid.";
-            var user = new User();
-            _fakeUserService.Setup(service => service.Update(user)).Returns(logContent);
+            var user = new UserUpdateViewModel();
+            _fakeUserService.Setup(service => service.Update(user)).ReturnsAsync(logContent);
 
             // Act
-            var result = _controller.Update(user);
+            var result = await _controller.Update(user);
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
@@ -237,14 +237,14 @@ namespace Basecode.Tests.Controllers
         }
 
         [Fact]
-        public void Update_FailedToGetErrors_ReturnsStatusCode500()
+        public async Task Update_FailedToGetErrors_ReturnsStatusCode500()
         {
             // Arrange
             _fakeUserService.Setup(service => service.GetValidationErrors(_controller.ModelState))
                 .Throws(new Exception());
 
             // Act
-            var result = _controller.Update(new User());
+            var result = await _controller.Update(new UserUpdateViewModel());
 
             // Assert
             var objectResult = Assert.IsType<ObjectResult>(result);
@@ -252,29 +252,29 @@ namespace Basecode.Tests.Controllers
         }
 
         [Fact]
-        public void DeleteView_NonexistentId_ReturnsNotFoundResult()
+        public async Task DeleteView_NonexistentId_ReturnsNotFoundResult()
         {
             // Arrange
             int id = 420;
             User? data = null;
-            _fakeUserService.Setup(service => service.GetById(id)).Returns(data);
+            _fakeUserService.Setup(service => service.GetByIdAsync(id)).ReturnsAsync(data);
 
             // Act
-            var result = _controller.DeleteView(id);
+            var result = await _controller.DeleteView(id);
 
             // Assert
             Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
-        public void DeleteView_ExistingId_ReturnsPartialViewResult()
+        public async Task DeleteView_ExistingId_ReturnsPartialViewResult()
         {
             // Arrange
             int id = 69;
-            _fakeUserService.Setup(service => service.GetById(id)).Returns(new User());
+            _fakeUserService.Setup(service => service.GetByIdAsync(id)).ReturnsAsync(new User());
 
             // Act
-            var result = _controller.DeleteView(id);
+            var result = await _controller.DeleteView(id);
 
             // Assert
             var partialViewResult = Assert.IsType<PartialViewResult>(result);
@@ -282,14 +282,14 @@ namespace Basecode.Tests.Controllers
         }
 
         [Fact]
-        public void DeleteView_ExceptionThrown_ReturnsStatusCode500()
+        public async Task DeleteView_ExceptionThrown_ReturnsStatusCode500()
         {
             // Arrange
             int id = 25;
-            _fakeUserService.Setup(service => service.GetById(id)).Throws(new Exception());
+            _fakeUserService.Setup(service => service.GetByIdAsync(id)).ThrowsAsync(new Exception());
 
             // Act
-            var result = _controller.DeleteView(id);
+            var result = await _controller.DeleteView(id);
 
             // Assert
             var objectResult = Assert.IsType<ObjectResult>(result);
@@ -297,29 +297,29 @@ namespace Basecode.Tests.Controllers
         }
 
         [Fact]
-        public void Delete_NonexistentId_ReturnsNotFoundResult()
+        public async Task Delete_NonexistentId_ReturnsNotFoundResult()
         {
             // Arrange
             int id = 420;
             User? data = null;
-            _fakeUserService.Setup(service => service.GetById(id)).Returns(data);
+            _fakeUserService.Setup(service => service.GetByIdAsync(id)).ReturnsAsync(data);
 
             // Act
-            var result = _controller.Delete(id);
+            var result = await _controller.Delete(id);
 
             // Assert
             Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
-        public void Delete_ExistingId_RedirectsToIndex()
+        public async Task Delete_ExistingId_RedirectsToIndex()
         {
             // Arrange
             int id = 69;
-            _fakeUserService.Setup(service => service.GetById(id)).Returns(new User());
+            _fakeUserService.Setup(service => service.GetByIdAsync(id)).ReturnsAsync(new User());
 
             // Act
-            var result = _controller.Delete(id);
+            var result = await _controller.Delete(id);
 
             // Assert
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
@@ -327,18 +327,18 @@ namespace Basecode.Tests.Controllers
         }
 
         [Fact]
-        public void Delete_ExceptionThrown_ReturnsStatusCode500()
+        public async Task Delete_ExceptionThrown_ReturnsStatusCode500()
         {
             // Arrange
             int id = 25;
-            _fakeUserService.Setup(service => service.GetById(id)).Throws(new Exception());
+            _fakeUserService.Setup(service => service.GetByIdAsync(id)).ThrowsAsync(new Exception());
 
             // Act
-            var result = _controller.Delete(id);
+            var result = await _controller.Delete(id);
 
             // Assert
             var statusCodeResult = Assert.IsType<ObjectResult>(result);
             Assert.Equal(500, statusCodeResult.StatusCode);
-        }*/
+        }
     }
 }

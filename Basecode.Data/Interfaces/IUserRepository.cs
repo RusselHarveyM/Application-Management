@@ -52,10 +52,11 @@ namespace Basecode.Data.Interfaces
         User GetByEmail(string email);
 
         /// <summary>
-        /// Updates an existing user in the User table.
+        /// Updates the specified user.
         /// </summary>
-        /// <param name="user">Represents the user with updated information.</param>
-        void Update(User user);
+        /// <param name="user">The user.</param>
+        /// <returns></returns>
+        Task Update(User user);
 
         /// <summary>
         /// Deletes the specified user.

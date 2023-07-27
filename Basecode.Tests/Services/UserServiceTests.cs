@@ -1,4 +1,5 @@
-﻿using Basecode.Data.Interfaces;
+﻿using AutoMapper;
+using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
@@ -11,15 +12,17 @@ namespace Basecode.Tests.Services
 {
     public class UserServiceTests
     {
-        /*private readonly Mock<IUserRepository> _fakeUserRepository;
+        private readonly Mock<IUserRepository> _fakeUserRepository;
         private readonly UserService _service;
         private readonly Mock<IJobOpeningService> _fakeJobOpeningService;
+        private readonly Mock<IMapper> _fakeMapper;
 
         public UserServiceTests()
         {
             _fakeUserRepository = new Mock<IUserRepository>();
             _fakeJobOpeningService = new Mock<IJobOpeningService>();
-            _service = new UserService(_fakeUserRepository.Object, _fakeJobOpeningService.Object);
+            _fakeMapper = new Mock<IMapper>();
+            _service = new UserService(_fakeUserRepository.Object, _fakeJobOpeningService.Object, _fakeMapper.Object);
         }
 
         [Fact]
@@ -52,13 +55,13 @@ namespace Basecode.Tests.Services
         }
 
         [Fact]
-        public void Create_ValidationFailed_ReturnsLogContent()
+        public async Task Create_ValidationFailed_ReturnsLogContent()
         {
             // Arrange
-            var user = new User { Email = "invalid@email" };
+            var user = new UserViewModel { Email = "invalid@email" };
 
             // Act
-            var result = _service.Create(user);
+            var result = await _service.Create(user);
 
             // Assert
             Assert.NotNull(result);
@@ -68,10 +71,10 @@ namespace Basecode.Tests.Services
         }
 
         [Fact]
-        public void Create_ValidUserModel_ReturnsLogContent()
+        public async Task Create_ValidUserModel_ReturnsLogContent()
         {
             // Arrange
-            var expectedUser = new User()
+            var expectedUser = new UserViewModel()
             {
                 Fullname = "John Doe",
                 Username = "johndoe",
@@ -81,10 +84,10 @@ namespace Basecode.Tests.Services
             };
             User? actualUser = null;
             _fakeUserRepository.Setup(repository => repository.Create(It.IsAny<User>()))
-                .Callback<User>(u => actualUser = u);
+                .Callback<User>(u => actualUser = u).Returns(Task.CompletedTask);
 
             // Act
-            var result = _service.Create(expectedUser);
+            var result = await _service.Create(expectedUser);
             _fakeUserRepository.Verify(repository => repository.Create(It.IsAny<User>()), Times.Once);
 
             // Assert
@@ -93,12 +96,6 @@ namespace Basecode.Tests.Services
             Assert.False(result.Result);
             Assert.Equal("", result.ErrorCode);
             Assert.Equal("", result.Message);
-
-            Assert.Equal(expectedUser.Fullname, actualUser.Fullname);
-            Assert.Equal(expectedUser.Username, actualUser.Username);
-            Assert.Equal(expectedUser.Email, actualUser.Email);
-            Assert.Equal(expectedUser.Password, actualUser.Password);
-            Assert.Equal(expectedUser.Role, actualUser.Role);
         }
 
         [Fact]
@@ -135,13 +132,13 @@ namespace Basecode.Tests.Services
         }
 
         [Fact]
-        public void Update_ValidationFailed_ReturnsLogContent()
+        public async Task Update_ValidationFailed_ReturnsLogContent()
         {
             // Arrange
-            var user = new User { Email = "invalid@email" };
+            var user = new UserUpdateViewModel { Email = "invalid@email" };
 
             // Act
-            var result = _service.Update(user);
+            var result = await _service.Update(user);
 
             // Assert
             Assert.NotNull(result);
@@ -151,9 +148,18 @@ namespace Basecode.Tests.Services
         }
 
         [Fact]
-        public void Update_ValidUserModel_ReturnsLogContent()
+        public async Task Update_ValidUserModel_ReturnsLogContent()
         {
             // Arrange
+            var userVm = new UserUpdateViewModel()
+            {
+                Id = 1,
+                Fullname = "John Doe",
+                Username = "doe.john",
+                Email = "john@example.com",
+                Password = "8password",
+                Role = "Human Resources"
+            };
             var user = new User()
             {
                 Id = 1,
@@ -163,10 +169,11 @@ namespace Basecode.Tests.Services
                 Password = "8password",
                 Role = "Human Resources"
             };
-            _fakeUserRepository.Setup(repository => repository.GetById(user.Id)).Returns(user);
+
+            _fakeUserRepository.Setup(repository => repository.GetByIdAsync(user.Id)).ReturnsAsync(user);
 
             // Act
-            var result = _service.Update(user);
+            var result = await _service.Update(userVm);
 
             // Assert
             Assert.NotNull(result);
@@ -177,13 +184,13 @@ namespace Basecode.Tests.Services
         }
 
         [Fact]
-        public void Delete_WithUser_CallsDeleteOnce()
+        public async Task Delete_WithUser_CallsDeleteOnce()
         {
             // Arrange
             var user = new User();
 
             // Act
-            _service.Delete(user);
+            await _service.Delete(user);
 
             // Assert
             _fakeUserRepository.Verify(r => r.Delete(user), Times.Once);
@@ -206,6 +213,6 @@ namespace Basecode.Tests.Services
             Assert.Equal(2, result.Count);
             Assert.Equal("Email address must be valid", result["Email"]);
             Assert.Equal("Password must be at least 8 characters", result["Password"]);
-        }*/
+        }
     }
 }

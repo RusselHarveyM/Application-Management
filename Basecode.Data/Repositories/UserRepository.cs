@@ -119,10 +119,36 @@ namespace Basecode.Data.Repositories
         /// Updates an existing user in the User table.
         /// </summary>
         /// <param name="user">Represents the user with updated information.</param>
-        public void Update(User user)
+        public async Task Update(User user)
         {
-            _context.User.Update(user);
-            _context.SaveChanges();
+            var identityUser = await _userManager.FindByIdAsync(user.AspId);
+            var getUserToGetRole = await GetByIdAsync(user.Id);
+            
+
+            if (identityUser != null)
+            {
+                //Update identity user mail
+                identityUser.Email = user.Email;
+                identityUser.NormalizedEmail = user.Email.Normalize();
+                identityUser.UserName = user.Email.ToLower();
+                await _userManager.UpdateAsync(identityUser);
+                //Update identity user password
+                var passwordToken = await _userManager.GeneratePasswordResetTokenAsync(identityUser);
+                await _userManager.ResetPasswordAsync(identityUser, passwordToken, user.Password);
+                //Update role
+                await CreateRole(user.Role);
+                var removeOldRole = await _userManager.RemoveFromRoleAsync(identityUser, getUserToGetRole.Role);
+                if (removeOldRole.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(identityUser, user.Role);
+                    getUserToGetRole.Email = user.Email;
+                    getUserToGetRole.Username = user.Username;
+                    getUserToGetRole.Role = user.Role;
+                    getUserToGetRole.Password = user.Password;
+                    await _context.SaveChangesAsync();
+                }
+            }
+
         }
 
         /// <summary>
@@ -132,11 +158,11 @@ namespace Basecode.Data.Repositories
         public async Task Delete(User user)
         {
             var findUser = await _userManager.FindByIdAsync(user.AspId);
-            if(findUser != null)
+            if (findUser != null)
             {
                 await _userManager.DeleteAsync(findUser);
             }
-            
+
         }
 
         /// <summary>

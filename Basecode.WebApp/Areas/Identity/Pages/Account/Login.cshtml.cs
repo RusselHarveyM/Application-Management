@@ -74,6 +74,8 @@ namespace Basecode.WebApp.Areas.Identity.Pages.Account
             /// </summary>
             [Required]
             [DataType(DataType.Password)]
+            [RegularExpression("^(?=.*[^a-zA-Z0-9])(?=.*[0-9])(?=.*[A-Z]).{8,}$",
+        ErrorMessage = "At least 8 characters, 1 non-alphanumeric, digit, uppercase letter")]
             public string Password { get; set; }
 
             /// <summary>
@@ -128,7 +130,7 @@ namespace Basecode.WebApp.Areas.Identity.Pages.Account
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt");
                     return Page();
                 }
             }

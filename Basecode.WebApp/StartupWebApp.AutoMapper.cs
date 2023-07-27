@@ -21,6 +21,7 @@ namespace Basecode.WebApp
                 cfg.CreateMap<CharacterReference, CharacterReferenceViewModel>();
                 cfg.CreateMap<BackgroundCheckFormViewModel, BackgroundCheck>();
                 cfg.CreateMap<UserViewModel, User>();
+                cfg.CreateMap<UserUpdateViewModel, User>();
             });
 
             services.AddSingleton(Config.CreateMapper());

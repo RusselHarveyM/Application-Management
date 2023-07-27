@@ -122,20 +122,29 @@ namespace Basecode.WebApp.Controllers
         /// <param name="id">Integer representing the ID of the user to be updated.</param>
         /// <returns>A partial view and User object.</returns>
         [HttpGet]
-        public ActionResult UpdateView(int id)
+        public async Task<ActionResult> UpdateView(int id)
         {
             try
             {
-                var data = _service.GetById(id);
+                var data =await _service.GetByIdAsync(id);
 
                 if (data == null)
                 {
                     _logger.Error("User [" + id + "] not found.");
                     return NotFound();
                 }
-
+                var vmData = new UserUpdateViewModel
+                {
+                    Id = data.Id,
+                    AspId = data.AspId,
+                    Username = data.Username,
+                    Fullname = data.Fullname,
+                    Email = data.Email,
+                    Password = data.Password,
+                    Role = data.Role,
+                };
                 _logger.Trace("Successfully retrieved user by ID: [" + id + "].");
-                return PartialView("~/Views/User/_UpdateView.cshtml", data);
+                return PartialView("~/Views/User/_UpdateView.cshtml", vmData);
             }
             catch (Exception e)
             {
@@ -147,11 +156,11 @@ namespace Basecode.WebApp.Controllers
         /// <summary>
         /// Updates an existing user in the system.
         /// </summary>
-        /// <param name="user">User object representing the user with updated information.</param>
+        /// <param name="user">UserUpdateViewModel object representing the user with updated information.</param>
         /// <returns>Redirect to the Index() action to display the list of users.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Update(User user)
+        public async Task<IActionResult> Update(UserUpdateViewModel user)
         {
             try
             {
@@ -163,7 +172,7 @@ namespace Basecode.WebApp.Controllers
                 }
 
                 // Update the user
-                var data = _service.Update(user);
+                var data = await _service.Update(user);
 
                 if (!data.Result)
                 {

@@ -2,25 +2,21 @@
 using Basecode.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using NLog;
 
 namespace Basecode.WebApp.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IAdminService _service;
+        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        public AdminController(RoleManager<IdentityRole> roleManager, IAdminService service) {
-            _roleManager = roleManager;
+        public AdminController(IAdminService service) {
             _service = service;
         }    
         public IActionResult Index()
         {
-            return View();
-        }
-
-        public IActionResult RoleManagement()
-        {
+            _logger.Trace("Redirecting to Admin Create Role");
             return View();
         }
 
@@ -32,18 +28,27 @@ namespace Basecode.WebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateRole(CreateRoleViewModel createRoleViewModel)
         {
-            if(ModelState.IsValid)
+            try
             {
-
-                IdentityResult result = await _service.CreateRole(createRoleViewModel.RoleName);
-
-                if(result.Succeeded)
+                if (ModelState.IsValid)
                 {
-                    return RedirectToAction("Index", "Admin");
+
+                    IdentityResult result = await _service.CreateRole(createRoleViewModel.RoleName);
+
+                    if(result.Succeeded || result! == null)
+                    {
+                        _logger.Trace("Role Created Successfully");
+                        return RedirectToAction("Index", "Admin");
+                    }
                 }
+
+                return View();
             }
-            
-            return View();
+            catch (Exception e)
+            {
+                _logger.Error("Something went wrong " + e.Message);
+                return StatusCode(500);
+            }
         }
     }
 }
