@@ -63,8 +63,8 @@ namespace Basecode.WebApp
             app.UseAuthentication();        // Enables the ConfigureAuth service.
             app.UseAuthorization();
             
-            this.ConfigureRoutes(app);      // Configuration for API controller routing
-            this.ConfigureAuth(app);        // Configuration for Token Authentication
+            ConfigureRoutes(app);      // Configuration for API controller routing
+            ConfigureAuth(app);        // Configuration for Token Authentication
 
             app.UseHangfireDashboard();
 

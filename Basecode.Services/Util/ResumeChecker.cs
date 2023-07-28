@@ -70,9 +70,26 @@ namespace Basecode.Services.Util
         /// <param name="resume">The resume.</param>
         /// <returns></returns>
         /// <exception cref="System.ApplicationException">OpenAI API key not found in configuration.</exception>
-        public async Task<string> CheckResume(string jobPosition, byte[] resume)
+        public async Task<string> CheckResume(string jobPosition, List<Qualification>qualifications, byte[] resume)
         {
             var parsedResume = await ParseResume(resume);
+
+            if (!(qualifications.Count > 0))
+            {
+                return "";
+            }
+            
+            var contents= $"As an AI-powered resume evaluator for a leading hiring company, your task is to analyze parsed resumes and assess their suitability for a specific job position - the {jobPosition} role." +
+                $" Your objective is to return a JSON object with key-value pairs representing the overall likelihood of the resume aligning with the requirements of the {jobPosition} position." +
+                $" The output JSON should have the following structure: {{\r\n  \"JobPosition\": \"{jobPosition}\",\r\n  \"Score\": \"Result\",\r\n  \"Explanation\": \"explanation\"\r\n}}\r\n. The \"Score\" value should be presented as a percentage, ranging from 1% to 100%." +
+                $" Your advanced algorithms will thoroughly evaluate the resume's contents, focusing on essential skills, qualifications, and experience relevant to the {jobPosition} position. Concentrate on the field of {jobPosition} position. " +
+                $" Here are the qualifications needed to apply for this job: ";
+            
+            foreach (var qual in qualifications)
+            {
+                contents += $"{{\r\n \"{qual.Description}\"\r\n}}";
+            }
+
 
             var openAiApiKey = configuration["ApiKeys:OpenAI"];
             if (string.IsNullOrEmpty(openAiApiKey))
@@ -96,11 +113,8 @@ namespace Basecode.Services.Util
             new
             {
                 role = "system",
-                content = $"As an AI-powered resume evaluator for a leading hiring company, your task is to analyze parsed resumes and assess their suitability for a specific job position - the {jobPosition} role." +
-                          $" Your objective is to return a JSON object with key-value pairs representing the overall likelihood of the resume aligning with the requirements of the {jobPosition} position." +
-                          $" The output JSON should have the following structure: {{\r\n  \"JobPosition\": \"{jobPosition}\",\r\n  \"Score\": \"Result\",\r\n  \"Explanation\": \"explanation\"\r\n}}\r\n. The \"Score\" value should be presented as a percentage, ranging from 1% to 100%." +
-                          $" Your advanced algorithms will thoroughly evaluate the resume's contents, focusing on essential skills, qualifications, and experience relevant to the {jobPosition} position. Concentrate on the field of {jobPosition} position. " +
-                          $"Please provide a brief explanation of why the given score was assigned to the resume in the \"Explanation\" field.\r\n\r\nYour assessment should take into account the candidate's expertise, achievements, and experience specifically in the {jobPosition} field, determining its compatibility with the desired role.",
+                content = contents + 
+                         $". Please provide a brief explanation of why the given score was assigned to the resume in the \"Explanation\" field.\r\n\r\nYour assessment should take into account the candidate's expertise, achievements, and experience specifically in the {jobPosition} field, determining its compatibility with the desired role.",
             },
             new
             {
