@@ -77,24 +77,6 @@ namespace Basecode.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Interview",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ApplicationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: true),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    TeamsLink = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Result = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Interview", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "JobOpening",
                 columns: table => new
                 {
@@ -356,8 +338,8 @@ namespace Basecode.Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CharReferenceId = table.Column<int>(type: "int", nullable: false),
-                    UserHRId = table.Column<int>(type: "int", nullable: false),
+                    CharacterReferenceId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
                     Firstname = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Lastname = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -374,9 +356,15 @@ namespace Basecode.Data.Migrations
                 {
                     table.PrimaryKey("PK_BackgroundCheck", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BackgroundCheck_CharacterReference_CharReferenceId",
-                        column: x => x.CharReferenceId,
+                        name: "FK_BackgroundCheck_CharacterReference_CharacterReferenceId",
+                        column: x => x.CharacterReferenceId,
                         principalTable: "CharacterReference",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BackgroundCheck_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -427,6 +415,40 @@ namespace Basecode.Data.Migrations
                         principalTable: "Application",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Examination_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Interview",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ApplicationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: true),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    TeamsLink = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Result = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Interview", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Interview_Application_ApplicationId",
+                        column: x => x.ApplicationId,
+                        principalTable: "Application",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Interview_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -509,9 +531,15 @@ namespace Basecode.Data.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BackgroundCheck_CharReferenceId",
+                name: "IX_BackgroundCheck_CharacterReferenceId",
                 table: "BackgroundCheck",
-                column: "CharReferenceId");
+                column: "CharacterReferenceId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BackgroundCheck_UserId",
+                table: "BackgroundCheck",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CharacterReference_ApplicantId",
@@ -522,6 +550,25 @@ namespace Basecode.Data.Migrations
                 name: "IX_Examination_ApplicationId",
                 table: "Examination",
                 column: "ApplicationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Examination_UserId",
+                table: "Examination",
+                column: "UserId",
+                unique: true,
+                filter: "[UserId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Interview_ApplicationId",
+                table: "Interview",
+                column: "ApplicationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Interview_UserId",
+                table: "Interview",
+                column: "UserId",
+                unique: true,
+                filter: "[UserId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_JobOpeningUser_UsersId",
@@ -546,12 +593,14 @@ namespace Basecode.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_UserSchedule_ApplicationId",
                 table: "UserSchedule",
-                column: "ApplicationId");
+                column: "ApplicationId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserSchedule_UserId",
                 table: "UserSchedule",
-                column: "UserId");
+                column: "UserId",
+                unique: true);
         }
 
         /// <inheritdoc />

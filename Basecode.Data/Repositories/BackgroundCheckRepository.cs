@@ -1,5 +1,6 @@
 ﻿using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,7 @@ namespace Basecode.Data.Repositories
 
         public BackgroundCheck GetById(int id)
         {
-            return _context.BackgroundCheck.Find(id);
+            return _context.BackgroundCheck.Include(bc => bc.CharacterReference).FirstOrDefault(bc => bc.Id == id);
         }
     }
 }

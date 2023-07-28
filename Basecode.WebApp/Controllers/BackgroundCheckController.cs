@@ -1,6 +1,7 @@
 ﻿using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
 using Basecode.Services.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
 
@@ -14,24 +15,30 @@ namespace Basecode.WebApp.Controllers
         private readonly IJobOpeningService _jobOpeningService;
         private readonly IBackgroundCheckService _backgroundCheckService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
 
         public BackgroundCheckController(ICharacterReferenceService characterReferenceService, IApplicantService applicantService,
-            IApplicationService applicationService, IJobOpeningService jobOpeningService, IBackgroundCheckService backgroundCheckService)
+            IApplicationService applicationService, IJobOpeningService jobOpeningService, IBackgroundCheckService backgroundCheckService, 
+            SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager)
         {
             _characterReferenceService = characterReferenceService;
             _applicantService = applicantService;
             _applicationService = applicationService;
             _jobOpeningService = jobOpeningService;
             _backgroundCheckService = backgroundCheckService;
+            _signInManager = signInManager;
+            _userManager = userManager;
         }
         //[Route("/BackgroundCheck/Form/{characterReferenceId}/{userId}")]
         public IActionResult Index()
         {
-            return View("BackgroundForm");
+            //to be implemented
+            return View();
         }
 
-        [Route("/BackgroundCheck/BackgroundForm/{characterReferenceId}/{userId}")]
-        public IActionResult BackgroundForm(int characterReferenceId, int userId)
+        [Route("/BackgroundCheck/Form/{characterReferenceId}/{userId}")]
+        public IActionResult Form(int characterReferenceId, int userId)
         {
             _logger.Trace("BackgroundCheck Controller | Enter form successfully");
             
@@ -81,10 +88,15 @@ namespace Basecode.WebApp.Controllers
         }
 
         [Route("/BackgroundCheck/FormOk")]
-        public ActionResult FormOk(BackgroundCheckFormViewModel data)
+        public async Task<ActionResult> FormOk(BackgroundCheckFormViewModel data)
         {
+            var whoIsSigned = _signInManager.IsSignedIn(User);
+            if (whoIsSigned)
+            {
+                var userSign = await _userManager.GetUserAsync(User);
+            }
             _logger.Trace("Form Submitted Successfully");
-            _backgroundCheckService.Create(data);
+            await _backgroundCheckService.Create(data);
             ViewBag.IsFormSubmitted = true;
             return View("Redirection");
         }
