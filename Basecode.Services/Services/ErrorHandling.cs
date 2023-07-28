@@ -1,4 +1,5 @@
-﻿using Basecode.Data.Models;
+﻿using Basecode.Data.Dto;
+using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
 using Newtonsoft.Json.Linq;
 using System;
@@ -354,6 +355,47 @@ namespace Basecode.Services.Services
             if (schedule.Status == "rejected")
             {
                 logContent.SetError("401", "Schedule has already been rejected.");
+                return logContent;
+            }
+            return logContent;
+        }
+
+        public static LogContent CheckCalendarEvent(CalendarEvent calendarEvent)
+        {
+            LogContent logContent = new LogContent();
+            if (calendarEvent == null)
+            {
+                logContent.SetError("400", "Calendar event is null.");
+                return logContent;
+            }
+            if (string.IsNullOrEmpty(calendarEvent.Subject))
+            {
+                logContent.SetError("400", "Calendar event's Subject is null or empty.");
+                return logContent;
+            }
+            if (string.IsNullOrEmpty(calendarEvent.Body.Content))
+            {
+                logContent.SetError("400", "Calendar event's Body is null or empty.");
+                return logContent;
+            }
+            if (calendarEvent.Start.DateTime == default(DateTime))
+            {
+                logContent.SetError("400", "Calendar event's Start DateTime is not set.");
+                return logContent;
+            }
+            if (calendarEvent.End.DateTime == default(DateTime))
+            {
+                logContent.SetError("400", "Calendar event's End DateTime is not set.");
+                return logContent;
+            }
+            if (calendarEvent.OnlineMeetingProvider != "TeamsForBusiness")
+            {
+                logContent.SetError("400", "Calendar event's Online Meeting Provider is invalid.");
+                return logContent;
+            }
+            if (calendarEvent.IsOnlineMeeting == false)
+            {
+                logContent.SetError("400", "Calendar event is not an online meeting.");
                 return logContent;
             }
             return logContent;
