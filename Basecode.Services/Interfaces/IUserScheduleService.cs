@@ -52,7 +52,7 @@ namespace Basecode.Services.Interfaces
         /// </summary>
         /// <param name="userScheduleId">The user schedule identifier.</param>
         /// <returns></returns>
-        LogContent AcceptSchedule(int userScheduleId);
+        Task<LogContent> AcceptSchedule(int userScheduleId);
 
         /// <summary>
         /// Rejects the schedule.
@@ -74,5 +74,20 @@ namespace Basecode.Services.Interfaces
         /// <param name="applicationId">The application identifier.</param>
         /// <returns></returns>
         int GetIdIfUserScheduleExists(Guid applicationId);
+
+        /// <summary>
+        /// Sets the online meeting schedule.
+        /// </summary>
+        string SetOnlineMeetingSchedule(UserSchedule userSchedule);
+
+        /// <summary>
+        /// Sends the accepted schedule with Teams link to the interviewer.
+        /// </summary>
+        Task SendAcceptedScheduleToInterviewer(UserSchedule userSchedule, string joinUrl);
+
+        /// <summary>
+        /// Sends the accepted schedule with Teams link to the applicant.
+        /// </summary>
+        Task SendAcceptedScheduleToApplicant(UserSchedule userSchedule, string joinUrl);
     }
 }

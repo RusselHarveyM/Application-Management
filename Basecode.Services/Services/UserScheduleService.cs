@@ -1,4 +1,5 @@
-﻿using Basecode.Data.Interfaces;
+﻿using Basecode.Data.Dto;
+using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
@@ -16,10 +17,11 @@ namespace Basecode.Services.Services
         private readonly IJobOpeningService _jobOpeningService;
         private readonly IInterviewService _interviewService;
         private readonly IExaminationService _examinationService;
+        private readonly ICalendarService _calendarService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
         public UserScheduleService(IUserScheduleRepository repository, IEmailSendingService emailSendingService, IApplicationService applicationService, IApplicantService applicantService,
-            IUserService userService, IJobOpeningService jobOpeningService, IInterviewService interviewService, IExaminationService examinationService)
+            IUserService userService, IJobOpeningService jobOpeningService, IInterviewService interviewService, IExaminationService examinationService, ICalendarService calendarService)
         {
             _repository = repository;
             _emailSendingService = emailSendingService;
@@ -29,6 +31,7 @@ namespace Basecode.Services.Services
             _jobOpeningService = jobOpeningService;
             _interviewService = interviewService;
             _examinationService = examinationService;
+            _calendarService = calendarService;
         }
 
         /// <summary>
@@ -196,27 +199,40 @@ namespace Basecode.Services.Services
         /// </summary>
         /// <param name="userScheduleId">The user schedule identifier.</param>
         /// <returns></returns>
-        public LogContent AcceptSchedule(int userScheduleId)
+        public async Task<LogContent> AcceptSchedule(int userScheduleId)
         {
             var userSchedule = GetUserScheduleById(userScheduleId);
             LogContent logContent = CheckUserScheduleStatus(userSchedule);
 
             if (logContent.Result == false)
             {
+                LogContent data;
+
                 if (userSchedule.Type == "HR Interview" || userSchedule.Type == "Technical Interview")
                 {
-                    var interviewData = _interviewService.AddInterview(userSchedule);
-                    if (!interviewData.Result)
+                    data = _interviewService.AddInterview(userSchedule);
+                    if (!data.Result)
                     {
                         _logger.Trace("Successfully created a new Interview record.");
                     }
                 }
                 else
                 {
-                    var examData = _examinationService.AddExamination(userSchedule);
-                    if (!examData.Result)
+                    data = _examinationService.AddExamination(userSchedule);
+                    if (!data.Result)
                     {
                         _logger.Trace("Successfully created a new Examination record.");
+                    }
+                }
+
+                if (data.Result == false)
+                {
+                    string joinUrl = SetOnlineMeetingSchedule(userSchedule);
+                    if (!string.IsNullOrEmpty(joinUrl))
+                    {
+                        _logger.Trace("Successfully generated a Teams meeting link.");
+                        await SendAcceptedScheduleToInterviewer(userSchedule, joinUrl);
+                        await SendAcceptedScheduleToApplicant(userSchedule, joinUrl);
                     }
                 }
 
@@ -257,6 +273,56 @@ namespace Basecode.Services.Services
             Applicant applicant = _applicantService.GetApplicantByApplicationId(userSchedule.ApplicationId);
             string applicantFullName = applicant.Firstname + " " + applicant.Lastname;
             await _emailSendingService.SendRejectedScheduleNoticeToInterviewer(user.Email, user.Fullname, userSchedule, applicantFullName);
+        }
+
+        /// <summary>
+        /// Sets the online meeting schedule.
+        /// </summary>
+        public string SetOnlineMeetingSchedule(UserSchedule userSchedule)
+        {
+            ApplicationViewModel application = _applicationService.GetById(userSchedule.ApplicationId);
+            string email = _userService.GetUserEmailById(userSchedule.UserId);
+
+            CalendarEvent calendarEvent = new CalendarEvent()
+            {
+                Subject = $"Alliance Software Inc. {userSchedule.Type}",
+                Body = new Body()
+                {
+                    Content = $"{userSchedule.Type} for {application.JobOpeningTitle} position" +
+                    $"<br> Applicant Name: {application.ApplicantName}",
+                },
+                Start = new EventDateTime() { DateTime = userSchedule.Schedule },
+                End = new EventDateTime() { DateTime = userSchedule.Schedule.AddHours(1) }
+            };
+
+            string joinUrl = "";
+            LogContent logContent = CheckCalendarEvent(calendarEvent);
+            if (logContent.Result == false)
+            {
+                joinUrl = _calendarService.CreateEvent(calendarEvent, email);
+            }
+
+            return joinUrl;
+        }
+
+        /// <summary>
+        /// Sends the accepted schedule with Teams link to the interviewer.
+        /// </summary>
+        public async Task SendAcceptedScheduleToInterviewer(UserSchedule userSchedule, string joinUrl)
+        {
+            User user = _userService.GetById(userSchedule.UserId);
+            ApplicationViewModel application = _applicationService.GetById(userSchedule.ApplicationId);
+            await _emailSendingService.SendAcceptedScheduleToInterviewer(user.Email, user.Fullname, userSchedule, application, joinUrl);
+        }
+
+        /// <summary>
+        /// Sends the accepted schedule with Teams link to the applicant.
+        /// </summary>
+        public async Task SendAcceptedScheduleToApplicant(UserSchedule userSchedule, string joinUrl)
+        {
+            string email = _applicantService.GetApplicantByApplicationId(userSchedule.ApplicationId).Email;
+            ApplicationViewModel application = _applicationService.GetById(userSchedule.ApplicationId);
+            await _emailSendingService.SendAcceptedScheduleToApplicant(email, userSchedule, application, joinUrl);
         }
     }
 }
