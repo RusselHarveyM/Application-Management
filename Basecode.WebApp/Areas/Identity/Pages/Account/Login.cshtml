@@ -32,7 +32,7 @@
                     <div class="form-group p-1 bg-light px-3 py-2">
                         <label asp-for="Input.Email" class="control-label text-black text-strong mb-1">Email</label>
                         <input asp-for="Input.Email" autocomplete="username" type="email" id="email" class="form-control p-1" placeholder="example.email@gmail.com" />
-                        
+                        <span asp-validation-for="Input.Email" class="text-danger error-style"></span>
                     </div>
                 </div>
                 <div class="row">
