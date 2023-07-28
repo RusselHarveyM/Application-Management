@@ -1,5 +1,6 @@
 ﻿using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
+using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System.Web;
@@ -314,7 +315,7 @@ namespace Basecode.Services.Services
             var body = templateContent
                 .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
                 .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
-                .Replace("{{HEADLINE}}", $"Applicant {userSchedule.Type} Schedule Rejection")
+                .Replace("{{HEADLINE}}", $"Applicant {userSchedule.Type} Schedule Rejected")
                 .Replace("{{BODY}}", $"Dear {fullname},<br>" +
                                      $"<br> We hope this email finds you well. We would like to inform you that the {userSchedule.Type} schedule that you set for Mr./Ms. {applicantFullName}" +
                                      $" on {userSchedule.Schedule} has been rejected. Please reschedule the meeting through our HR Automation System. <br> " +
@@ -324,7 +325,52 @@ namespace Basecode.Services.Services
                                      $"<br> Should you encounter any difficulties or require any support in the process, please do not hesitate to reach out to our support team, and we will be glad to assist you. <br>" +
                                      $"<br><br> Best regards,");
 
-            await _emailService.SendEmail(email, $"Alliance Software Inc. {userSchedule.Type} Schedule Rejection", body);
+            await _emailService.SendEmail(email, $"Alliance Software Inc. {userSchedule.Type} Schedule Rejection Notification", body);
+        }
+
+        /// <summary>
+        /// Sends the accepted schedule with Teams link to the interviewer.
+        /// </summary>
+        public async Task SendAcceptedScheduleToInterviewer(string email, string fullname, UserSchedule userSchedule, ApplicationViewModel application, string joinUrl)
+        {
+            var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
+            var templateContent = File.ReadAllText(templatePath);
+            var body = templateContent
+                .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+                .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+                .Replace("{{HEADLINE}}", $"Applicant {userSchedule.Type} Schedule Accepted")
+                .Replace("{{BODY}}", $"<br> Dear {fullname}," +
+                                     $"<br><br> Warm greetings! We are delighted to inform you that an applicant has accepted the {userSchedule.Type} schedule you proposed through our HR Automation System." +
+                                     $"<br><br> The details for the scheduled {userSchedule.Type} are as follows: <br> Applicant: {application.ApplicantName}" +
+                                     $"<br> Position: {application.JobOpeningTitle} <br> Date: {userSchedule.Schedule.ToShortDateString} <br> Time: {userSchedule.Schedule.ToShortTimeString} <br> Meeting Link: {joinUrl}" +
+                                     $"<br><br> With the provided Teams Meeting link, you and the applicant can effortlessly join the virtual meeting at the scheduled time. Please ensure you have access to a " +
+                                     $"stable internet connection and a working camera and microphone for a seamless meeting experience." +
+                                     $"<br><br>Should any unforeseen circumstances arise or if you encounter any challenges with the virtual meeting link, please reach out to our support team, and we will be more than happy to assist you." +
+                                     $"<br><br><br> Best regards,");
+
+            await _emailService.SendEmail(email, $"Alliance Software Inc. {userSchedule.Type} Schedule Acceptance Notification", body);
+        }
+
+        public async Task SendAcceptedScheduleToApplicant(string email, UserSchedule userSchedule, ApplicationViewModel application, string joinUrl)
+        {
+            var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
+            var templateContent = File.ReadAllText(templatePath);
+            var body = templateContent
+                .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+                .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+                .Replace("{{HEADLINE}}", $"{userSchedule.Type} Schedule Accepted")
+                .Replace("{{BODY}}", $"<br> Dear {application.ApplicantName}," +
+                                     $"<br><br> Warm greetings! We are delighted to inform you that an applicant has accepted the {userSchedule.Type} schedule you proposed through our HR Automation System." +
+                                     $"<br><br> The details for the scheduled {userSchedule.Type} are as follows: " +
+                                     $"<br> Position: {application.JobOpeningTitle} <br> Date: {userSchedule.Schedule.ToShortDateString} <br> Time: {userSchedule.Schedule.ToShortTimeString} <br> Meeting Link: {joinUrl}" +
+                                     $"<br><br> You can now look forward to your scheduled interview at the designated time. We will be utilizing Microsoft Teams for the virtual interview, so please ensure " +
+                                     $"you are familiar with the platform and have access to a stable internet connection. Additionally, make sure your camera and microphone are in good working order to " +
+                                     $"facilitate a smooth interview experience." +
+                                     $"<br><br>If you have any queries or require further assistance regarding the interview process or the Teams Meeting link, please feel free to contact us. We are here to support " +
+                                     $"you and ensure that your interview experience is both positive and successful." +
+                                     $"<br><br><br> Best regards,");
+
+            await _emailService.SendEmail(email, $"Alliance Software Inc. {userSchedule.Type} Schedule Acceptance Notification", body);
         }
     }
 }
