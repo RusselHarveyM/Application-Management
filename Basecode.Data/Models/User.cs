@@ -76,7 +76,7 @@ namespace Basecode.Data.Models
         /// Collection navigation for related JobOpenings
         /// </summary>
         public ICollection<JobOpening> JobOpenings { get; set; } = new List<JobOpening>();
-        
+
         /// <summary>
         /// Gets or sets the identity user.
         /// </summary>
@@ -108,5 +108,13 @@ namespace Basecode.Data.Models
         /// The examination.
         /// </value>
         public Examination? Examination { get; set; }
+
+        /// <summary>
+        /// Gets or sets the background check.
+        /// </summary>
+        /// <value>
+        /// The background check.
+        /// </value>
+        public List<BackgroundCheck> BackgroundCheck { get; set; }
     }
 }

@@ -9,8 +9,8 @@ namespace Basecode.Data.ViewModels
 {
     public class BackgroundCheckFormViewModel
     {
-        public int CharReferenceId { get; set; }
-        public int UserHRId { get; set; }
+        public int CharacterReferenceId { get; set; }
+        public int UserId { get; set; }
 
         [Required(ErrorMessage = "Firstname is required")]
         public string Firstname { get; set; }
