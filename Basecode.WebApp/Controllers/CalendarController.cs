@@ -27,7 +27,7 @@ public class CalendarController : Controller
     {
         try
         {
-            var joinUrl = _calendarService.CreateEvent(calendarEvent);
+            var joinUrl = _calendarService.CreateEvent(calendarEvent, "");
             if (!joinUrl.IsNullOrEmpty())
             {
                 _logger.Trace("Event Created Successfully!");
