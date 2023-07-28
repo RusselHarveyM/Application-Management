@@ -131,7 +131,7 @@ namespace Basecode.Data.Migrations
                     b.Property<DateTime>("AnsweredDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("CharReferenceId")
+                    b.Property<int>("CharacterReferenceId")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
@@ -169,12 +169,15 @@ namespace Basecode.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserHRId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CharReferenceId");
+                    b.HasIndex("CharacterReferenceId")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("BackgroundCheck");
                 });
@@ -239,6 +242,10 @@ namespace Basecode.Data.Migrations
 
                     b.HasIndex("ApplicationId");
 
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
+
                     b.ToTable("Examination");
                 });
 
@@ -269,6 +276,12 @@ namespace Basecode.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplicationId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
 
                     b.ToTable("Interview");
                 });
@@ -458,9 +471,11 @@ namespace Basecode.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationId");
+                    b.HasIndex("ApplicationId")
+                        .IsUnique();
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("UserSchedule");
                 });
@@ -700,21 +715,31 @@ namespace Basecode.Data.Migrations
             modelBuilder.Entity("Basecode.Data.Models.BackgroundCheck", b =>
                 {
                     b.HasOne("Basecode.Data.Models.CharacterReference", "CharacterReference")
-                        .WithMany()
-                        .HasForeignKey("CharReferenceId")
+                        .WithOne("BackgroundCheck")
+                        .HasForeignKey("Basecode.Data.Models.BackgroundCheck", "CharacterReferenceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Basecode.Data.Models.User", "User")
+                        .WithMany("BackgroundCheck")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("CharacterReference");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Basecode.Data.Models.CharacterReference", b =>
                 {
-                    b.HasOne("Basecode.Data.Models.Applicant", null)
+                    b.HasOne("Basecode.Data.Models.Applicant", "Applicant")
                         .WithMany("CharacterReferences")
                         .HasForeignKey("ApplicantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Applicant");
                 });
 
             modelBuilder.Entity("Basecode.Data.Models.Examination", b =>
@@ -725,7 +750,30 @@ namespace Basecode.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Basecode.Data.Models.User", "User")
+                        .WithOne("Examination")
+                        .HasForeignKey("Basecode.Data.Models.Examination", "UserId");
+
                     b.Navigation("Application");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Basecode.Data.Models.Interview", b =>
+                {
+                    b.HasOne("Basecode.Data.Models.Application", "Application")
+                        .WithMany()
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Basecode.Data.Models.User", "User")
+                        .WithOne("Interview")
+                        .HasForeignKey("Basecode.Data.Models.Interview", "UserId");
+
+                    b.Navigation("Application");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Basecode.Data.Models.Qualification", b =>
@@ -760,14 +808,14 @@ namespace Basecode.Data.Migrations
             modelBuilder.Entity("Basecode.Data.Models.UserSchedule", b =>
                 {
                     b.HasOne("Basecode.Data.Models.Application", "Application")
-                        .WithMany()
-                        .HasForeignKey("ApplicationId")
+                        .WithOne("UserSchedule")
+                        .HasForeignKey("Basecode.Data.Models.UserSchedule", "ApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Basecode.Data.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                        .WithOne("UserSchedule")
+                        .HasForeignKey("Basecode.Data.Models.UserSchedule", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -849,6 +897,16 @@ namespace Basecode.Data.Migrations
                     b.Navigation("CharacterReferences");
                 });
 
+            modelBuilder.Entity("Basecode.Data.Models.Application", b =>
+                {
+                    b.Navigation("UserSchedule");
+                });
+
+            modelBuilder.Entity("Basecode.Data.Models.CharacterReference", b =>
+                {
+                    b.Navigation("BackgroundCheck");
+                });
+
             modelBuilder.Entity("Basecode.Data.Models.JobOpening", b =>
                 {
                     b.Navigation("Applications");
@@ -856,6 +914,17 @@ namespace Basecode.Data.Migrations
                     b.Navigation("Qualifications");
 
                     b.Navigation("Responsibilities");
+                });
+
+            modelBuilder.Entity("Basecode.Data.Models.User", b =>
+                {
+                    b.Navigation("BackgroundCheck");
+
+                    b.Navigation("Examination");
+
+                    b.Navigation("Interview");
+
+                    b.Navigation("UserSchedule");
                 });
 #pragma warning restore 612, 618
         }
