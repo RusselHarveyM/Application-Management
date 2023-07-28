@@ -5,6 +5,7 @@ using Basecode.Data.Repositories;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
 using Basecode.Services.Util;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -186,6 +187,15 @@ namespace Basecode.Services.Services
         public Applicant GetApplicantByApplicationId(Guid applicationId)
         {
             return _repository.GetApplicantByApplicationId(applicationId);
+        }
+
+        /// <summary>
+        /// This method retrieves a list of applicant names along with their corresponding email addresses and job titles.
+        /// </summary>
+        /// <returns>A list of tuples, each containing the applicant's full name, email address, and job title.</returns>
+        public List<(string Name, string Email, string Title)> GetApplicantNameAndJobTitle()
+        {
+            return _repository.GetApplicantNameAndJobTitle();
         }
     }
 }

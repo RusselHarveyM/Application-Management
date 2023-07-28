@@ -1,4 +1,5 @@
-﻿using Basecode.Data.ViewModels;
+﻿using Basecode.Data.Models;
+using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
 using Basecode.Services.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -207,11 +208,34 @@ namespace Basecode.WebApp.Controllers
             return NotFound();
         }
 
-
+        /// <summary>
+        /// Retrieves the data needed to display the Applicant Directory view, which includes a list of applicants along with their job titles,
+        /// and information about shortlisted applicants for HR and Technical positions.
+        /// </summary>
+        /// <returns>An IActionResult representing the Applicant Directory view populated with the required data.</returns>
         public IActionResult ApplicantDirectoryView()
         {
-            return View();
-        }
+            try
+            {
+                var applicants = _applicantService.GetApplicantNameAndJobTitle();
 
+                var shortlistedModel = new ShortListedViewModel();
+                shortlistedModel.HRShortlisted = _dashboardService.GetShorlistedApplicatons("HR Shortlisted");
+                shortlistedModel.TechShortlisted = _dashboardService.GetShorlistedApplicatons("Technical Shortlisted");
+
+                var applicantDirectoryViewModel = new ApplicantDirectoryViewModel
+                {
+                    Applicants = applicants,
+                    Shortlists = shortlistedModel
+                };
+
+                return View(applicantDirectoryViewModel);
+            }
+            catch (Exception e)
+            {
+                _logger.Error(ErrorHandling.DefaultException(e.Message));
+                return StatusCode(500, "Something went wrong.");
+            }
+        }
     }
 }
