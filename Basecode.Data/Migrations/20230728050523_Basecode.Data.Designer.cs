@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Basecode.Data.Migrations
 {
     [DbContext(typeof(BasecodeContext))]
-    [Migration("20230727093443_BaseCodeBackground")]
-    partial class BaseCodeBackground
+    [Migration("20230728050523_Basecode.Data")]
+    partial class BasecodeData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
