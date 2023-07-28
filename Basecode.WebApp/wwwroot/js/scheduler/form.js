@@ -19,6 +19,8 @@
             noResults: () => "No applicants found",
         },
     });
+
+    document.getElementById('date').setAttribute('min', getCurrentDate());
 });
 
 $('#jobOpeningDropdown').on('change', function () {
@@ -130,11 +132,6 @@ function getCurrentDate() {
     var year = today.getFullYear();
     return year + '-' + month + '-' + day;
 }
-
-// Set the minimum date for the date input to the current date
-document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById('date').setAttribute('min', getCurrentDate());
-});
 
 $('#scheduleForm').submit(function (event) {
     event.preventDefault();
