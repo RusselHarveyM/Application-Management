@@ -87,7 +87,7 @@ namespace Basecode.WebApp.Controllers
         /// Accepts the schedule.
         /// </summary>
         [Route("Scheduler/AcceptSchedule/{token}")]
-        public IActionResult AcceptSchedule(string token)
+        public async Task<IActionResult> AcceptSchedule(string token)
         {
             try
             {
@@ -99,7 +99,7 @@ namespace Basecode.WebApp.Controllers
                     return View();
                 }
 
-                var data = _userScheduleService.AcceptSchedule(userScheduleId);
+                var data = await _userScheduleService.AcceptSchedule(userScheduleId);
                 if (!data.Result)
                 {
                     _logger.Trace("User Schedule [" + userScheduleId + "] has been successfully accepted.");
