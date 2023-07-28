@@ -204,9 +204,9 @@ namespace Basecode.Services.Services
                                      $"<br> While your experience and achievements are impressive, we have decided to move forward with other candidates whose qualifications more closely match our current needs. <br>" +
                                      $"<br> Please know that this decision does not reflect on your capabilities or potential. We recognize the effort you put into your application, and we sincerely appreciate your interest in joining our team. <br>" +
                                      $"<br> As a company, we strive to ensure that every applicant receives a fair evaluation. We encourage you to continue exploring other opportunities within our organization or elsewhere that may be a better fit for your skills and aspirations. <br>" +
-                                     $"<br> Once again, thank you for your interest in Alliance Software Inc. We wish you all the best in your job search and future endeavors." +
+                                     $"<br> Once again, thank you for your interest in Alliance Software Inc. We wish you all the best in your job search and future endeavors. <br>" +
                                      $"<br> If you have any questions or would like feedback on your application, please feel free to reach out. We're more than willing to provide insights that may be helpful in your career journey. <br>" +
-                                     $"<br> Best regards, <br>");
+                                     $"<br> Best regards,");
 
             await _emailService.SendEmail(applicant.Email, "Alliance Software Inc. Application Status Update", body);
         }
@@ -296,7 +296,7 @@ namespace Basecode.Services.Services
                                      $"<br> Your thoughtful and positive feedback has been received and will play a crucial role in the evaluation process for Mr/Ms. {applicant.Lastname}'s application. Character references are incredibly valuable in providing insights into an individual's personal attributes and qualities, and your input will help us make an informed decision. <br>" +
                                      $"<br> We understand that providing a character reference requires time and effort, and we are truly grateful for your support in this matter. Your willingness to vouch for Mr/Ms. {applicant.Lastname}'s character speaks volumes about your relationship with them, and it is a testament to their strengths and character. <br>" +
                                      $"<br> If you have any questions or need any further information about the application process, please do not hesitate to reach out to us. Your assistance in this matter is invaluable, and we are here to assist you in any way we can. <br>" +
-                                     $"<br> Once again, thank you for being a part of Mr/Ms. {applicant.Lastname}'s journey through this process. We truly appreciate your contribution to our decision-making process." +
+                                     $"<br> Once again, thank you for being a part of Mr/Ms. {applicant.Lastname}'s journey through this process. We truly appreciate your contribution to our decision-making process. <br>" +
                                      $"<br> Best regards,");
 
             await _emailService.SendEmail(reference.Email, "Alliance Software Inc. Background Check", body);
