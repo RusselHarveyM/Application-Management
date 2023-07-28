@@ -97,13 +97,15 @@ namespace Basecode.Services.Services
         {
             LogContent logContent = new LogContent();
             int createdApplicantId = 0;
-            var jobOpening = _jobOpeningService.GetByIdClean(applicant.JobOpeningId);
+            var jobOpening = _jobOpeningService.GetById(applicant.JobOpeningId);
+            var jobOpeningClone = _jobOpeningService.GetByIdClean(applicant.JobOpeningId);
 
             logContent = CheckApplicant(applicant);
             if (logContent.Result == false)
             {
                 var applicantModel = _mapper.Map<Applicant>(applicant);
-
+                var newJobOpening = _mapper.Map<JobOpening>(jobOpening);
+                
                 createdApplicantId = _repository.CreateApplicant(applicantModel);
 
                 var application = new Application
@@ -114,13 +116,13 @@ namespace Basecode.Services.Services
                     ApplicationDate = DateTime.Now,
                     UpdateTime = DateTime.Now,
                     Applicant = applicantModel,
-                    JobOpening = jobOpening
+                    JobOpening = jobOpeningClone
                 };
 
                 _applicationService.Create(application);
 
                 // Resume checking moved to the TrackService
-                var result = await _trackService.CheckAndSendApplicationStatus(application, applicantModel, jobOpening);
+                var result = await _trackService.CheckAndSendApplicationStatus(application, applicantModel, newJobOpening);
 
                 if(result != null)
                 {
@@ -160,13 +162,12 @@ namespace Basecode.Services.Services
                 .Select(applicant => applicant.Id)
                 .ToList();
 
-            if(rejectedApplicantIds.Count > 0)
             return _repository.GetAll()
                 .Where(applicant =>
                     // Applicants with no UserSchedule record at all
-                    applicant.Application.UserSchedule == null ||
+                    (applicant.Application.UserSchedule == null ||
                     // Applicants with UserSchedule records having "rejected" status
-                    rejectedApplicantIds.Contains(applicant.Id))
+                    rejectedApplicantIds.Contains(applicant.Id)))
                 .Select(applicant => new ApplicantStatusViewModel
                 {
                     Id = applicant.Id,
@@ -176,7 +177,6 @@ namespace Basecode.Services.Services
                     JobOpeningId = applicant.Application.JobOpeningId,
                 })
                 .ToList();
-            return new List<ApplicantStatusViewModel>();
         }
 
         /// <summary>

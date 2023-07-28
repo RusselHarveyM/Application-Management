@@ -42,10 +42,11 @@ namespace Basecode.Services.Services
         public async Task<Application> CheckAndSendApplicationStatus(Application application, Applicant applicant,
             JobOpening jobOpening)
         {
-            var result = await _resumeChecker.CheckResume(jobOpening.Title, applicant.CV);
+            var result = await _resumeChecker.CheckResume(jobOpening.Title, jobOpening.Qualifications,applicant.CV);
 
             JsonDocument jsonDocument = JsonDocument.Parse(result);
             var jsonObject = jsonDocument.RootElement;
+            
 
             // Accessing individual properties
             string jobPosition = jsonObject.GetProperty("JobPosition").GetString();
@@ -54,7 +55,7 @@ namespace Basecode.Services.Services
 
             if (int.Parse(score.Replace("%", "")) > 60)
             {
-                return await UpdateApplicationStatus(application, jobOpening, "HR Shortlisted", "GUID");
+                return await UpdateApplicationStatus(application, application.JobOpening, "HR Shortlisted", "GUID");
             }
             else
             {
