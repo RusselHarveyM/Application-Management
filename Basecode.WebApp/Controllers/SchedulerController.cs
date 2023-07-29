@@ -14,7 +14,6 @@ namespace Basecode.WebApp.Controllers
         private readonly IApplicantService _applicantService;
         private readonly UserManager<IdentityUser> _userManager;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
-        private readonly IConfiguration _config;
         private readonly TokenHelper _tokenHelper;
 
         public SchedulerController(IUserScheduleService userScheduleService, IUserService userService, IApplicantService applicantService, UserManager<IdentityUser> userManager, IConfiguration config)
@@ -23,8 +22,7 @@ namespace Basecode.WebApp.Controllers
             _userService = userService;
             _applicantService = applicantService;
             _userManager = userManager;
-            _config = config;
-            _tokenHelper = new TokenHelper(_config["TokenHelper:SecretKey"]);
+            _tokenHelper = new TokenHelper(config["TokenHelper:SecretKey"]);
         }
 
         /// <summary>
