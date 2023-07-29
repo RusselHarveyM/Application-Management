@@ -6,38 +6,51 @@
     ViewData["Login"] = "Login page";
 }
 
-<style>
-    /* Remove default list styles */
-    .error-style ul {
-        list-style: none;
-        padding-left: 0;
-    }
-
-     /* Align the list to the leftmost position */
-    .error-style ul li {
-        text-indent: -1em;
-        padding-left: 1em;
-     }
-</style>
-
 <div class="container d-flex align-items-center justify-content-center p-3 form-parent">
     <div class="row w-100">
         <div class="col-md-6 col-sm-12 align-self-center">
             <h1 class="mb-3 text-center sign-font">Sign-in</h1>
-            <form id="formSubmit" method="post">
+            <form id="formSubmit" method="post" onsubmit="return validateForm()">
                 <div class="row p-2 text-center">
                     <div asp-validation-summary="ModelOnly" class="text-danger error-style"></div>
                 </div>
                 <div class="row">
-                    <div class="form-group p-1 bg-light px-3 py-2">
-                        <label asp-for="Input.Email" class="control-label text-black text-strong mb-1">Email</label>
+                    <div class="form-group p-1 bg-light px-3 py-2 pt-2">
+                        <label asp-for="Input.Email" class="control-label text-strong mb-1" id="emailToRed">Email<span style="color:red"> &nbsp;*</span></label>
+                        @if (!string.IsNullOrEmpty(@ViewData["userEmail"]?.ToString()))
+                        {
+                            <span class="text-danger error-style fst-italic">@ViewData["userEmail"]</span>
+
+                        }
+                        else
+                        {
+                            if (!string.IsNullOrEmpty(@ViewData["userPass"]?.ToString()))
+                            {
+                                @ViewData.Remove("userEmail")
+                                ;
+                            }
+                            <span asp-validation-for="Input.Email" class="text-danger error-style fst-italic"></span>
+                        }
                         <input asp-for="Input.Email" autocomplete="username" type="email" id="email" class="form-control p-1" placeholder="example.email@gmail.com" />
-                        <span asp-validation-for="Input.Email" class="text-danger error-style"></span>
+
                     </div>
                 </div>
                 <div class="row">
-                    <div class="form-group p-1 bg-light mb-2 px-3 py-2">
-                        <label asp-for="Input.Password" class="control-label text-black text-strong mb-1">Password</label>
+                    <div class="form-group p-1 bg-light mb-2 px-3 py-2 pb-3">
+                        <label asp-for="Input.Password" class="control-label text-strong mb-1" id="passwordToRed">Password<span style="color:red"> &nbsp;*</span></label>
+                        @if (!string.IsNullOrEmpty(@ViewData["userPass"]?.ToString()))
+                        {
+                            <span class="text-danger error-style fst-italic">@ViewData["userPass"]</span>
+                        }
+                        else
+                        {
+                            if (!string.IsNullOrEmpty(@ViewData["userPass"]?.ToString()))
+                            {
+                                @ViewData.Remove("userPass")
+                                ;
+                            }
+                            <span asp-validation-for="Input.Password" class="text-danger error-style fst-italic"></span>
+                        }
                         <div class="input-group">
                             <input asp-for="Input.Password" autocomplete="current-password" type="password" id="password" min="8" required class="form-control p-1" placeholder="At least 8 characters, 1 non-alphanumeric, digit, uppercase letter" />
                             <span id="eye" class="input-group-text visually-hidden">
@@ -47,7 +60,6 @@
                                 <i class="fas fa-eye-slash"></i>
                             </span>
                         </div>
-                        <span asp-validation-for="Input.Password" class="text-danger error-style"></span>
                     </div>
                 </div>
                 <div class="row">
@@ -71,6 +83,34 @@
         </div>
     </div>
 </div>
+
+@if (!string.IsNullOrEmpty(@ViewData["userPass"]?.ToString()))
+{
+    <script>
+        var pass = document.getElementById("passwordToRed");
+        var mail = document.getElementById("emailToRed");
+        pass.style.color = "#FF3300";
+        mail.style.color = "#FF3300";
+    </script>
+}
+else
+{
+    <script>
+        function validateForm() {
+            var input = document.getElementById("formSubmit");
+            if (input.checkValidity() === false) {
+                var pass = document.getElementById("passwordToRed");
+                var mail = document.getElementById("emailToRed");
+                pass.style.color = "#FF3300";
+                mail.style.color = "#FF3300";
+                return false;
+            } else {
+                return true;
+            }
+        }
+    </script>
+}
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
