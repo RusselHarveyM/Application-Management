@@ -45,10 +45,16 @@ namespace Basecode.Data.Interfaces
         Applicant GetApplicantByApplicationId(Guid applicationId);
 
         /// <summary>
-        /// This method retrieves a list of applicant names along with their corresponding email addresses and job titles.
-        /// It performs a series of database joins to retrieve the required information from the underlying data context.
+        /// Gets the linked job openings.
         /// </summary>
-        /// <returns>A list of tuples, each containing the applicant's full name, email address, and job title.</returns>
-        List<(string Name, string Email, string Title)> GetApplicantNameAndJobTitle();
+        /// <param name="userId">The user identifier.</param>
+        /// <returns></returns>
+        IEnumerable<JobOpeningBasicViewModel> GetLinkedJobOpenings(string userAspId);
+
+        /// <summary>
+        /// Retrieves a list of applicants along with their associated job openings and character references from the database.
+        /// </summary>
+        /// <returns>A List of Applicant objects, each containing their respective Application (including JobOpening) and CharacterReferences.</returns>
+        List<Applicant> GetApplicantsWithJobAndReferences(string userAspId);
     }
 }

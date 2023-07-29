@@ -1,8 +1,10 @@
 ﻿using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
+using Basecode.Data.ViewModels.Common;
 using Basecode.Services.Interfaces;
 using Basecode.Services.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using NLog;
@@ -15,15 +17,19 @@ namespace Basecode.WebApp.Controllers
         private readonly IApplicantService _applicantService;
         private readonly IJobOpeningService _jobOpeningService;
         private readonly IUserService _userService;
+        private readonly ICharacterReferenceService _characterReferenceService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly IDashboardService _dashboardService;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService, IUserService userService, IDashboardService  dashboardService )
+        public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService, IUserService userService, ICharacterReferenceService characterReferenceService, IDashboardService  dashboardService, UserManager<IdentityUser> userManager)
         {
             _applicantService = applicantService;
             _jobOpeningService = jobOpeningService;
             _userService = userService;
+            _characterReferenceService = characterReferenceService;
             _dashboardService = dashboardService;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -217,7 +223,8 @@ namespace Basecode.WebApp.Controllers
         {
             try
             {
-                var applicants = _applicantService.GetApplicantNameAndJobTitle();
+                var userAspId = _userManager.GetUserId(User);
+                var applicants = _applicantService.GetApplicantsWithJobAndReferences(userAspId);
 
                 var shortlistedModel = new ShortListedViewModel();
                 shortlistedModel.HRShortlisted = _dashboardService.GetShorlistedApplicatons("HR Shortlisted");
@@ -230,6 +237,61 @@ namespace Basecode.WebApp.Controllers
                 };
 
                 return View(applicantDirectoryViewModel);
+            }
+            catch (Exception e)
+            {
+                _logger.Error(ErrorHandling.DefaultException(e.Message));
+                return StatusCode(500, "Something went wrong.");
+            }
+        }
+
+        /// <summary>
+        /// Action method for displaying the details of an applicant and their associated character references.
+        /// </summary>
+        /// <returns>Returns a View containing the applicant details and character references.</returns>
+        public IActionResult ApplicantViewDetails()
+        {
+            try
+            {
+                var applicant = new Applicant();
+                var characterReferences = new List<CharacterReference>();
+
+                if (Request.Query.TryGetValue("applicantId", out var applicantIdValue))
+                {
+                    int applicantId = int.Parse(applicantIdValue);
+                    applicant = _applicantService.GetApplicantById(applicantId);
+                    characterReferences = _characterReferenceService.GetReferencesByApplicantId(applicantId);
+
+                }
+
+                var model = new ApplicantDetailsViewModel
+                {
+                    Applicant = applicant,
+                    CharacterReferences = characterReferences
+                };
+
+                return View(model);
+            }
+            catch (Exception e)
+            {
+                _logger.Error(ErrorHandling.DefaultException(e.Message));
+                return StatusCode(500, "Something went wrong.");
+            }
+        }
+
+        /// <summary>
+        /// Action method for downloading the resume of an applicant identified by the given 'applicantId'.
+        /// </summary>
+        /// <param name="applicantId">The unique identifier of the applicant whose resume is to be downloaded.</param>
+        /// <returns>Returns a FileResult containing the applicant's resume in PDF format for download.</returns>
+        public IActionResult DownloadResume(int applicantId)
+        {
+            try
+            {
+                var applicant = _applicantService.GetApplicantById(applicantId);
+                var fileName = $"{applicant.Firstname}_{applicant.Lastname}_Resume.pdf";
+
+                return File(applicant.CV, "application/pdf", fileName);
             }
             catch (Exception e)
             {

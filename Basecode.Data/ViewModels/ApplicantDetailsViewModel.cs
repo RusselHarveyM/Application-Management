@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Basecode.Data.ViewModels
 {
-    public class ApplicantDirectoryViewModel
+    public class ApplicantDetailsViewModel
     {
-        public List<Applicant> Applicants { get; set; }
-        public ShortListedViewModel Shortlists { get; set; }
+        public Applicant Applicant { get; set; }
+        public List<CharacterReference> CharacterReferences { get; set; }
     }
 }

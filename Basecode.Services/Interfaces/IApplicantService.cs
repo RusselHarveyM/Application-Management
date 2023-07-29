@@ -70,9 +70,9 @@ namespace Basecode.Services.Interfaces
         Applicant GetApplicantByApplicationId(Guid applicationId);
 
         /// <summary>
-        /// This method retrieves a list of applicant names along with their corresponding email addresses and job titles.
+        /// Retrieves a list of applicants along with their associated job openings and character references from the database.
         /// </summary>
-        /// <returns>A list of tuples, each containing the applicant's full name, email address, and job title.</returns>
-        List<(string Name, string Email, string Title)> GetApplicantNameAndJobTitle();
+        /// <returns>A List of Applicant objects, each containing their respective Application (including JobOpening) and CharacterReferences.</returns>
+        List<Applicant> GetApplicantsWithJobAndReferences(string userAspId);
     }
 }
