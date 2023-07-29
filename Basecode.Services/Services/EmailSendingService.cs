@@ -232,11 +232,14 @@ namespace Basecode.Services.Services
                 .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
                 .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
                 .Replace("{{HEADLINE}}", $"{meetingType} Schedule")
-                .Replace("{{BODY}}", $"Dear {applicant.Firstname},<br>" +
-                                     $"<br> Your {meetingType} has been scheduled for {userSchedule.Schedule}.<br/>" +
-                                     $"<br> Please click the button to accept or reject the schedule:<br/>" +
-                                     $"<br> <a href=\"{acceptUrl}\">Accept</a> " +
-                                     $"<a href=\"{rejectUrl}\">Reject</a>");
+                .Replace("{{BODY}}", $"<br> Dear {applicant.Firstname} {applicant.Lastname}," +
+                                     $"<br><br> Your {meetingType} has been scheduled for {userSchedule.Schedule.ToShortDateString()} at {userSchedule.Schedule.ToShortTimeString()}." +
+                                     $"<br><br> If you are available on the said schedule, please click the Accept button. Otherwise, click the Reject button." +
+                                     $"<br><br> If you reject, the interviewer will be informed, and a new schedule will be set for you." +
+                                     $"<br><br> Please click the button below that corresponds to your choice:" +
+                                     $"<br><br> <a href=\"{acceptUrl}\">Accept</a> " +
+                                     $"<a href=\"{rejectUrl}\">Reject</a>" +
+                                     $"<br><br> Best regards,");
 
             await _emailService.SendEmail(applicant.Email, $"Alliance Software Inc. {meetingType} Schedule", body);
         }
@@ -342,7 +345,7 @@ namespace Basecode.Services.Services
                 .Replace("{{BODY}}", $"<br> Dear {fullname}," +
                                      $"<br><br> Warm greetings! We are delighted to inform you that an applicant has accepted the {userSchedule.Type} schedule you proposed through our HR Automation System." +
                                      $"<br><br> The details for the scheduled {userSchedule.Type} are as follows: <br> Applicant: {application.ApplicantName}" +
-                                     $"<br> Position: {application.JobOpeningTitle} <br> Date: {userSchedule.Schedule.ToShortDateString} <br> Time: {userSchedule.Schedule.ToShortTimeString} <br> Meeting Link: {joinUrl}" +
+                                     $"<br> Position: {application.JobOpeningTitle} <br> Date: {userSchedule.Schedule.ToShortDateString()} <br> Time: {userSchedule.Schedule.ToShortTimeString()} <br> Meeting Link: {joinUrl}" +
                                      $"<br><br> With the provided Teams Meeting link, you and the applicant can effortlessly join the virtual meeting at the scheduled time. Please ensure you have access to a " +
                                      $"stable internet connection and a working camera and microphone for a seamless meeting experience." +
                                      $"<br><br>Should any unforeseen circumstances arise or if you encounter any challenges with the virtual meeting link, please reach out to our support team, and we will be more than happy to assist you." +
@@ -362,7 +365,7 @@ namespace Basecode.Services.Services
                 .Replace("{{BODY}}", $"<br> Dear {application.ApplicantName}," +
                                      $"<br><br> Warm greetings! We are delighted to inform you that an applicant has accepted the {userSchedule.Type} schedule you proposed through our HR Automation System." +
                                      $"<br><br> The details for the scheduled {userSchedule.Type} are as follows: " +
-                                     $"<br> Position: {application.JobOpeningTitle} <br> Date: {userSchedule.Schedule.ToShortDateString} <br> Time: {userSchedule.Schedule.ToShortTimeString} <br> Meeting Link: {joinUrl}" +
+                                     $"<br> Position: {application.JobOpeningTitle} <br> Date: {userSchedule.Schedule.ToShortDateString()} <br> Time: {userSchedule.Schedule.ToShortTimeString()} <br> Meeting Link: {joinUrl}" +
                                      $"<br><br> You can now look forward to your scheduled interview at the designated time. We will be utilizing Microsoft Teams for the virtual interview, so please ensure " +
                                      $"you are familiar with the platform and have access to a stable internet connection. Additionally, make sure your camera and microphone are in good working order to " +
                                      $"facilitate a smooth interview experience." +
