@@ -38,35 +38,42 @@ namespace Basecode.Services.Services
         /// Adds the schedules from the HR Scheduler.
         /// </summary>
         /// <param name="formData">The HR Scheduler form data.</param>
-        public async Task AddUserSchedules(SchedulerDataViewModel formData, int userId)
+        public async Task<(LogContent, Dictionary<string, string>)> AddUserSchedules(SchedulerDataViewModel formData, int userId)
         {
-            List<int> successfullyAddedApplicantIds = new List<int>();
+            (LogContent logContent, Dictionary<string, string> validationErrors) data = CheckSchedulerData(formData);
 
-            foreach (var schedule in formData.ApplicantSchedules)
+            if (data.logContent.Result == false)
             {
-                Guid applicationId = _applicationService.GetApplicationIdByApplicantId(schedule.ApplicantId);
+                List<int> successfullyAddedApplicantIds = new List<int>();
 
-                var userSchedule = new UserSchedule
+                foreach (var schedule in formData.ApplicantSchedules)
                 {
-                    UserId = userId,
-                    ApplicationId = applicationId,
-                    Type = formData.Type,
-                    Schedule = DateTime.Parse(formData.Date.ToString() + " " + schedule.Time),
-                    Status = "pending",
-                };
+                    Guid applicationId = _applicationService.GetApplicationIdByApplicantId(schedule.ApplicantId);
 
-                int existingId = GetIdIfUserScheduleExists(applicationId);
-                if (existingId != -1)   // Update "rejected" schedule to "pending"
-                {
-                    successfullyAddedApplicantIds = await HandleExistingSchedule(userSchedule, existingId, schedule.ApplicantId, successfullyAddedApplicantIds);
+                    var userSchedule = new UserSchedule
+                    {
+                        UserId = userId,
+                        ApplicationId = applicationId,
+                        Type = formData.Type,
+                        Schedule = DateTime.Parse(formData.Date.ToString() + " " + schedule.Time),
+                        Status = "pending",
+                    };
+
+                    int existingId = GetIdIfUserScheduleExists(applicationId);
+                    if (existingId != -1)   // Update "rejected" schedule to "pending"
+                    {
+                        successfullyAddedApplicantIds = await HandleExistingSchedule(userSchedule, existingId, schedule.ApplicantId, successfullyAddedApplicantIds);
+                    }
+                    else    // Create new schedule
+                    {
+                        successfullyAddedApplicantIds = await HandleNewSchedule(userSchedule, schedule.ApplicantId, successfullyAddedApplicantIds);
+                    }
                 }
-                else    // Create new schedule
-                {
-                    successfullyAddedApplicantIds = await HandleNewSchedule(userSchedule, schedule.ApplicantId, successfullyAddedApplicantIds);
-                }
+
+                await SendSchedulesToInterviewer(formData, userId, successfullyAddedApplicantIds);
             }
 
-            await SendSchedulesToInterviewer(formData, userId, successfullyAddedApplicantIds);
+            return data;
         }
 
         /// <summary>

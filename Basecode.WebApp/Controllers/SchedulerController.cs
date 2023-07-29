@@ -67,12 +67,20 @@ namespace Basecode.WebApp.Controllers
                 if (!ModelState.IsValid)
                 {
                     _logger.Warn("Model has validation error(s).");
-                    return View(formData);
+                    return BadRequest();
                 }
                 var userAspId = _userManager.GetUserId(User);
                 int userId = _userService.GetUserIdByAspId(userAspId);
-                await _userScheduleService.AddUserSchedules(formData, userId);
-                return RedirectToAction("Index", "Dashboard");
+                (ErrorHandling.LogContent logContent, Dictionary<string, string> validationErrors) data = await _userScheduleService.AddUserSchedules(formData, userId);
+
+                if (!data.logContent.Result)
+                {
+                    _logger.Trace("Successfully added new user schedule(s).");
+                    return Ok();
+                }
+
+                _logger.Warn(ErrorHandling.SetLog(data.logContent));
+                return BadRequest(Json(data.validationErrors));
             }
             catch (Exception e)
             {

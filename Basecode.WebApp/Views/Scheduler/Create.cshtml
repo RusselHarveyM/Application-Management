@@ -38,9 +38,9 @@
 
         <div class="row justify-content-center mt-5 gx-5 pb-3">
             <div class="col-md-4 col-12">
-                <label asp-for="@Model.FormData.Date" class="form-label">Date</label>
+                <label asp-for="@Model.FormData.Date" class="form-label"></label>
                 <input asp-for="@Model.FormData.Date" type="date" id="date" class="form-control" required />
-                <span asp-validation-for="@Model.FormData.Date" class="text-danger" id="ScheduleError"></span>
+                <span asp-validation-for="@Model.FormData.Date" class="text-danger" id="DateError"></span>
             </div>
             <div class="col-md-4 col-12">
                 <label for="applicantDropdown" class="form-label">
@@ -53,6 +53,7 @@
                     </select>
                     <button type="button" class="btn btn-outline-primary" id="addApplicantButton" disabled><i class="fa-solid fa-user-plus"></i></button>
                 </div>
+                <span class="text-danger" id="ApplicantError"></span>
             </div>
         </div>
 
@@ -69,6 +70,7 @@
                     <tbody id="selectedApplicants">
                     </tbody>
                 </table>
+                <span class="text-danger" id="TimeError"></span>
             </div>
         </div>
         <div class="mt-5 text-center">
