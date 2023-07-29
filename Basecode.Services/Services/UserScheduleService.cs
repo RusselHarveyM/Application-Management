@@ -207,8 +207,8 @@ namespace Basecode.Services.Services
             if (logContent.Result == false)
             {
                 LogContent data;
-
-                if (userSchedule.Type == "HR Interview" || userSchedule.Type == "Technical Interview")
+                string scheduleType = userSchedule.Type.Split(' ').Skip(1).FirstOrDefault();
+                if (scheduleType == "Interview")
                 {
                     data = _interviewService.AddInterview(userSchedule);
                     if (!data.Result)
@@ -216,7 +216,7 @@ namespace Basecode.Services.Services
                         _logger.Trace("Successfully created a new Interview record.");
                     }
                 }
-                else
+                else    // schedule type is Exam
                 {
                     data = _examinationService.AddExamination(userSchedule);
                     if (!data.Result)
