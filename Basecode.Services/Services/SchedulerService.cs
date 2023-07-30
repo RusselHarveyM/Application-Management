@@ -183,37 +183,29 @@ namespace Basecode.Services.Services
 
             if (logContent.Result == false)
             {
-                LogContent data;
+                string joinUrl = SetOnlineMeetingSchedule(userSchedule);
+                if (!string.IsNullOrEmpty(joinUrl))
+                {
+                    _logger.Trace("Successfully generated a Teams meeting link.");
+
+                    SendAcceptedScheduleToInterviewer(userSchedule, joinUrl);
+                    SendAcceptedScheduleToApplicant(userSchedule, joinUrl);
+
+                    _userScheduleService.DeleteUserSchedule(userSchedule);
+                }
+
                 string scheduleType = userSchedule.Type.Split(' ').Skip(1).FirstOrDefault();
                 if (scheduleType == "Interview")
                 {
-                    data = _interviewService.AddInterview(userSchedule);
-                    if (!data.Result)
-                    {
-                        _logger.Trace("Successfully created a new Interview record.");
-                    }
+                    var data = _interviewService.AddInterview(userSchedule, joinUrl);
+                    if (!data.Result) _logger.Trace("Successfully created a new Interview record.");
+                    else _logger.Error(SetLog(data));
                 }
                 else    // schedule type is Exam
                 {
-                    data = _examinationService.AddExamination(userSchedule);
-                    if (!data.Result)
-                    {
-                        _logger.Trace("Successfully created a new Examination record.");
-                    }
-                }
-
-                if (data.Result == false)
-                {
-                    string joinUrl = SetOnlineMeetingSchedule(userSchedule);
-                    if (!string.IsNullOrEmpty(joinUrl))
-                    {
-                        _logger.Trace("Successfully generated a Teams meeting link.");
-
-                        SendAcceptedScheduleToInterviewer(userSchedule, joinUrl);
-                        SendAcceptedScheduleToApplicant(userSchedule, joinUrl);
-
-                        _userScheduleService.DeleteUserSchedule(userSchedule);
-                    }
+                    var data = _examinationService.AddExamination(userSchedule, joinUrl);
+                    if (!data.Result) _logger.Trace("Successfully created a new Examination record.");
+                    else _logger.Error(SetLog(data));
                 }
             }
 

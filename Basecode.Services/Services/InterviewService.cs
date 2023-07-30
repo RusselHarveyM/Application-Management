@@ -18,7 +18,7 @@ namespace Basecode.Services.Services
         /// </summary>
         /// <param name="schedule">The schedule.</param>
         /// <returns></returns>
-        public LogContent AddInterview(UserSchedule schedule)
+        public LogContent AddInterview(UserSchedule schedule, string teamsLink)
         {
             LogContent logContent = CheckUserSchedule(schedule);
 
