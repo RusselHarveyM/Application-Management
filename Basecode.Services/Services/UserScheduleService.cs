@@ -145,7 +145,12 @@ namespace Basecode.Services.Services
         public async Task SendScheduleToApplicant(UserSchedule userSchedule, int userScheduleId, int applicantId, string meetingType)
         {
             var applicant = _applicantService.GetApplicantById(applicantId);
-            await _emailSendingService.SendScheduleToApplicant(userSchedule, userScheduleId, applicant, meetingType);
+
+            DateTime twelveHoursBefore = userSchedule.Schedule.AddHours(-12);
+            TimeSpan timeDifference = twelveHoursBefore - DateTime.Now;
+            int hoursLeft = (int)timeDifference.TotalHours;
+
+            await _emailSendingService.SendScheduleToApplicant(userSchedule, userScheduleId, applicant, meetingType, hoursLeft);
         }
 
         /// <summary>

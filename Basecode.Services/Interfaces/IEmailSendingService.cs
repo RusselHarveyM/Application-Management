@@ -73,7 +73,7 @@ namespace Basecode.Services.Interfaces
         /// <summary>
         /// Sends the schedule to applicant.
         /// </summary>
-        Task SendScheduleToApplicant(UserSchedule userSchedule, int userScheduleId, Applicant applicant, string meetingType);
+        Task SendScheduleToApplicant(UserSchedule userSchedule, int userScheduleId, Applicant applicant, string meetingType, int tokenExpiry);
 
         /// <summary>
         /// Sends the schedules to interviewer.

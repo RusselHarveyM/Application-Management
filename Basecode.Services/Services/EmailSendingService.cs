@@ -217,10 +217,10 @@ namespace Basecode.Services.Services
         /// <summary>
         /// Sends the schedule to applicant.
         /// </summary>
-        public async Task SendScheduleToApplicant(UserSchedule userSchedule, int userScheduleId, Applicant applicant, string meetingType)
+        public async Task SendScheduleToApplicant(UserSchedule userSchedule, int userScheduleId, Applicant applicant, string meetingType, int tokenExpiry)
         {
-            string acceptToken = _tokenHelper.GenerateToken("accept", userScheduleId);
-            string rejectToken = _tokenHelper.GenerateToken("reject", userScheduleId);
+            string acceptToken = _tokenHelper.GenerateToken("accept", userScheduleId, tokenExpiry);
+            string rejectToken = _tokenHelper.GenerateToken("reject", userScheduleId, tokenExpiry);
 
             string baseUrl = "https://localhost:53813";
             var acceptUrl = $"{baseUrl}/Scheduler/AcceptSchedule/{HttpUtility.UrlEncode(acceptToken)}";
