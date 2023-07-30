@@ -389,7 +389,7 @@ namespace Basecode.Services.Services
                 .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
                 .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
                 .Replace("{{HEADLINE}}", $"Forgot Password Link")
-                .Replace("{{BODY}}",$"You have requested to change your password click this link bellow" +
+                .Replace("{{BODY}}",$"You have requested to change your password click this link below" +
                         $"<br><br><div style=\"display:flex; align-items:center; justify-content:center\"><a href=\"{callBackUrl}\" style=\"background-color: #FF0000;" +
                         $"border: none; color: white; padding: 10px 24px; text-align: center; text-decoration: underline; border-radius:5px;" +
                         $"font-size: 14px; margin: 4px 2px; cursor: pointer;\">CHANGE PASSWORD</a></div>");

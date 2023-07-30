@@ -14,18 +14,18 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using NLog;
 
 namespace Basecode.WebApp.Areas.Identity.Pages.Account
 {
     public class ForgotPasswordModel : PageModel
     {
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly IEmailSender _emailSender;
         private readonly IEmailSendingService _emailSendingService;
-        public ForgotPasswordModel(UserManager<IdentityUser> userManager, IEmailSender emailSender, IEmailSendingService emailSendingService)
+        private static readonly Logger _loggerWebApp = LogManager.GetCurrentClassLogger();
+        public ForgotPasswordModel(UserManager<IdentityUser> userManager, IEmailSendingService emailSendingService)
         {
             _userManager = userManager;
-            _emailSender = emailSender;
             _emailSendingService = emailSendingService;
         }
 
@@ -58,7 +58,7 @@ namespace Basecode.WebApp.Areas.Identity.Pages.Account
                 var user = await _userManager.FindByEmailAsync(Input.Email);
                 if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
                 {
-                    // Don't reveal that the user does not exist or is not confirmed
+                    _loggerWebApp.Trace("Forgot password emailed");
                     return RedirectToPage("./ForgotPasswordConfirmation");
                 }
 
@@ -73,6 +73,7 @@ namespace Basecode.WebApp.Areas.Identity.Pages.Account
                     protocol: Request.Scheme);
                 await _emailSendingService.SendPasswordChange(Input.Email, callbackUrl);
 
+                _loggerWebApp.Trace("Forgot password emailed");
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }
 

@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using NLog;
 
 namespace Basecode.WebApp.Areas.Identity.Pages.Account
 {
@@ -20,6 +21,7 @@ namespace Basecode.WebApp.Areas.Identity.Pages.Account
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IUserService _userService;
+        private static readonly Logger _loggerWebApp = LogManager.GetCurrentClassLogger();
         public ResetPasswordModel(UserManager<IdentityUser> userManager, IUserService userService)
         {
             _userManager = userManager;
@@ -79,8 +81,10 @@ namespace Basecode.WebApp.Areas.Identity.Pages.Account
 
         public IActionResult OnGet(string code = null)
         {
+            _loggerWebApp.Trace("Redirected to ResetPassword");
             if (code == null)
             {
+                _loggerWebApp.Error("Error code/token");
                 return BadRequest("A code must be supplied for password reset.");
             }
             else
@@ -97,6 +101,7 @@ namespace Basecode.WebApp.Areas.Identity.Pages.Account
         {
             if (!ModelState.IsValid)
             {
+                _loggerWebApp.Warn("Wrong input details");
                 return Page();
             }
 
@@ -104,6 +109,7 @@ namespace Basecode.WebApp.Areas.Identity.Pages.Account
             if (user == null)
             {
                 // Don't reveal that the user does not exist
+                _loggerWebApp.Warn("No email in the system found");
                 return RedirectToPage("./ResetPasswordConfirmation");
             }
 
@@ -126,6 +132,7 @@ namespace Basecode.WebApp.Areas.Identity.Pages.Account
                     };
                     await _userService.Update(userVm);
                 }
+                _loggerWebApp.Trace("Password changed successfully");
                 return RedirectToPage("./ResetPasswordConfirmation");
             }
 
