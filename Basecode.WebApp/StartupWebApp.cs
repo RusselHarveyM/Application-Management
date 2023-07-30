@@ -1,5 +1,6 @@
 ﻿using Basecode.Services.Interfaces;
 using Basecode.Services.Services;
+using Basecode.WebApp.Controllers;
 using Hangfire;
 using Hangfire.SqlServer;
 

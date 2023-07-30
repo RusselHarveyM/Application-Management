@@ -1,4 +1,4 @@
-﻿using Basecode.Data.Models;
+using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
 using Basecode.Data.ViewModels.Common;
 using Basecode.Services.Interfaces;

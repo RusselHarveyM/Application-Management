@@ -14,25 +14,16 @@ namespace Basecode.Main.Controllers
     {
         private readonly IJobOpeningService _jobOpeningService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
-        private readonly IConfiguration _config;
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController" /> class.
         /// </summary>
         /// <param name="jobOpeningService">The job opening service.</param>
-        public HomeController(IJobOpeningService jobOpeningService, IConfiguration config)
+        public HomeController(IJobOpeningService jobOpeningService)
         {
             _jobOpeningService = jobOpeningService;
-            _config = config;
         }
 
-        public ActionResult OauthRedirect()
-        {
-            var redirectUrl = "https://login.microsoftonline.com/common/adminconsent?" +
-                              "&state=automationsystem2" +
-                              "&redirect_uri=" + _config["GraphApi:Redirect_url"] +
-                              "&client_id=" + _config["GraphApi:ClientId"];
-            return Redirect(redirectUrl);
-        }
+      
 
         /// <summary>
         /// Retrieves a list of job openings, category jobs and returns a view with the list.
@@ -40,7 +31,7 @@ namespace Basecode.Main.Controllers
         /// <returns>
         /// A view with a list of job openings and category of job.
         /// </returns>
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             try
             {

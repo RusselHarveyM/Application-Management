@@ -18,6 +18,7 @@ namespace Basecode.WebApp
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ClaimsProvider, ClaimsProvider>();
             services.AddScoped<ResumeChecker>();
+            services.AddScoped<GraphHelper>();
 
 
             // Services 
@@ -40,6 +41,7 @@ namespace Basecode.WebApp
             services.AddScoped<IDashboardService, DashboardService>();
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<ICalendarService, CalendarService>();
+            services.AddScoped<IOAuthService, OAuthService>();
             services.AddScoped<ISchedulerService, SchedulerService>();
 
             // Repositories
