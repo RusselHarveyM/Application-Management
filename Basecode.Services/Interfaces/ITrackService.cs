@@ -12,7 +12,7 @@ namespace Basecode.Services.Interfaces
         /// <param name="applicant">The applicant.</param>
         /// <param name="jobOpening">The job opening.</param>
         /// <returns></returns>
-        Task<Application> CheckAndSendApplicationStatus(Application application, Applicant applicant, JobOpening jobOpening);
+        Task<Application?> CheckAndSendApplicationStatus(Application application);
 
         /// <summary>
         /// Updates the track status email.
@@ -22,7 +22,7 @@ namespace Basecode.Services.Interfaces
         /// <param name="newStatus">The new status.</param>
         /// <param name="mailType">Type of the mail.</param>
         /// <returns></returns>
-        Task UpdateTrackStatusEmail(Application application, User user, string newStatus, string mailType);
+        void UpdateTrackStatusEmail(Application application, User user, string newStatus, string mailType);
 
         /// <summary>
         /// Updates the application status.
@@ -32,7 +32,7 @@ namespace Basecode.Services.Interfaces
         /// <param name="newStatus">The new status.</param>
         /// <param name="mailType">Type of the mail.</param>
         /// <returns></returns>
-        Task<Application> UpdateApplicationStatus(Application application, User user, string newStatus, string mailType);
+        Application UpdateApplicationStatus(Application application, User user, string newStatus, string mailType);
 
         /// <summary>
         /// Updates the application status based on the response through email.
@@ -42,7 +42,7 @@ namespace Basecode.Services.Interfaces
         /// <param name="choice">The choice (e.g., approved or rejected).</param>
         /// <param name="newStatus">The new status.</param>
         /// <returns></returns>
-        Task<Application> UpdateApplicationStatusByEmailResponse(Application application, User user, string choice, string newStatus);
+        Application UpdateApplicationStatusByEmailResponse(Application application, User user, string choice, string newStatus);
 
         /// <summary>
         /// Notifies the applicant and user about the application status.
@@ -51,7 +51,7 @@ namespace Basecode.Services.Interfaces
         /// <param name="user">The user.</param>
         /// <param name="newStatus">The new status.</param>
         /// <returns></returns>
-        Task StatusNotification(Applicant applicant, User user, string newStatus);
+        void StatusNotification(Applicant applicant, User user, string newStatus);
 
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Basecode.Services.Interfaces
         /// <param name="applicant">The applicant.</param>
         /// <param name="job">The job position.</param>
         /// <returns></returns>
-        Task RegretNotification(Applicant applicant, string job);
+        void RegretNotification(Applicant applicant, string job);
 
         /// <summary>
         /// Sends gratitude notification.
@@ -68,6 +68,6 @@ namespace Basecode.Services.Interfaces
         /// <param name="applicant">The applicant.</param>
         /// <param name="reference">The reference.</param>
         /// <returns></returns>
-        Task GratitudeNotification(Applicant applicant, BackgroundCheck reference);
+        void GratitudeNotification(Applicant applicant, BackgroundCheck reference);
     }
 }

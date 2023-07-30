@@ -94,7 +94,7 @@ namespace Basecode.Services.Services
         /// </summary>
         /// <param name="applicationId">The application identifier.</param>
         /// <returns></returns>
-        public Application? GetApplicationWithCompleteRelationsById(Guid applicationId)
+        public Application? GetApplicationWithAllRelationsById(Guid applicationId)
         {
             var application = _repository.GetApplicationWithAllRelationsById(applicationId);
             if (application == null) return null;

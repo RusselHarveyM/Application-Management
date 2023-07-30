@@ -38,7 +38,7 @@ namespace Basecode.Services.Interfaces
         /// <param name="choice">The choice.</param>
         /// <param name="newStatus">The new status.</param>
         /// <returns></returns>
-        Task UpdateApplication(Application application, User user, string choice, string newStatus);
+        void UpdateApplication(Application application, User user, string choice, string newStatus);
 
         /// <summary>
         /// Creates a new applicant based on the provided applicant data.
@@ -47,7 +47,12 @@ namespace Basecode.Services.Interfaces
         /// <returns>
         /// Returns a tuple with the log content and the ID of the created applicant.
         /// </returns>
-        Task<(LogContent, int)> Create(ApplicantViewModel applicant);
+        (LogContent, int) Create(ApplicantViewModel applicant);
+
+        /// <summary>
+        /// Checks and sends the application status.
+        /// </summary>
+        Task CheckAndSendApplicationStatus(Guid applicationId);
 
         /// <summary>
         /// Gets the applicants by the job opening id.
