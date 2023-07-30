@@ -174,13 +174,13 @@ namespace Basecode.WebApp.Controllers
         /// <param name="email">The email.</param>
         /// <param name="status">The status.</param>
         /// <returns></returns>
-        public async Task<IActionResult> ViewDetailsUpdate(Guid appId, string email, string status)
+        public IActionResult ViewDetailsUpdate(Guid appId, string email, string status)
         {
             try
             {
                 var application = _dashboardService.GetApplicationById(appId);
                 var foundUser = _userService.GetByEmail(email);
-                 await _dashboardService.UpdateStatus(application, foundUser, status);
+                 _dashboardService.UpdateStatus(application, foundUser, status);
                  return RedirectToAction("ShortListView");
             }
             catch(Exception e)

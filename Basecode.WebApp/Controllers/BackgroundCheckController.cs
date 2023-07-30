@@ -96,7 +96,7 @@ namespace Basecode.WebApp.Controllers
                 var userSign = await _userManager.GetUserAsync(User);
             }
             _logger.Trace("Form Submitted Successfully");
-            await _backgroundCheckService.Create(data);
+            _backgroundCheckService.Create(data);
             ViewBag.IsFormSubmitted = true;
             return View("Redirection");
         }

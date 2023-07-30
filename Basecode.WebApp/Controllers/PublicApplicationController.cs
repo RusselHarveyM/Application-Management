@@ -127,7 +127,7 @@ namespace Basecode.WebApp.Controllers
         /// <param name="fileData">The CV of the applicant.</param>
         /// <returns>Returns a redirect to the job index page if the applicant is created successfully, otherwise returns the index view.</returns>
         [HttpPost]
-        public async Task<IActionResult> Create(ApplicantViewModel applicant, string fileName, int applicantId, string newStatus, string fileData)
+        public IActionResult Create(ApplicantViewModel applicant, string fileName, int applicantId, string newStatus, string fileData)
         {
             try
             {
@@ -136,7 +136,7 @@ namespace Basecode.WebApp.Controllers
                 {
                     byte[] cv = Convert.FromBase64String(fileData).ToArray();
                     applicant.CV = cv;
-                    (LogContent logContent, int createdApplicantId) = await _applicantService.Create(applicant);
+                    (LogContent logContent, int createdApplicantId) = _applicantService.Create(applicant);
                     if (!logContent.Result)
                     {
                         _logger.Trace("Create Applicant successfully.");
