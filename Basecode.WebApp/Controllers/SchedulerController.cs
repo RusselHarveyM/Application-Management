@@ -79,7 +79,7 @@ namespace Basecode.WebApp.Controllers
                     return Ok();
                 }
 
-                _logger.Warn(ErrorHandling.SetLog(data.logContent));
+                _logger.Error(ErrorHandling.SetLog(data.logContent));
                 return BadRequest(Json(data.validationErrors));
             }
             catch (Exception e)
@@ -111,6 +111,7 @@ namespace Basecode.WebApp.Controllers
                     _logger.Trace("User Schedule [" + userScheduleId + "] has been successfully accepted.");
                     ViewBag.IsScheduleAccepted = true;
                 }
+                else _logger.Error(ErrorHandling.SetLog(data));
 
                 return View();
             }
@@ -143,6 +144,7 @@ namespace Basecode.WebApp.Controllers
                     _logger.Trace("User Schedule [" + userScheduleId + "] has been successfully rejected.");
                     ViewBag.IsScheduleRejected = true;
                 }
+                else _logger.Error(ErrorHandling.SetLog(data));
 
                 return View();
             }
