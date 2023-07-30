@@ -45,23 +45,23 @@ namespace Basecode.Services.Services
         /// <returns></returns>
         public async Task<Application?> CheckAndSendApplicationStatus(Application application)
         {
-            //var result = await _resumeChecker.CheckResume(application.JobOpening.Title, application.JobOpening.Qualifications, application.Applicant.CV);
-            var result = "test";
+            var result = await _resumeChecker.CheckResume(application.JobOpening.Title, application.JobOpening.Qualifications, application.Applicant.CV);
+            //var result = "test";
 
             if (!string.IsNullOrEmpty(result))
             {
-                //JsonDocument jsonDocument = JsonDocument.Parse(result);
-                //var jsonObject = jsonDocument.RootElement;
+                JsonDocument jsonDocument = JsonDocument.Parse(result);
+                var jsonObject = jsonDocument.RootElement;
 
 
-                //// Accessing individual properties
-                //string jobPosition = jsonObject.GetProperty("JobPosition").GetString();
-                //string score = jsonObject.GetProperty("Score").GetString();
-                //string explanation = jsonObject.GetProperty("Explanation").GetString();
+                // Accessing individual properties
+                string jobPosition = jsonObject.GetProperty("JobPosition").GetString();
+                string score = jsonObject.GetProperty("Score").GetString();
+                string explanation = jsonObject.GetProperty("Explanation").GetString();
 
-                int convertedScore = 70;
-                //if (int.Parse(score.Replace("%", "")) > 60)
-                if (convertedScore > 60)
+                //int convertedScore = 70;
+                if (int.Parse(score.Replace("%", "")) > 60)
+                //if (convertedScore > 60)
                 {
                     return UpdateApplicationStatus(application, application.JobOpening, "HR Shortlisted", "GUID");
                 }
