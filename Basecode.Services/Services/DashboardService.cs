@@ -46,13 +46,13 @@ namespace Basecode.Services.Services
         /// <param name="application">The application.</param>
         /// <param name="user">The user.</param>
         /// <param name="status">The status.</param>
-        public async Task UpdateStatus(Application application, User user, string status)
+        public void UpdateStatus(Application application, User user, string status)
         {
-            var result = await _trackService.UpdateApplicationStatus(application, user, status, null);
+            var result = _trackService.UpdateApplicationStatus(application, user, status, null);
             if(result != null)
             {
                 _applicationService.Update(result);
-                await _trackService.UpdateTrackStatusEmail(application, user, status, "Approval");
+                _trackService.UpdateTrackStatusEmail(application, user, status, "Approval");
             }
         }
     }
