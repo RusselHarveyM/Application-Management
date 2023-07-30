@@ -53,6 +53,7 @@ namespace Basecode.Data.Repositories
                 UserName = user.Email,
                 Email = user.Email,
             };
+            identityUser.EmailConfirmed = true;
             var result = await _userManager.CreateAsync(identityUser, user.Password.ToString().Trim());
 
             if (result.Succeeded)
