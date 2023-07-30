@@ -238,13 +238,13 @@ namespace Basecode.Services.Services
                     if (!string.IsNullOrEmpty(joinUrl))
                     {
                         _logger.Trace("Successfully generated a Teams meeting link.");
+
                         await SendAcceptedScheduleToInterviewer(userSchedule, joinUrl);
                         await SendAcceptedScheduleToApplicant(userSchedule, joinUrl);
-                    }
-                }
 
-                userSchedule.Status = "accepted";
-                logContent = UpdateUserSchedule(userSchedule);
+                        DeleteUserSchedule(userSchedule);
+                    }
+                } 
             }
 
             return logContent;
@@ -330,6 +330,16 @@ namespace Basecode.Services.Services
             string email = _applicantService.GetApplicantByApplicationId(userSchedule.ApplicationId).Email;
             ApplicationViewModel application = _applicationService.GetById(userSchedule.ApplicationId);
             await _emailSendingService.SendAcceptedScheduleToApplicant(email, userSchedule, application, joinUrl);
+        }
+
+        /// <summary>
+        /// Deletes the user schedule.
+        /// </summary>
+        /// <param name="userSchedule">The user schedule.</param>
+        public void DeleteUserSchedule(UserSchedule userSchedule)
+        {
+            _repository.DeleteUserSchedule(userSchedule);
+            _logger.Trace("UserSchedule record has been deleted.");
         }
     }
 }

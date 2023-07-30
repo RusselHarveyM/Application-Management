@@ -89,5 +89,11 @@ namespace Basecode.Services.Interfaces
         /// Sends the accepted schedule with Teams link to the applicant.
         /// </summary>
         Task SendAcceptedScheduleToApplicant(UserSchedule userSchedule, string joinUrl);
+
+        /// <summary>
+        /// Deletes the user schedule.
+        /// </summary>
+        /// <param name="userSchedule">The user schedule.</param>
+        void DeleteUserSchedule(UserSchedule userSchedule);
     }
 }
