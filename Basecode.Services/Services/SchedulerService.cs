@@ -1,4 +1,5 @@
-﻿using Basecode.Data.Dto;
+﻿using AutoMapper;
+using Basecode.Data.Dto;
 using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
@@ -19,9 +20,10 @@ namespace Basecode.Services.Services
         private readonly IApplicantService _applicantService;
         private readonly ICalendarService _calendarService;
         private readonly IUserService _userService;
-        
-        public SchedulerService(IUserScheduleService userScheduleService, IApplicationService applicationService, IEmailSendingService emailSendingService, IApplicantService applicantService, 
-            IUserService userService, ICalendarService calendarService, IInterviewService interviewService, IExaminationService examinationService, IJobOpeningService jobOpeningService)
+        private readonly IMapper _mapper;
+
+        public SchedulerService(IUserScheduleService userScheduleService, IApplicationService applicationService, IEmailSendingService emailSendingService, IApplicantService applicantService, IUserService userService, 
+            ICalendarService calendarService, IInterviewService interviewService, IExaminationService examinationService, IJobOpeningService jobOpeningService, IMapper mapper)
         {
             _userScheduleService = userScheduleService;
             _emailSendingService = emailSendingService;
@@ -32,13 +34,14 @@ namespace Basecode.Services.Services
             _applicantService = applicantService;
             _calendarService = calendarService;
             _userService = userService;   
+            _mapper = mapper;
         }
 
         /// <summary>
         /// Adds the schedules from the HR Scheduler.
         /// </summary>
         /// <param name="formData">The HR Scheduler form data.</param>
-        public async Task<(LogContent, Dictionary<string, string>)> AddSchedules(SchedulerDataViewModel formData, int userId)
+        public (LogContent, Dictionary<string, string>) AddSchedules(SchedulerDataViewModel formData, int userId)
         {
             (LogContent logContent, Dictionary<string, string> validationErrors) data = CheckSchedulerData(formData);
 
@@ -62,15 +65,15 @@ namespace Basecode.Services.Services
                     int existingId = _userScheduleService.GetIdIfUserScheduleExists(applicationId);
                     if (existingId != -1)   // Update "rejected" schedule to "pending"
                     {
-                        successfullyAddedApplicantIds = await HandleExistingSchedule(userSchedule, existingId, schedule.ApplicantId, successfullyAddedApplicantIds);
+                        successfullyAddedApplicantIds = HandleExistingSchedule(userSchedule, existingId, schedule.ApplicantId, successfullyAddedApplicantIds);
                     }
                     else    // Create new schedule
                     {
-                        successfullyAddedApplicantIds = await HandleNewSchedule(userSchedule, schedule.ApplicantId, successfullyAddedApplicantIds);
+                        successfullyAddedApplicantIds = HandleNewSchedule(userSchedule, schedule.ApplicantId, successfullyAddedApplicantIds);
                     }
                 }
 
-                await SendSchedulesToInterviewer(formData, userId, successfullyAddedApplicantIds);
+                SendSchedulesToInterviewer(formData, userId, successfullyAddedApplicantIds);
             }
 
             return data;
@@ -79,13 +82,13 @@ namespace Basecode.Services.Services
         /// <summary>
         /// Handles the existing schedule.
         /// </summary>
-        private async Task<List<int>> HandleExistingSchedule(UserSchedule userSchedule, int existingId, int applicantId, List<int> successfullyAddedApplicantIds)
+        private List<int> HandleExistingSchedule(UserSchedule userSchedule, int existingId, int applicantId, List<int> successfullyAddedApplicantIds)
         {
             LogContent logContent = _userScheduleService.UpdateUserSchedule(userSchedule, existingId);
             if (logContent.Result == false)
             {
                 _logger.Trace("Successfully updated User Schedule [ " + existingId + " ]");
-                await SendScheduleToApplicant(userSchedule, existingId, applicantId, userSchedule.Type);
+                SendScheduleToApplicant(userSchedule, existingId, applicantId, userSchedule.Type);
                 successfullyAddedApplicantIds.Add(applicantId);
             }
             return successfullyAddedApplicantIds;
@@ -94,14 +97,14 @@ namespace Basecode.Services.Services
         /// <summary>
         /// Handles the new schedule.
         /// </summary>
-        private async Task<List<int>> HandleNewSchedule(UserSchedule userSchedule, int applicantId, List<int> successfullyAddedApplicantIds)
+        private List<int> HandleNewSchedule(UserSchedule userSchedule, int applicantId, List<int> successfullyAddedApplicantIds)
         {
             (LogContent logContent, int userScheduleId) data = _userScheduleService.AddUserSchedule(userSchedule);
 
             if (!data.logContent.Result && data.userScheduleId != -1)
             {
                 _logger.Trace("Successfully created a new UserSchedule record.");
-                await SendScheduleToApplicant(userSchedule, data.userScheduleId, applicantId, userSchedule.Type);
+                SendScheduleToApplicant(userSchedule, data.userScheduleId, applicantId, userSchedule.Type);
                 successfullyAddedApplicantIds.Add(applicantId);
             }
             return successfullyAddedApplicantIds;
@@ -114,21 +117,26 @@ namespace Basecode.Services.Services
         /// <param name="userScheduleId">The user schedule identifier.</param>
         /// <param name="applicantId">The applicant identifier.</param>
         /// <param name="meetingType">Type of the meeting.</param>
-        public async Task SendScheduleToApplicant(UserSchedule userSchedule, int userScheduleId, int applicantId, string meetingType)
+        public void SendScheduleToApplicant(UserSchedule userSchedule, int userScheduleId, int applicantId, string meetingType)
         {
-            var applicant = _applicantService.GetApplicantById(applicantId);
-
             // time difference between now and 12hrs before the schedule
             TimeSpan timeDifference = userSchedule.Schedule.AddHours(-12) - DateTime.Now;
             // number of hours left, to be used as the token expiry
             int hoursLeft = (int)timeDifference.TotalHours;
 
             BackgroundJob.Schedule(() => CheckScheduleStatusAfterTokenExpiry(userScheduleId), TimeSpan.FromHours(hoursLeft));
-            await _emailSendingService.SendScheduleToApplicant(userSchedule, userScheduleId, applicant, meetingType, hoursLeft);
+
+            var applicant = _applicantService.GetApplicantById(applicantId);
+            var applicantTemp = _mapper.Map<Applicant>(applicant);
+            var userScheduleTemp = _mapper.Map<UserSchedule>(userSchedule);
+            BackgroundJob.Enqueue(() => _emailSendingService.SendScheduleToApplicant(userScheduleTemp, applicantTemp, hoursLeft));
         }
 
-
-        private void CheckScheduleStatusAfterTokenExpiry(int userScheduleId)
+        /// <summary>
+        /// Checks the schedule status after token expiry.
+        /// </summary>
+        /// <param name="userScheduleId">The user schedule identifier.</param>
+        public void CheckScheduleStatusAfterTokenExpiry(int userScheduleId)
         {
             UserSchedule userSchedule = _userScheduleService.GetUserScheduleById(userScheduleId);
             if (userSchedule.Status == "pending")
@@ -146,7 +154,7 @@ namespace Basecode.Services.Services
         /// </summary>
         /// <param name="formData">The form data.</param>
         /// <param name="userId">The user identifier.</param>
-        public async Task SendSchedulesToInterviewer(SchedulerDataViewModel formData, int userId, List<int> successfullyAddedApplicantIds)
+        public void SendSchedulesToInterviewer(SchedulerDataViewModel formData, int userId, List<int> successfullyAddedApplicantIds)
         {
             string jobOpeningTitle = _jobOpeningService.GetJobOpeningTitleById(formData.JobOpeningId);
             var user = _userService.GetById(userId);
@@ -161,14 +169,14 @@ namespace Basecode.Services.Services
                 }
             }
 
-            await _emailSendingService.SendSchedulesToInterviewer(user.Fullname, user.Email, jobOpeningTitle, formData.Date, scheduledTimes, formData.Type);
+            BackgroundJob.Enqueue(() => _emailSendingService.SendSchedulesToInterviewer(user.Fullname, user.Email, jobOpeningTitle, formData.Date, scheduledTimes, formData.Type));
         }
 
         /// <summary>
         /// Accepts the schedule.
         /// </summary>
         /// <param name="userScheduleId">The user schedule identifier.</param>
-        public async Task<LogContent> AcceptSchedule(int userScheduleId)
+        public LogContent AcceptSchedule(int userScheduleId)
         {
             var userSchedule = _userScheduleService.GetUserScheduleById(userScheduleId);
             LogContent logContent = CheckUserScheduleStatus(userSchedule);
@@ -201,8 +209,8 @@ namespace Basecode.Services.Services
                     {
                         _logger.Trace("Successfully generated a Teams meeting link.");
 
-                        await SendAcceptedScheduleToInterviewer(userSchedule, joinUrl);
-                        await SendAcceptedScheduleToApplicant(userSchedule, joinUrl);
+                        SendAcceptedScheduleToInterviewer(userSchedule, joinUrl);
+                        SendAcceptedScheduleToApplicant(userSchedule, joinUrl);
 
                         _userScheduleService.DeleteUserSchedule(userSchedule);
                     }
@@ -216,7 +224,7 @@ namespace Basecode.Services.Services
         /// Rejects the schedule.
         /// </summary>
         /// <param name="userScheduleId">The user schedule identifier.</param>
-        public async Task<LogContent> RejectSchedule(int userScheduleId)
+        public LogContent RejectSchedule(int userScheduleId)
         {
             var userSchedule = _userScheduleService.GetUserScheduleById(userScheduleId);
             LogContent logContent = CheckUserScheduleStatus(userSchedule);
@@ -225,7 +233,7 @@ namespace Basecode.Services.Services
             {
                 userSchedule.Status = "rejected";
                 logContent = _userScheduleService.UpdateUserSchedule(userSchedule);
-                await SendRejectedScheduleNoticeToInterviewer(userSchedule);
+                SendRejectedScheduleNoticeToInterviewer(userSchedule);
             }
 
             return logContent;
@@ -235,12 +243,14 @@ namespace Basecode.Services.Services
         /// Informs the interviewer that a schedule has been rejected.
         /// </summary>
         /// <param name="userSchedule">The user schedule.</param>
-        public async Task SendRejectedScheduleNoticeToInterviewer(UserSchedule userSchedule)
+        public void SendRejectedScheduleNoticeToInterviewer(UserSchedule userSchedule)
         {
             User user = _userService.GetById(userSchedule.UserId);
             Applicant applicant = _applicantService.GetApplicantByApplicationId(userSchedule.ApplicationId);
             string applicantFullName = applicant.Firstname + " " + applicant.Lastname;
-            await _emailSendingService.SendRejectedScheduleNoticeToInterviewer(user.Email, user.Fullname, userSchedule, applicantFullName);
+
+            var userScheduleTemp = _mapper.Map<UserSchedule>(userSchedule);
+            BackgroundJob.Enqueue(() => _emailSendingService.SendRejectedScheduleNoticeToInterviewer(user.Email, user.Fullname, userScheduleTemp, applicantFullName));
         }
 
         /// <summary>
@@ -276,21 +286,25 @@ namespace Basecode.Services.Services
         /// <summary>
         /// Sends the accepted schedule with Teams link to the interviewer.
         /// </summary>
-        public async Task SendAcceptedScheduleToInterviewer(UserSchedule userSchedule, string joinUrl)
+        public void SendAcceptedScheduleToInterviewer(UserSchedule userSchedule, string joinUrl)
         {
             User user = _userService.GetById(userSchedule.UserId);
             ApplicationViewModel application = _applicationService.GetById(userSchedule.ApplicationId);
-            await _emailSendingService.SendAcceptedScheduleToInterviewer(user.Email, user.Fullname, userSchedule, application, joinUrl);
+
+            var userScheduleTemp = _mapper.Map<UserSchedule>(userSchedule);
+            BackgroundJob.Enqueue(() => _emailSendingService.SendAcceptedScheduleToInterviewer(user.Email, user.Fullname, userScheduleTemp, application, joinUrl));
         }
 
         /// <summary>
         /// Sends the accepted schedule with Teams link to the applicant.
         /// </summary>
-        public async Task SendAcceptedScheduleToApplicant(UserSchedule userSchedule, string joinUrl)
+        public void SendAcceptedScheduleToApplicant(UserSchedule userSchedule, string joinUrl)
         {
             string email = _applicantService.GetApplicantByApplicationId(userSchedule.ApplicationId).Email;
             ApplicationViewModel application = _applicationService.GetById(userSchedule.ApplicationId);
-            await _emailSendingService.SendAcceptedScheduleToApplicant(email, userSchedule, application, joinUrl);
+
+            var userScheduleTemp = _mapper.Map<UserSchedule>(userSchedule);
+            BackgroundJob.Enqueue(() => _emailSendingService.SendAcceptedScheduleToApplicant(email, userScheduleTemp, application, joinUrl));
         }
     }
 }

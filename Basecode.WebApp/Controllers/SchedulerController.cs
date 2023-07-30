@@ -9,20 +9,20 @@ namespace Basecode.WebApp.Controllers
 {
     public class SchedulerController : Controller
     {
-        private readonly IUserScheduleService _userScheduleService;
+        private readonly ISchedulerService _schedulerService;
         private readonly IUserService _userService;
         private readonly IApplicantService _applicantService;
         private readonly UserManager<IdentityUser> _userManager;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly TokenHelper _tokenHelper;
 
-        public SchedulerController(IUserScheduleService userScheduleService, IUserService userService, IApplicantService applicantService, UserManager<IdentityUser> userManager, IConfiguration config)
+        public SchedulerController(IUserService userService, IApplicantService applicantService, UserManager<IdentityUser> userManager, IConfiguration config, ISchedulerService schedulerService)
         {
-            _userScheduleService = userScheduleService;
             _userService = userService;
             _applicantService = applicantService;
             _userManager = userManager;
             _tokenHelper = new TokenHelper(config["TokenHelper:SecretKey"]);
+            _schedulerService = schedulerService;
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Basecode.WebApp.Controllers
         /// <param name="formData">The HR Scheduler form data.</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(SchedulerDataViewModel formData)
+        public IActionResult Create(SchedulerDataViewModel formData)
         {
             try
             {
@@ -71,7 +71,7 @@ namespace Basecode.WebApp.Controllers
                 }
                 var userAspId = _userManager.GetUserId(User);
                 int userId = _userService.GetUserIdByAspId(userAspId);
-                (ErrorHandling.LogContent logContent, Dictionary<string, string> validationErrors) data = await _userScheduleService.AddUserSchedules(formData, userId);
+                (ErrorHandling.LogContent logContent, Dictionary<string, string> validationErrors) data = _schedulerService.AddSchedules(formData, userId);
 
                 if (!data.logContent.Result)
                 {
@@ -93,7 +93,7 @@ namespace Basecode.WebApp.Controllers
         /// Accepts the schedule.
         /// </summary>
         [Route("Scheduler/AcceptSchedule/{token}")]
-        public async Task<IActionResult> AcceptSchedule(string token)
+        public IActionResult AcceptSchedule(string token)
         {
             try
             {
@@ -105,7 +105,7 @@ namespace Basecode.WebApp.Controllers
                     return View();
                 }
 
-                var data = await _userScheduleService.AcceptSchedule(userScheduleId);
+                var data = _schedulerService.AcceptSchedule(userScheduleId);
                 if (!data.Result)
                 {
                     _logger.Trace("User Schedule [" + userScheduleId + "] has been successfully accepted.");
@@ -125,7 +125,7 @@ namespace Basecode.WebApp.Controllers
         /// Rejects the schedule.
         /// </summary>
         [Route("Scheduler/RejectSchedule/{token}")]
-        public async Task<IActionResult> RejectSchedule(string token)
+        public IActionResult RejectSchedule(string token)
         {
             try
             {
@@ -137,7 +137,7 @@ namespace Basecode.WebApp.Controllers
                     return View();
                 }
 
-                var data = await _userScheduleService.RejectSchedule(userScheduleId);
+                var data = _schedulerService.RejectSchedule(userScheduleId);
                 if (!data.Result)
                 {
                     _logger.Trace("User Schedule [" + userScheduleId + "] has been successfully rejected.");

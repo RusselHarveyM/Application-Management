@@ -10,7 +10,7 @@ namespace Basecode.Services.Interfaces
         /// Adds the schedules from the HR Scheduler.
         /// </summary>
         /// <param name="formData">The HR Scheduler form data.</param>
-        Task<(LogContent, Dictionary<string, string>)> AddSchedules(SchedulerDataViewModel formData, int userId);
+        (LogContent, Dictionary<string, string>) AddSchedules(SchedulerDataViewModel formData, int userId);
 
         /// <summary>
         /// Sends the schedule to applicant.
@@ -19,32 +19,38 @@ namespace Basecode.Services.Interfaces
         /// <param name="userScheduleId">The user schedule identifier.</param>
         /// <param name="applicantId">The applicant identifier.</param>
         /// <param name="meetingType">Type of the meeting.</param>
-        Task SendScheduleToApplicant(UserSchedule userSchedule, int userScheduleId, int applicantId, string meetingType);
+        void SendScheduleToApplicant(UserSchedule userSchedule, int userScheduleId, int applicantId, string meetingType);
+
+        /// <summary>
+        /// Checks the schedule status after token expiry.
+        /// </summary>
+        /// <param name="userScheduleId">The user schedule identifier.</param>
+        public void CheckScheduleStatusAfterTokenExpiry(int userScheduleId);
 
         /// <summary>
         /// Sends the schedules to interviewer.
         /// </summary>
         /// <param name="formData">The form data.</param>
         /// <param name="userId">The user identifier.</param>
-        Task SendSchedulesToInterviewer(SchedulerDataViewModel formData, int userId, List<int> successfullyAddedApplicantIds);
+        void SendSchedulesToInterviewer(SchedulerDataViewModel formData, int userId, List<int> successfullyAddedApplicantIds);
 
         /// <summary>
         /// Accepts the schedule.
         /// </summary>
         /// <param name="userScheduleId">The user schedule identifier.</param>
-        Task<LogContent> AcceptSchedule(int userScheduleId);
+        LogContent AcceptSchedule(int userScheduleId);
 
         /// <summary>
         /// Rejects the schedule.
         /// </summary>
         /// <param name="userScheduleId">The user schedule identifier.</param>
-        Task<LogContent> RejectSchedule(int userScheduleId);
+        LogContent RejectSchedule(int userScheduleId);
 
         /// <summary>
         /// Informs the interviewer that a schedule has been rejected.
         /// </summary>
         /// <param name="userSchedule">The user schedule.</param>
-        Task SendRejectedScheduleNoticeToInterviewer(UserSchedule userSchedule);
+        void SendRejectedScheduleNoticeToInterviewer(UserSchedule userSchedule);
 
         /// <summary>
         /// Sets the online meeting schedule.
@@ -54,11 +60,11 @@ namespace Basecode.Services.Interfaces
         /// <summary>
         /// Sends the accepted schedule with Teams link to the interviewer.
         /// </summary>
-        Task SendAcceptedScheduleToInterviewer(UserSchedule userSchedule, string joinUrl);
+        void SendAcceptedScheduleToInterviewer(UserSchedule userSchedule, string joinUrl);
 
         /// <summary>
         /// Sends the accepted schedule with Teams link to the applicant.
         /// </summary>
-        Task SendAcceptedScheduleToApplicant(UserSchedule userSchedule, string joinUrl);
+        void SendAcceptedScheduleToApplicant(UserSchedule userSchedule, string joinUrl);
     }
 }

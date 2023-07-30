@@ -22,6 +22,9 @@ namespace Basecode.WebApp
                 cfg.CreateMap<BackgroundCheckFormViewModel, BackgroundCheck>();
                 cfg.CreateMap<UserViewModel, User>();
                 cfg.CreateMap<UserUpdateViewModel, User>();
+                cfg.CreateMap<Applicant, Applicant>().ForMember(dest => dest.Application, opt => opt.Ignore());
+                cfg.CreateMap<UserSchedule, UserSchedule>().ForMember(dest => dest.User, opt => opt.Ignore())
+                    .ForMember(dest => dest.Application, opt => opt.Ignore());
             });
 
             services.AddSingleton(Config.CreateMapper());

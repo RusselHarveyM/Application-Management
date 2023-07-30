@@ -217,10 +217,10 @@ namespace Basecode.Services.Services
         /// <summary>
         /// Sends the schedule to applicant.
         /// </summary>
-        public async Task SendScheduleToApplicant(UserSchedule userSchedule, int userScheduleId, Applicant applicant, string meetingType, int tokenExpiry)
+        public async Task SendScheduleToApplicant(UserSchedule userSchedule, Applicant applicant, int tokenExpiry)
         {
-            string acceptToken = _tokenHelper.GenerateToken("accept", userScheduleId, tokenExpiry);
-            string rejectToken = _tokenHelper.GenerateToken("reject", userScheduleId, tokenExpiry);
+            string acceptToken = _tokenHelper.GenerateToken("accept", userSchedule.Id, tokenExpiry);
+            string rejectToken = _tokenHelper.GenerateToken("reject", userSchedule.Id, tokenExpiry);
 
             string baseUrl = "https://localhost:53813";
             var acceptUrl = $"{baseUrl}/Scheduler/AcceptSchedule/{HttpUtility.UrlEncode(acceptToken)}";
@@ -231,9 +231,9 @@ namespace Basecode.Services.Services
             var body = templateContent
                 .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
                 .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
-                .Replace("{{HEADLINE}}", $"{meetingType} Schedule")
+                .Replace("{{HEADLINE}}", $"{userSchedule.Type} Schedule")
                 .Replace("{{BODY}}", $"<br> Dear {applicant.Firstname} {applicant.Lastname}," +
-                                     $"<br><br> Your {meetingType} has been scheduled for {userSchedule.Schedule.ToShortDateString()} at {userSchedule.Schedule.ToShortTimeString()}." +
+                                     $"<br><br> Your {userSchedule.Type} has been scheduled for {userSchedule.Schedule.ToShortDateString()} at {userSchedule.Schedule.ToShortTimeString()}." +
                                      $"<br><br> If you are available on the said schedule, please click the Accept button. Otherwise, click the Reject button." +
                                      $"<br><br> If you reject, the interviewer will be informed, and a new schedule will be set for you." +
                                      $"<br><br> Please click the button below that corresponds to your choice:" +
@@ -241,7 +241,7 @@ namespace Basecode.Services.Services
                                      $"<a href=\"{rejectUrl}\">Reject</a>" +
                                      $"<br><br> Best regards,");
 
-            await _emailService.SendEmail(applicant.Email, $"Alliance Software Inc. {meetingType} Schedule", body);
+            await _emailService.SendEmail(applicant.Email, $"Alliance Software Inc. {userSchedule.Type} Schedule", body);
         }
 
         /// <summary>
