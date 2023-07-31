@@ -103,6 +103,7 @@ namespace Basecode.Services.Services
                     EmploymentType = m.EmploymentType,
                     WorkSetup = m.WorkSetup,
                     Location = m.Location,
+                    Tag = m.Tag,
                     Responsibilities = responsibilities,
                     Qualifications = qualifications
                 })

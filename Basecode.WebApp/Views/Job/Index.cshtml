@@ -135,14 +135,22 @@
     }
 </style>
 
-<div class="jobContainer">
+<div class="jobContainer" id="cardContainer">
     <h1>Search <span style="color: red;">Jobs</span>
         @*Admin View*@
         <partial name="_LoginPartialJobIndex"/>
     </h1>
     <div class="searchFilter">
         <div id="searchJob">
-            <input type="text" placeholder="Enter keywords">
+            <input type="text" id="keywordInput" placeholder="Enter keywords" oninput="filterJobOpenings()">
+            <select name="tag" onchange="filterJobOpenings()">
+                <option value="">All Tags</option>
+                <option value="Technical">Technical</option>
+                <option value="Hr">Hr</option>
+                <option value="Finance">Finance</option>
+                <option value="Marketing">Marketing</option>
+                <!-- Add more options for different tags as needed -->
+            </select>
         </div>
         <select name="location">
             <option value="">All Locations</option>
@@ -163,7 +171,7 @@
     <div class="row mt-4">
         @foreach (var jobOpening in Model)
         {
-            <div class="col-sm-4">
+                <div class="col-sm-4" data-tag="@jobOpening.Tag">
                 <a href="@Url.Action("JobView", "Job", new { id = jobOpening.Id })" style="text-decoration:none;">
 
                     <div class="card mb-4">
@@ -198,4 +206,40 @@
         <p>No job openings available.</p>
     }
 </div>
+
+<script>
+    function filterJobOpenings() {
+        var input, tagSelect, filter, selectedTag, cardContainer, cards, card, i, txtValue, jobTag;
+        input = document.getElementById("keywordInput");
+        tagSelect = document.querySelector("select[name='tag']"); // Select the tag dropdown
+        filter = input.value.toUpperCase();
+        selectedTag = tagSelect.value.toUpperCase();
+        cardContainer = document.getElementById("cardContainer");
+        cards = cardContainer.getElementsByClassName("col-sm-4");
+
+        for (i = 0; i < cards.length; i++) {
+            card = cards[i];
+            txtValue = card.querySelector(".card-title").textContent;
+            jobTag = card.getAttribute("data-tag").toUpperCase(); // Get the tag of the job opening
+
+            // Check if the tag matches the selected tag and keyword matches the job title
+            if ((selectedTag === "" || jobTag === selectedTag) && txtValue.toUpperCase().indexOf(filter) > -1) {
+                card.style.display = "";
+            } else {
+                card.style.display = "none";
+            }
+        }
+
+        // Update the URL with the selected tag
+        var currentURL = new URL(window.location.href);
+        currentURL.searchParams.set('tag', selectedTag.toLowerCase());
+        window.history.replaceState({}, document.title, currentURL);
+    }
+
+</script>
+
+
+
+
+
 
