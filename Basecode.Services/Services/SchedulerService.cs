@@ -45,10 +45,10 @@ namespace Basecode.Services.Services
         {
             (LogContent logContent, Dictionary<string, string> validationErrors) data = CheckSchedulerData(formData);
 
-            var newSchedules = new List<UserSchedule>();
-
-            if (data.logContent.Result == false)
+            if (!data.logContent.Result)
             {
+                var newSchedules = new List<UserSchedule>();
+
                 foreach (var schedule in formData.ApplicantSchedules)
                 {
                     Guid applicationId = _applicationService.GetApplicationIdByApplicantId(schedule.ApplicantId);
@@ -63,19 +63,18 @@ namespace Basecode.Services.Services
                     };
 
                     int existingId = _userScheduleService.GetIdIfUserScheduleExists(applicationId);
-                    if (existingId != -1)   // Update "rejected" schedule to "pending"
-                    {
+                    if (existingId != -1)   // Existing schedule, change it from "rejected" to "pending"
                         HandleExistingSchedule(userSchedule, existingId, schedule.ApplicantId);
-                    }
-                    else    // Create new schedule
-                    {
-                        LogContent logContent = CheckUserSchedule(userSchedule);
-                        if (logContent.Result == false) newSchedules.Add(userSchedule);
-                    }
+                    else    // New schedule, check it for errors
+                        newSchedules = CheckNewSchedule(userSchedule, newSchedules);
                 }
 
-                _userScheduleService.AddUserSchedules(newSchedules);
-
+                if (newSchedules.Count > 0)     // Add new schedules, if any
+                {
+                    _userScheduleService.AddUserSchedules(newSchedules);
+                    _logger.Trace("New UserSchedule(s) have been successfully inserted into the database.");
+                }
+                    
                 foreach (var userSchedule in newSchedules)
                     SendScheduleToApplicant(userSchedule, userSchedule.Id, userSchedule.Type);
 
@@ -91,12 +90,22 @@ namespace Basecode.Services.Services
         private void HandleExistingSchedule(UserSchedule userSchedule, int existingId, int applicantId)
         {
             LogContent logContent = _userScheduleService.UpdateUserSchedule(userSchedule, existingId);
-            if (logContent.Result == false)
+            if (!logContent.Result)
             {
                 _logger.Trace("Successfully updated User Schedule [ " + existingId + " ]");
                 userSchedule.Id = existingId;
                 SendScheduleToApplicant(userSchedule, existingId, userSchedule.Type, applicantId);
             }
+        }
+
+        /// <summary>
+        /// Handles the new schedule.
+        /// </summary>
+        private List<UserSchedule> CheckNewSchedule(UserSchedule userSchedule, List<UserSchedule> newSchedules)
+        {
+            LogContent logContent = CheckUserSchedule(userSchedule);
+            if (!logContent.Result) newSchedules.Add(userSchedule);
+            return newSchedules;
         }
 
         /// <summary>
@@ -114,11 +123,11 @@ namespace Basecode.Services.Services
             int hoursLeft = (int)timeDifference.TotalHours;
 
             BackgroundJob.Schedule(() => CheckScheduleStatusAfterTokenExpiry(userScheduleId), TimeSpan.FromHours(hoursLeft));
-            Applicant applicant = new Applicant();
 
-            if (applicantId == -1) 
+            Applicant applicant = new Applicant();
+            if (applicantId == -1)  // existing schedule
                 applicant = _applicantService.GetApplicantByApplicationId(userSchedule.ApplicationId);
-            else 
+            else    // new schedule
                 applicant = _applicantService.GetApplicantById(applicantId);
  
             var applicantTemp = _mapper.Map<Applicant>(applicant);
@@ -137,9 +146,7 @@ namespace Basecode.Services.Services
             {
                 LogContent logContent = RejectSchedule(userScheduleId);
                 if (!logContent.Result)
-                {
-                    _logger.Trace($"Token has expired and was not used. UserSchedule [ {userSchedule.Id} ] has been automatically rejected.");
-                }
+                    _logger.Trace($"Token has expired and was not used. UserSchedule [{userSchedule.Id}] has been automatically rejected.");
             }
         }
 
@@ -172,7 +179,7 @@ namespace Basecode.Services.Services
             var userSchedule = _userScheduleService.GetUserScheduleById(userScheduleId);
             LogContent logContent = CheckUserScheduleStatus(userSchedule);
 
-            if (logContent.Result == false)
+            if (!logContent.Result)
             {
                 string joinUrl = await SetOnlineMeetingSchedule(userSchedule);
                 if (!string.IsNullOrEmpty(joinUrl))
@@ -185,14 +192,14 @@ namespace Basecode.Services.Services
                     _userScheduleService.DeleteUserSchedule(userSchedule);
                 }
 
-                string scheduleType = userSchedule.Type.Split(' ').Skip(1).FirstOrDefault();
+                string scheduleType = userSchedule.Type.Split(' ').Skip(1).FirstOrDefault();    // Remove first word from string
                 if (scheduleType == "Interview")
                 {
                     var data = _interviewService.AddInterview(userSchedule, joinUrl);
                     if (!data.Result) _logger.Trace("Successfully created a new Interview record.");
                     else _logger.Error(SetLog(data));
                 }
-                else    // schedule type is Exam
+                else    // schedule type is "Exam"
                 {
                     var data = _examinationService.AddExamination(userSchedule, joinUrl);
                     if (!data.Result) _logger.Trace("Successfully created a new Examination record.");
@@ -212,7 +219,7 @@ namespace Basecode.Services.Services
             var userSchedule = _userScheduleService.GetUserScheduleById(userScheduleId);
             LogContent logContent = CheckUserScheduleStatus(userSchedule);
 
-            if (logContent.Result == false)
+            if (!logContent.Result)
             {
                 userSchedule.Status = "rejected";
                 logContent = _userScheduleService.UpdateUserSchedule(userSchedule);
@@ -256,14 +263,11 @@ namespace Basecode.Services.Services
                 End = new EventDateTime() { DateTime = userSchedule.Schedule.AddHours(1) }
             };
 
-            string joinUrl = "";
             LogContent logContent = CheckCalendarEvent(calendarEvent);
-            if (logContent.Result == false)
-            {
-                joinUrl = await _calendarService.CreateEvent(calendarEvent, email);
-            }
+            if (!logContent.Result)
+                return await _calendarService.CreateEvent(calendarEvent, email);
 
-            return joinUrl;
+            return "";
         }
 
         /// <summary>
