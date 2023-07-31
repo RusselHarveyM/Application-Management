@@ -121,6 +121,8 @@ namespace Basecode.Services.Interfaces
         /// <returns></returns>
         Task SendPasswordChange(string userEmail, string callBackUrl);
 
+        Task SendCongratulation(Applicant applicant, int userId);
+
         Task SendRejectedHireNoticeToInterviewer(string email, string fullname, string position, CurrentHire currentHire, string applicantFullName);
     }
 }

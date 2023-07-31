@@ -399,6 +399,36 @@ namespace Basecode.Services.Services
             await _emailService.SendEmail(userEmail, $"Alliance Software Inc. Forgot Password", body);
         }
 
+        /// <summary>
+        /// Sends the congratulations to applicant.
+        /// </summary>
+        public async Task SendCongratulation(Applicant applicant, int userId)
+        {
+            string acceptToken = _tokenHelper.GenerateToken("accept", userId);
+            string rejectToken = _tokenHelper.GenerateToken("reject", userId);
+
+            string baseUrl = "https://localhost:61433";
+            var acceptUrl = $"{baseUrl}/JobOffer/AcceptOffer/{HttpUtility.UrlEncode(acceptToken)}";
+            var rejectUrl = $"{baseUrl}/JobOffer/RejectOffer/{HttpUtility.UrlEncode(rejectToken)}";
+
+            var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
+            var templateContent = File.ReadAllText(templatePath);
+            var body = templateContent
+                .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+                .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+                .Replace("{{HEADLINE}}", "Job Offer")
+                .Replace("{{BODY}}", $"Dear Mr/Ms. {applicant.Lastname},<br>" +
+                                     $"<br> Congratulations. You're hired Mr/Ms. {applicant.Firstname} {applicant.Lastname}. <br>" +
+                                     $"<br> If you have any questions or need any further information about the company details, please do not hesitate to reach out to us. <br>" +
+                                     $"<br> Once again, congratulations. We truly appreciate your decision for choosing the alliance software inc." +
+                                     $"<br> Best regards, <br/>" +
+                                     $"<br> Please click the button to accept or reject for being hired<br/>" +
+                                     $"<br> <a href=\"{acceptUrl}\">Accept</a> " +
+                                     $"<a href=\"{rejectUrl}\">Reject</a>");
+
+            await _emailService.SendEmail(applicant.Email, "Alliance Software Inc. Background Check", body);
+        }
+
         public async Task SendRejectedHireNoticeToInterviewer(string email, string fullname, string position, CurrentHire currentHire, string applicantFullName)
         {
             var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
