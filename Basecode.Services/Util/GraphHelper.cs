@@ -37,7 +37,7 @@ public class GraphHelper
             string accessToken = tokenResponse.GetProperty("access_token").GetString();
 
             var user = _config["GraphApi:ObjectId"];
-            string endpoint = $"https://graph.microsoft.com/v1.0/users/{user}/calendar/events";
+            string endpoint = $"https://graph.microsoft.com/v1.0/users/IsaiahL@5183ny.onmicrosoft.com/calendar/events";
 
 
             var jsonMessage = JsonSerializer.Serialize(calendarEvent);
