@@ -209,5 +209,19 @@ namespace Basecode.Services.Services
             }
             return successfullyAddedApplicantIds;
         }
+
+        /// <summary>
+        /// Send offer to applicant
+        /// </summary>
+        /// <param name="userOffer"></param>
+        /// <param name="userOfferId"></param>
+        /// <param name="applicantId"></param>
+        /// <returns></returns>
+        public async Task SendHireToApplicant(CurrentHire currentHire, int currentHireId, int applicantId)
+        {
+            var applicant = _applicantService.GetApplicantById(applicantId);
+            //await _emailSendingService.SendScheduleToApplicant(userOffer, userOfferId, applicant);
+        }
+
     }
 }
