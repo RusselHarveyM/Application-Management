@@ -139,7 +139,7 @@ namespace Basecode.Services.Services
                 .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
                 .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
                 .Replace("{{HEADLINE}}", "Applicant Status")
-                .Replace("{{BODY}}", $"Dear {applicant.Firstname},<br> Application [{applicant.Id}] has changed its status. <br> Current Status: {newStatus}");
+                .Replace("{{BODY}}", $"Dear {applicant.Firstname},<br> Applicant [{applicant.Id}] has changed its status. <br> Current Status: {newStatus}");
 
             await _emailService.SendEmail(applicant.Email, "Alliance Software Inc. Applicant Status Update", body);
 
@@ -163,7 +163,7 @@ namespace Basecode.Services.Services
                 .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
                 .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
                 .Replace("{{HEADLINE}}", "Approval Email")
-                .Replace("{{BODY}}", $"Dear {user.Fullname},<br> Application [{applicant.Id}] is ready for HR Screening, please provide your feedback to" +
+                .Replace("{{BODY}}", $"Dear {user.Fullname},<br> Applicant [{applicant.Id}] is ready for {newStatus}, please provide your feedback to" +
                     $" proceed to the next phase. Thank you.")
                 .Replace("{{APPLICATION_ID}}", $"{appId}")
                 .Replace("{{USER_ID}}", $"{user.Id}")
