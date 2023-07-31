@@ -464,5 +464,31 @@ namespace Basecode.Services.Services
             }
             return logContent;
         }
+
+        public static LogContent CheckCurrentOffer(CurrentHire hire)
+        {
+            LogContent logContent = new LogContent();
+            if (hire == null)
+            {
+                logContent.SetError("400", "No data found");
+                return logContent;
+            }
+            if (hire.UserId <= 0)
+            {
+                logContent.SetError("400", "UserId is invalid.");
+                return logContent;
+            }
+            if (hire.ApplicationId == Guid.Empty)
+            {
+                logContent.SetError("400", "ApplicationId is invalid.");
+                return logContent;
+            }
+            if (string.IsNullOrEmpty(hire.Status))
+            {
+                logContent.SetError("400", "Offer Status is required but has no value.");
+                return logContent;
+            }
+            return logContent;
+        }
     }
 }
