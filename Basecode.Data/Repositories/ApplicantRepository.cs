@@ -61,26 +61,36 @@ namespace Basecode.Data.Repositories
         }
 
         /// <summary>
-        /// This method retrieves a list of applicant names along with their corresponding email addresses and job titles.
-        /// It performs a series of database joins to retrieve the required information from the underlying data context.
+        /// Gets the linked job openings.
         /// </summary>
-        /// <returns>A list of tuples, each containing the applicant's full name, email address, and job title.</returns>
-        public List<(string Name, string Email, string Title)> GetApplicantNameAndJobTitle()
+        /// <param name="userId">The user identifier.</param>
+        /// <returns></returns>
+        public IEnumerable<JobOpeningBasicViewModel> GetLinkedJobOpenings(string userAspId)
         {
-            var result = _context.Applicant
-                .Join(_context.Application,
-                    applicant => applicant.Id,
-                    application => application.ApplicantId,
-                    (applicant, application) => new { Applicant = applicant, Application = application })
-                .Join(_context.JobOpening,
-                    applicantApplication => applicantApplication.Application.JobOpeningId,
-                    jobOpening => jobOpening.Id,
-                    (applicantApplication, jobOpening) => new { ApplicantApplication = applicantApplication, JobOpening = jobOpening })
-                .Select(joinedTables => new { joinedTables.ApplicantApplication.Applicant, joinedTables.JobOpening.Title })
+            return _context.User
+                   .Where(u => u.AspId == userAspId)
+                   .SelectMany(u => u.JobOpenings)
+                   .Select(j => new JobOpeningBasicViewModel
+                   {
+                       Id = j.Id,
+                       Title = j.Title
+                   })
+                   .ToList();
+        }
+
+        public List<Applicant> GetApplicantsWithJobAndReferences(string userAspId)
+        {
+            var linkedJobOpenings = GetLinkedJobOpenings(userAspId);
+            var jobOpeningIds = linkedJobOpenings.Select(j => j.Id).ToList();
+
+            var applicants = _context.Applicant
+                .Where(applicant => jobOpeningIds.Contains(applicant.Application.JobOpeningId)) // Include Application and JobOpening
+                .Include(applicant => applicant.Application)
+                .Include(applicant => applicant.Application.JobOpening)
+                .Include(a => a.CharacterReferences)
                 .ToList();
 
-            var nameAndTitleList = result.Select(x => (Name: $"{x.Applicant.Firstname} {x.Applicant.Middlename} {x.Applicant.Lastname}".Trim(), x.Applicant.Email, x.Title)).ToList();
-            return nameAndTitleList;
+            return applicants;
         }
     }
 }

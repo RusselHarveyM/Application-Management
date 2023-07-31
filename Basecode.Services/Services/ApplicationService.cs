@@ -90,6 +90,18 @@ namespace Basecode.Services.Services
         }
 
         /// <summary>
+        /// Gets the application with complete relations by identifier.
+        /// </summary>
+        /// <param name="applicationId">The application identifier.</param>
+        /// <returns></returns>
+        public Application? GetApplicationWithAllRelationsById(Guid applicationId)
+        {
+            var application = _repository.GetApplicationWithAllRelationsById(applicationId);
+            if (application == null) return null;
+            return application;
+        }
+
+        /// <summary>
         /// Gets the shorlisted applicatons.
         /// </summary>
         /// <param name="stage">The stage.</param>

@@ -29,7 +29,7 @@ namespace Basecode.Services.Services
             _applicantService = applicantService;
         }
 
-        public async Task<LogContent> Create(BackgroundCheckFormViewModel form)
+        public LogContent Create(BackgroundCheckFormViewModel form)
         {
             LogContent logContent = new LogContent();
 
@@ -44,7 +44,7 @@ namespace Basecode.Services.Services
                 var result = _repository.GetById(backgroundId);
                 var applicant = _applicantService.GetApplicantById(result.CharacterReference.ApplicantId);
 
-                await _trackService.GratitudeNotification(applicant, result);
+                _trackService.GratitudeNotification(applicant, result);
             }
             return logContent;
         }

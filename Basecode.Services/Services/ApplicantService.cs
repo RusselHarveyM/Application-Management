@@ -5,6 +5,7 @@ using Basecode.Data.Repositories;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
 using Basecode.Services.Util;
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -77,9 +78,9 @@ namespace Basecode.Services.Services
         /// <param name="user">The user.</param>
         /// <param name="choice">The choice.</param>
         /// <param name="newStatus">The new status.</param>
-        public async Task UpdateApplication(Application application, User user, string choice, string newStatus)
+        public void UpdateApplication(Application application, User user, string choice, string newStatus)
         {
-           var result = await _trackService.UpdateApplicationStatusByEmailResponse(application, user, choice, newStatus);
+           var result = _trackService.UpdateApplicationStatusByEmailResponse(application, user, choice, newStatus);
             if(result != null)
             {
                 _applicationService.Update(result);
@@ -93,7 +94,7 @@ namespace Basecode.Services.Services
         /// <returns>
         /// Returns a tuple with the log content and the ID of the created applicant.
         /// </returns>
-        public async Task<(LogContent, int)> Create(ApplicantViewModel applicant)
+        public (LogContent, int) Create(ApplicantViewModel applicant)
         {
             LogContent logContent = new LogContent();
             int createdApplicantId = 0;
@@ -121,16 +122,24 @@ namespace Basecode.Services.Services
 
                 _applicationService.Create(application);
 
-                // Resume checking moved to the TrackService
-                var result = await _trackService.CheckAndSendApplicationStatus(application, applicantModel, newJobOpening);
-
-                if(result != null)
-                {
-                    _applicationService.Update(result);
-                }
+                BackgroundJob.Enqueue(() => CheckAndSendApplicationStatus(application.Id)); 
             }
 
             return (logContent, createdApplicantId);
+        }
+
+        public async Task CheckAndSendApplicationStatus(Guid applicationId)
+        {
+            var application = _applicationService.GetApplicationWithAllRelationsById(applicationId);
+            if (application != null)
+            {
+                // Resume checking moved to the TrackService
+                var result = await _trackService.CheckAndSendApplicationStatus(application);
+                if (result != null)
+                {
+                    _applicationService.Update(result);
+                }
+            } 
         }
 
         /// <summary>
@@ -190,12 +199,12 @@ namespace Basecode.Services.Services
         }
 
         /// <summary>
-        /// This method retrieves a list of applicant names along with their corresponding email addresses and job titles.
+        /// Retrieves a list of applicants along with their associated job openings and character references from the database.
         /// </summary>
-        /// <returns>A list of tuples, each containing the applicant's full name, email address, and job title.</returns>
-        public List<(string Name, string Email, string Title)> GetApplicantNameAndJobTitle()
+        /// <returns>A List of Applicant objects, each containing their respective Application (including JobOpening) and CharacterReferences.</returns>
+        public List<Applicant> GetApplicantsWithJobAndReferences(string userAspId)
         {
-            return _repository.GetApplicantNameAndJobTitle();
+            return _repository.GetApplicantsWithJobAndReferences(userAspId);
         }
     }
 }

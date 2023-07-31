@@ -37,6 +37,17 @@ namespace Basecode.Data.Repositories
                 .FirstOrDefault(a => a.Id == id);
         }
 
+        public Application? GetApplicationWithAllRelationsById(Guid applicationId)
+        {
+            return _context.Application
+                .Include(a => a.Applicant)
+                .Include(a => a.JobOpening)
+                .Include(a => a.JobOpening.Qualifications)
+                .Include(a => a.JobOpening.Responsibilities)
+                .Include(a => a.JobOpening.Users)
+                .FirstOrDefault(a => a.Id == applicationId);
+        }
+
         public void UpdateApplication(Application application)
         {
             _context.Application.Update(application);

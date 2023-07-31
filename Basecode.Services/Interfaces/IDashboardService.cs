@@ -16,7 +16,7 @@ namespace Basecode.Services.Interfaces
         /// <param name="user">The user.</param>
         /// <param name="status">The status.</param>
         /// <returns></returns>
-        Task UpdateStatus(Application application, User user, string status);
+        void UpdateStatus(Application application, User user, string status);
         /// <summary>
         /// Gets the shorlisted applicatons.
         /// </summary>

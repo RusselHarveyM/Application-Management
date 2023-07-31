@@ -1,6 +1,8 @@
-﻿using Basecode.Data.Models;
+﻿using AutoMapper;
+using Basecode.Data.Models;
 using Basecode.Services.Interfaces;
 using Basecode.Services.Util;
+using Hangfire;
 using Microsoft.IdentityModel.Tokens;
 using System.IO;
 using System.Text.Json;
@@ -13,11 +15,13 @@ namespace Basecode.Services.Services
         private readonly IEmailSendingService _emailSendingService;
         private readonly ResumeChecker _resumeChecker;
         private readonly List<string> _statuses;
+        private readonly IMapper _mapper;
 
-        public TrackService(IEmailSendingService emailSendingService, ResumeChecker resumeChecker)
+        public TrackService(IEmailSendingService emailSendingService, ResumeChecker resumeChecker, IMapper mapper)
         {
             _emailSendingService = emailSendingService;
             _resumeChecker = resumeChecker;
+            _mapper = mapper;
             _statuses = new List<string>
             {
                 "NA",
@@ -39,29 +43,36 @@ namespace Basecode.Services.Services
         /// <param name="applicant">The applicant.</param>
         /// <param name="jobOpening">The job opening.</param>
         /// <returns></returns>
-        public async Task<Application> CheckAndSendApplicationStatus(Application application, Applicant applicant,
-            JobOpening jobOpening)
+        public async Task<Application?> CheckAndSendApplicationStatus(Application application)
         {
-            var result = await _resumeChecker.CheckResume(jobOpening.Title, jobOpening.Qualifications,applicant.CV);
+            var result = await _resumeChecker.CheckResume(application.JobOpening.Title, application.JobOpening.Qualifications, application.Applicant.CV);
+            //var result = "test";
 
-            JsonDocument jsonDocument = JsonDocument.Parse(result);
-            var jsonObject = jsonDocument.RootElement;
-            
-
-            // Accessing individual properties
-            string jobPosition = jsonObject.GetProperty("JobPosition").GetString();
-            string score = jsonObject.GetProperty("Score").GetString();
-            string explanation = jsonObject.GetProperty("Explanation").GetString();
-
-            if (int.Parse(score.Replace("%", "")) > 60)
+            if (!string.IsNullOrEmpty(result))
             {
-                return await UpdateApplicationStatus(application, application.JobOpening, "HR Shortlisted", "GUID");
+                JsonDocument jsonDocument = JsonDocument.Parse(result);
+                var jsonObject = jsonDocument.RootElement;
+
+
+                // Accessing individual properties
+                string jobPosition = jsonObject.GetProperty("JobPosition").GetString();
+                string score = jsonObject.GetProperty("Score").GetString();
+                string explanation = jsonObject.GetProperty("Explanation").GetString();
+
+                //int convertedScore = 70;
+                if (int.Parse(score.Replace("%", "")) > 60)
+                //if (convertedScore > 60)
+                {
+                    return UpdateApplicationStatus(application, application.JobOpening, "HR Shortlisted", "GUID");
+                }
+                else
+                {
+                    RegretNotification(application.Applicant, application.JobOpening.Title);
+                    return null;
+                }
             }
-            else
-            {
-                await RegretNotification(applicant, jobOpening.Title);
-                return null;
-            }
+
+            return null;
         }
 
         /// <summary>
@@ -71,21 +82,23 @@ namespace Basecode.Services.Services
         /// <param name="user">The user.</param>
         /// <param name="newStatus">The new status.</param>
         /// <param name="mailType">Type of the mail.</param>
-        public async Task UpdateTrackStatusEmail(Application application, User user, string newStatus, string mailType)
+        public void UpdateTrackStatusEmail(Application application, User user, string newStatus, string mailType)
         {
             if (application.Applicant.Id >= 0 && user.Id >= -1 && !mailType.IsNullOrEmpty())
             {
+                // Map the applicant to a new instance of Applicant without the Application property
+                // otherwise HangFire cannot create the background job
+                var applicantTemp = _mapper.Map<Applicant>(application.Applicant);
                 switch (mailType)
                 {
                     case "GUID":
-                        await _emailSendingService.SendGUIDEmail(application);
+                        BackgroundJob.Enqueue(() => _emailSendingService.SendGUIDEmail(application.Id, applicantTemp));
                         break;
                     case "Approval":
-                        await _emailSendingService.SendApprovalEmail(user, application.Applicant, application.Id,
-                            newStatus);
+                        BackgroundJob.Enqueue(() => _emailSendingService.SendApprovalEmail(user, applicantTemp, application.Id, newStatus));
                         break;
                     case "Rejected":
-                        await _emailSendingService.SendRejectedEmail(application.Applicant, newStatus);
+                        BackgroundJob.Enqueue(() => _emailSendingService.SendRejectedEmail(applicantTemp, newStatus));
                         break;
                     default:
                         break;
@@ -101,7 +114,7 @@ namespace Basecode.Services.Services
         /// <param name="newStatus">The new status.</param>
         /// <param name="mailType">Type of the mail.</param>
         /// <returns></returns>
-        public async Task<Application> UpdateApplicationStatus(Application application, User user, string newStatus,
+        public Application UpdateApplicationStatus(Application application, User user, string newStatus,
             string mailType)
         {
             try
@@ -109,8 +122,8 @@ namespace Basecode.Services.Services
                 application.UpdateTime = DateTime.Now;
                 application.Status = newStatus;
 
-                await StatusNotification(application.Applicant, user, newStatus);
-                await UpdateTrackStatusEmail(application, user, newStatus, mailType);
+                StatusNotification(application.Applicant, user, newStatus);
+                UpdateTrackStatusEmail(application, user, newStatus, mailType);
                 return application;
             }
             catch (Exception e)
@@ -127,7 +140,7 @@ namespace Basecode.Services.Services
         /// <param name="newStatus">The new status.</param>
         /// <param name="mailType">Type of the mail.</param>
         /// <returns></returns>
-        private async Task<Application> UpdateApplicationStatus(Application application, JobOpening jobOpening,
+        private Application UpdateApplicationStatus(Application application, JobOpening jobOpening,
             string newStatus, string mailType)
         {
             try
@@ -135,8 +148,9 @@ namespace Basecode.Services.Services
                 application.UpdateTime = DateTime.Now;
                 application.Status = newStatus;
 
-                await StatusNotification(application.Applicant, jobOpening.Users.First(), newStatus);
-                await UpdateTrackStatusEmail(application, jobOpening.Users.First(), newStatus, mailType);
+                StatusNotification(application.Applicant, jobOpening.Users.First(), newStatus);
+                UpdateTrackStatusEmail(application, jobOpening.Users.First(), newStatus, mailType);
+
                 return application;
             }
             catch (Exception e)
@@ -153,7 +167,7 @@ namespace Basecode.Services.Services
         /// <param name="choice">The choice (e.g., approved or rejected).</param>
         /// <param name="newStatus">The new status.</param>
         /// <returns></returns>
-        public async Task<Application> UpdateApplicationStatusByEmailResponse(Application application, User user,
+        public Application UpdateApplicationStatusByEmailResponse(Application application, User user,
             string choice, string status)
         {
             var newStatus = "";
@@ -165,12 +179,12 @@ namespace Basecode.Services.Services
                     var statusIndex = _statuses.IndexOf(status);
                     newStatus = _statuses[statusIndex + 1];
                 }
-                return await UpdateApplicationStatus(application, user, newStatus, "Approval");
+                return UpdateApplicationStatus(application, user, newStatus, "Approval");
             }
             else
             {
                 //send automated email of regrets
-                return await UpdateApplicationStatus(application, user, newStatus, "Rejected");
+                return UpdateApplicationStatus(application, user, newStatus, "Rejected");
             }
         }
 
@@ -180,12 +194,14 @@ namespace Basecode.Services.Services
         /// <param name="applicant">The applicant.</param>
         /// <param name="user">The user.</param>
         /// <param name="newStatus">The new status.</param>
-        public async Task StatusNotification(Applicant applicant, User user, string newStatus)
+            public void StatusNotification(Applicant applicant, User user, string newStatus)
         {
             if (applicant.Id >= 0)
             {
+                var applicantTemp = _mapper.Map<Applicant>(applicant);
+                var userTemp = _mapper.Map<User>(user);
                 //Notify HR and Applicant for every status change.
-                await _emailSendingService.SendStatusNotification(user, applicant, newStatus);
+                BackgroundJob.Enqueue(() => _emailSendingService.SendStatusNotification(userTemp, applicantTemp, newStatus));
             }
         }
 
@@ -194,10 +210,11 @@ namespace Basecode.Services.Services
         /// </summary>
         /// <param name="applicant">The applicant.</param>
         /// <param name="job">The job position.</param>
-        public async Task RegretNotification(Applicant applicant, string job)
+        public void RegretNotification(Applicant applicant, string job)
         {
+            var applicantTemp = _mapper.Map<Applicant>(applicant);
             //Notify Applicant who is not shortlisted upon application
-            await _emailSendingService.SendRegretEmail(applicant, job);
+            BackgroundJob.Enqueue(() => _emailSendingService.SendRegretEmail(applicantTemp, job));
         }
 
         /// <summary>
@@ -205,10 +222,11 @@ namespace Basecode.Services.Services
         /// </summary>
         /// <param name="applicant">The applicant.</param>
         /// <param name="reference">The reference.</param>
-        public async Task GratitudeNotification(Applicant applicant, BackgroundCheck reference)
+        public void GratitudeNotification(Applicant applicant, BackgroundCheck reference)
         {
+            var referenceTemp = _mapper.Map<BackgroundCheck>(reference);
             //Notify reference for successfully submitting the form
-            await _emailSendingService.SendGratitudeEmail(applicant, reference);
+            BackgroundJob.Enqueue(() => _emailSendingService.SendGratitudeEmail(applicant, referenceTemp));
         }
     }
 }

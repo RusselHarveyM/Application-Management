@@ -23,8 +23,13 @@ namespace Basecode.WebApp
                 cfg.CreateMap<UserViewModel, User>();
                 cfg.CreateMap<UserUpdateViewModel, User>();
                 cfg.CreateMap<Applicant, Applicant>().ForMember(dest => dest.Application, opt => opt.Ignore());
+
                 cfg.CreateMap<UserSchedule, UserSchedule>().ForMember(dest => dest.User, opt => opt.Ignore())
                     .ForMember(dest => dest.Application, opt => opt.Ignore());
+
+                cfg.CreateMap<BackgroundCheck, BackgroundCheck>().ForMember(dest => dest.CharacterReference, opt => opt.Ignore());
+                cfg.CreateMap<User, User>().ForMember(dest => dest.JobOpenings, opt => opt.Ignore());
+
             });
 
             services.AddSingleton(Config.CreateMapper());

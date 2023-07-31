@@ -222,7 +222,7 @@ namespace Basecode.Tests.Controllers
         //}
 
         [Fact]
-        public async Task Create_ExceptionThrown_ReturnsStatusCode500()
+        public void Create_ExceptionThrown_ReturnsStatusCode500()
         {
             // Arrange
             var applicant = new ApplicantViewModel { JobOpeningId = 123 };
@@ -236,7 +236,7 @@ namespace Basecode.Tests.Controllers
             _mockApplicantService.Setup(service => service.Create(applicant)).Throws(new Exception());
 
             // Act
-            var result = await _controller.Create(applicant, fileName, applicantId, newStatus, fileData);
+            var result = _controller.Create(applicant, fileName, applicantId, newStatus, fileData);
 
             // Assert
             Assert.NotNull(result);

@@ -38,7 +38,7 @@ namespace Basecode.Services.Interfaces
         /// <param name="choice">The choice.</param>
         /// <param name="newStatus">The new status.</param>
         /// <returns></returns>
-        Task UpdateApplication(Application application, User user, string choice, string newStatus);
+        void UpdateApplication(Application application, User user, string choice, string newStatus);
 
         /// <summary>
         /// Creates a new applicant based on the provided applicant data.
@@ -47,7 +47,12 @@ namespace Basecode.Services.Interfaces
         /// <returns>
         /// Returns a tuple with the log content and the ID of the created applicant.
         /// </returns>
-        Task<(LogContent, int)> Create(ApplicantViewModel applicant);
+        (LogContent, int) Create(ApplicantViewModel applicant);
+
+        /// <summary>
+        /// Checks and sends the application status.
+        /// </summary>
+        Task CheckAndSendApplicationStatus(Guid applicationId);
 
         /// <summary>
         /// Gets the applicants by the job opening id.
@@ -70,9 +75,9 @@ namespace Basecode.Services.Interfaces
         Applicant GetApplicantByApplicationId(Guid applicationId);
 
         /// <summary>
-        /// This method retrieves a list of applicant names along with their corresponding email addresses and job titles.
+        /// Retrieves a list of applicants along with their associated job openings and character references from the database.
         /// </summary>
-        /// <returns>A list of tuples, each containing the applicant's full name, email address, and job title.</returns>
-        List<(string Name, string Email, string Title)> GetApplicantNameAndJobTitle();
+        /// <returns>A List of Applicant objects, each containing their respective Application (including JobOpening) and CharacterReferences.</returns>
+        List<Applicant> GetApplicantsWithJobAndReferences(string userAspId);
     }
 }

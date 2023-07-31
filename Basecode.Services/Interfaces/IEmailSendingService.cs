@@ -33,7 +33,7 @@ namespace Basecode.Services.Interfaces
         /// </summary>
         /// <param name="application">The application.</param>
         /// <returns></returns>
-        Task SendGUIDEmail(Application application);
+        Task SendGUIDEmail(Guid applicationId, Applicant applicant);
 
         /// <summary>
         /// Sends the status notification.
