@@ -81,6 +81,15 @@ namespace Basecode.Services.Interfaces
         Task SendSchedulesToInterviewer(string fullname, string userEmail, string jobOpeningTitle, DateOnly date, string scheduledTimes, string meetingType);
 
         /// <summary>
+        /// Sends a request for a character reference to the specified reference for a particular applicant.
+        /// </summary>
+        /// <param name="reference">The character reference object containing information about the reference.</param>
+        /// <param name="applicant">The applicant object containing information about the applicant.</param>
+        /// <param name="userId">The ID of the user making the request.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        Task SendRequestReference(CharacterReference reference, Applicant applicant, int userId);
+
+        /// <summary>
         /// Sends the gratitude email.
         /// </summary>
         /// <param name="applicant">The applicant.</param>

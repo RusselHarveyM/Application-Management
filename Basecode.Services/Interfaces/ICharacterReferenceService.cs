@@ -18,10 +18,10 @@ namespace Basecode.Services.Interfaces
         LogContent Create(CharacterReferenceViewModel characterReference, int applicantId);
 
         /// <summary>
-        /// Gets the reference by applicant id.
+        /// Retrieves a list of character references associated with the specified applicant ID.
         /// </summary>
-        /// <param name="applicantId">The applicant id.</param>
-        /// <returns>List of character references of an applicant.</returns>
+        /// <param name="applicantId">The unique identifier of the applicant whose character references are to be retrieved.</param>
+        /// <returns>A list of CharacterReference objects representing the character references related to the specified applicant.</returns>
         List<CharacterReference> GetReferencesByApplicantId(int applicantId);
 
         /// <summary>

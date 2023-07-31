@@ -263,13 +263,15 @@ namespace Basecode.Services.Services
         }
 
         /// <summary>
-        /// Sends the gratitude email.
+        /// Sends a request for a character reference to the specified reference for a particular applicant.
         /// </summary>
-        /// <param name="applicant">The applicant.</param>
-        /// <param name="reference">The reference.</param>
-        public async Task SendRequestReference(CharacterReference reference, Applicant applicant)
+        /// <param name="reference">The character reference object containing information about the reference.</param>
+        /// <param name="applicant">The applicant object containing information about the applicant.</param>
+        /// <param name="userId">The ID of the user making the request.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public async Task SendRequestReference(CharacterReference reference, Applicant applicant, int userId)
         {
-            var url = "https://localhost:49940/BackgroundCheck/Index";
+            var url = $"https://localhost:50100/BackgroundCheck/Form/{reference.Id}/{userId}";
             var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
             var templateContent = File.ReadAllText(templatePath);
             var body = templateContent

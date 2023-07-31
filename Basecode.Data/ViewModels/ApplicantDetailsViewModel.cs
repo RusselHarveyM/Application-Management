@@ -11,5 +11,6 @@ namespace Basecode.Data.ViewModels
     {
         public Applicant Applicant { get; set; }
         public List<CharacterReference> CharacterReferences { get; set; }
+        public List<BackgroundCheck> BackgroundCheck { get; set; }
     }
 }
