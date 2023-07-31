@@ -5,6 +5,7 @@ using Basecode.WebApp.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Microsoft.AspNetCore.Identity;
+using NToastNotify;
 
 namespace Basecode.Tests.Controllers
 {
@@ -12,6 +13,7 @@ namespace Basecode.Tests.Controllers
     {
         private readonly Mock<IJobOpeningService> _fakeJobOpeningService;
         private readonly Mock<UserManager<IdentityUser>> _fakeUserManager;
+        private readonly Mock<IToastNotification> _fakeToastNotification; 
 
         private readonly JobController _controller;
 
@@ -19,8 +21,9 @@ namespace Basecode.Tests.Controllers
         {
             _fakeJobOpeningService = new Mock<IJobOpeningService>();
             _fakeUserManager = new Mock<UserManager<IdentityUser>>(Mock.Of<IUserStore<IdentityUser>>(), null, null, null, null, null, null, null, null);
-    
-            _controller = new JobController(_fakeJobOpeningService.Object, _fakeUserManager.Object);
+            _fakeToastNotification = new Mock<IToastNotification>();
+            
+            _controller = new JobController(_fakeJobOpeningService.Object, _fakeUserManager.Object, _fakeToastNotification.Object);
         }
 
 
