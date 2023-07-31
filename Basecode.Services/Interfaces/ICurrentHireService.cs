@@ -53,5 +53,11 @@ namespace Basecode.Services.Interfaces
         /// <returns></returns>
         LogContent UpdateCurrentHire(CurrentHire currentHire, int? idToSetAsPending = null);
 
+        /// <summary>
+        /// Get Id if user offer existed
+        /// </summary>
+        /// <param name="applicationId"></param>
+        /// <returns></returns>
+        int GetIdIfCurrentHireExists(Guid applicationId);
     }
 }
