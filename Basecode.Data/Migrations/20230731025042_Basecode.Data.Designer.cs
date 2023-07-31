@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Basecode.Data.Migrations
 {
     [DbContext(typeof(BasecodeContext))]
-    [Migration("20230728050523_Basecode.Data")]
+    [Migration("20230731025042_Basecode.Data")]
     partial class BasecodeData
     {
         /// <inheritdoc />
@@ -309,6 +309,10 @@ namespace Basecode.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Tag")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
