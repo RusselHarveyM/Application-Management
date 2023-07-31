@@ -57,5 +57,28 @@ namespace Basecode.Data.Repositories
             _context.CurrentHire.Update(currentHire);
             _context.SaveChanges();
         }
+
+        /// <summary>
+        /// Update current hire
+        /// </summary>
+        /// <param name="userOffer"></param>
+        //public void UpdateCurrentHires(UserOffer userOffer)
+        //{
+        //    _context.UserOffer.Update(userOffer);
+        //    _context.SaveChanges();
+        //}
+
+        /// <summary>
+        /// Add useroffer
+        /// </summary>
+        /// <param name="userOffer"></param>
+        /// <returns></returns>
+        public int AddCurrentHire(CurrentHire currentHire)
+        {
+            _context.CurrentHire.Add(currentHire);
+            _context.SaveChanges();
+            return currentHire.Id;
+        }
+
     }
 }
