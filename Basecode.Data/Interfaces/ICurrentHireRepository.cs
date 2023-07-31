@@ -10,46 +10,46 @@ namespace Basecode.Data.Interfaces
     public interface ICurrentHireRepository
     {
         /// <summary>
-        /// Get user offer by Id
+        /// Get current hire by Id
         /// </summary>
-        /// <param name="userOfferId"></param>
+        /// <param name="currentHireId"></param>
         /// <returns></returns>
-        CurrentHire GetUserOfferById(int userOfferId);
+        CurrentHire GetUserOfferById(int currentHireId);
 
         /// <summary>
-        /// Get user offer id by user id
+        /// Get current hire id by user id
         /// </summary>
-        /// <param name="userOfferId"></param>
+        /// <param name="currentHireId"></param>
         /// <returns></returns>
-        int GetCurrentHireIdByUserId(int userOfferId);
+        int GetCurrentHireIdByUserId(int currentHireId);
 
         /// <summary>
-        /// Get all useroffer
+        /// Get all current hire
         /// </summary>
         /// <returns></returns>
         IQueryable<CurrentHire> GetAll();
 
         /// <summary>
-        /// Update useroffer
+        /// Update current hire
         /// </summary>
-        /// <param name="userOffer"></param>
+        /// <param name="currentHire"></param>
         void UpdateCurrentHire(CurrentHire currentHire);
 
         /// <summary>
         /// Update current hire
         /// </summary>
         /// <param name="userOffer"></param>
-        //void UpdateCurrentHires(UserOffer userOffer);
+        //void UpdateCurrentHires(CurrentHire currentHire);
 
         /// <summary>
-        /// Add useroffer
+        /// Add current hire
         /// </summary>
-        /// <param name="userOffer"></param>
+        /// <param name="currentHire"></param>
         /// <returns></returns>
         int AddCurrentHire(CurrentHire currenHire);
 
         /// <summary>
-        /// Get id if user offerexists
+        /// Get id if current hire exists
         /// </summary>
         /// <param name="applicationId"></param>
         /// <returns></returns>
