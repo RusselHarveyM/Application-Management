@@ -212,6 +212,52 @@ namespace Basecode.Data.Migrations
                     b.ToTable("CharacterReference");
                 });
 
+            modelBuilder.Entity("Basecode.Data.Models.CurrentHire", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("ApplicationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Firstname")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Lastname")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Middlename")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CurrentHire");
+                });
+
             modelBuilder.Entity("Basecode.Data.Models.Examination", b =>
                 {
                     b.Property<int>("Id")
@@ -744,6 +790,25 @@ namespace Basecode.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Applicant");
+                });
+
+            modelBuilder.Entity("Basecode.Data.Models.CurrentHire", b =>
+                {
+                    b.HasOne("Basecode.Data.Models.Application", "Application")
+                        .WithMany()
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Basecode.Data.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Application");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Basecode.Data.Models.Examination", b =>

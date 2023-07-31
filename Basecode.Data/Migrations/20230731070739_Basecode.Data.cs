@@ -395,6 +395,38 @@ namespace Basecode.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CurrentHire",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    ApplicationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Firstname = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Middlename = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Lastname = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CurrentHire", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CurrentHire_Application_ApplicationId",
+                        column: x => x.ApplicationId,
+                        principalTable: "Application",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CurrentHire_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Examination",
                 columns: table => new
                 {
@@ -548,6 +580,16 @@ namespace Basecode.Data.Migrations
                 column: "ApplicantId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CurrentHire_ApplicationId",
+                table: "CurrentHire",
+                column: "ApplicationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CurrentHire_UserId",
+                table: "CurrentHire",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Examination_ApplicationId",
                 table: "Examination",
                 column: "ApplicationId");
@@ -624,6 +666,9 @@ namespace Basecode.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "BackgroundCheck");
+
+            migrationBuilder.DropTable(
+                name: "CurrentHire");
 
             migrationBuilder.DropTable(
                 name: "Examination");
