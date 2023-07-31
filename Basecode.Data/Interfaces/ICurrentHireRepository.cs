@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Basecode.Data.Interfaces
 {
-    public interface IUserOfferRepository
+    public interface ICurrentHireRepository
     {
         /// <summary>
         /// Get user offer by Id
@@ -15,5 +15,18 @@ namespace Basecode.Data.Interfaces
         /// <param name="userOfferId"></param>
         /// <returns></returns>
         CurrentHire GetUserOfferById(int userOfferId);
+
+        /// <summary>
+        /// Get user offer id by user id
+        /// </summary>
+        /// <param name="userOfferId"></param>
+        /// <returns></returns>
+        int GetCurrentHireIdByUserId(int userOfferId);
+
+        /// <summary>
+        /// Get all useroffer
+        /// </summary>
+        /// <returns></returns>
+        IQueryable<CurrentHire> GetAll();
     }
 }

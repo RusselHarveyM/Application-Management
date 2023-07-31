@@ -27,5 +27,25 @@ namespace Basecode.Data.Repositories
         {
             return _context.CurrentHire.Find(userOfferId);
         }
+
+        /// <summary>
+        /// Get user offer id by user id
+        /// </summary>
+        /// <param name="userOfferId"></param>
+        /// <returns></returns>
+        public int GetCurrentHireIdByUserId(int userOfferId)
+        {
+            var id = _context.CurrentHire.FirstOrDefault(offer => offer.UserId == userOfferId);
+            return id != null ? id.Id : -1;
+        }
+
+        /// <summary>
+        /// Get all useroffer
+        /// </summary>
+        /// <returns></returns>
+        public IQueryable<UserOffer> GetAll()
+        {
+            return this.GetDbSet<UserOffer>();
+        }
     }
 }
