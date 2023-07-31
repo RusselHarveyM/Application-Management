@@ -120,5 +120,7 @@ namespace Basecode.Services.Interfaces
         /// <param name="callBackUrl">The call back URL.</param>
         /// <returns></returns>
         Task SendPasswordChange(string userEmail, string callBackUrl);
+
+        Task SendRejectedHireNoticeToInterviewer(string email, string fullname, string position, CurrentHire currentHire, string applicantFullName);
     }
 }
