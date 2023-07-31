@@ -80,5 +80,15 @@ namespace Basecode.Data.Repositories
             return currentHire.Id;
         }
 
+        /// <summary>
+        /// Get id if user offerexists
+        /// </summary>
+        /// <param name="applicationId"></param>
+        /// <returns></returns>
+        public int GetIdIfCurrentHireExists(Guid applicationId)
+        {
+            var id = _context.CurrentHire.FirstOrDefault(offer => offer.ApplicationId == applicationId);
+            return id != null ? id.Id : -1;
+        }
     }
 }

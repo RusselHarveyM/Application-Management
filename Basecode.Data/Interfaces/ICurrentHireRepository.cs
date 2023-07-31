@@ -28,5 +28,31 @@ namespace Basecode.Data.Interfaces
         /// </summary>
         /// <returns></returns>
         IQueryable<CurrentHire> GetAll();
+
+        /// <summary>
+        /// Update useroffer
+        /// </summary>
+        /// <param name="userOffer"></param>
+        void UpdateCurrentHire(CurrentHire currentHire);
+
+        /// <summary>
+        /// Update current hire
+        /// </summary>
+        /// <param name="userOffer"></param>
+        //void UpdateCurrentHires(UserOffer userOffer);
+
+        /// <summary>
+        /// Add useroffer
+        /// </summary>
+        /// <param name="userOffer"></param>
+        /// <returns></returns>
+        int AddCurrentHire(CurrentHire currenHire);
+
+        /// <summary>
+        /// Get id if user offerexists
+        /// </summary>
+        /// <param name="applicationId"></param>
+        /// <returns></returns>
+        int GetIdIfCurrentHireExists(Guid applicationId);
     }
 }
