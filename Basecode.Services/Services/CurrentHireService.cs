@@ -13,7 +13,7 @@ using Basecode.Data.Repositories;
 
 namespace Basecode.Services.Services
 {
-    public class CurrenHireService : ErrorHandling, ICurrentHireService
+    public class CurrentHireService : ErrorHandling, ICurrentHireService
     {
         private readonly ICurrentHireRepository _currentHireRepository;
         private readonly IUserScheduleRepository _userScheduleRepository;
@@ -24,7 +24,7 @@ namespace Basecode.Services.Services
         private readonly IApplicationService _applicationService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        public CurrenHireService(ICurrentHireRepository currentHireRepository, IUserScheduleRepository userScheduleRepository, IApplicationRepository applicationRepository, IApplicantService applicantService, IUserService userService, 
+        public CurrentHireService(ICurrentHireRepository currentHireRepository, IUserScheduleRepository userScheduleRepository, IApplicationRepository applicationRepository, IApplicantService applicantService, IUserService userService, 
             IEmailSendingService emailSendingService, IApplicationService applicationService)
         {
             _currentHireRepository = currentHireRepository;
