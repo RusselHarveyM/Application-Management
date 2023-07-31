@@ -43,6 +43,12 @@ namespace Basecode.Data.ViewModels
         public string Location { get; set; }
 
         /// <summary>
+        /// Gets or sets the tag.
+        /// </summary>
+        [Required(ErrorMessage = "The Tag us required.")]
+        public string Tag { get; set; }
+
+        /// <summary>
         /// Gets or sets the qualifications of the job opening.
         /// </summary>
         [Required(ErrorMessage = "At least one qualification is required.")]
