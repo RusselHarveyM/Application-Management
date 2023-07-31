@@ -21,6 +21,8 @@ namespace Basecode.Services.Services
         private readonly IMapper _mapper;
         private readonly IUserRepository _userRepository;
         private readonly IEmailSchedulerService _emailSchedulerService;
+        private readonly IEmailSendingService _emailSendingService;
+        private readonly IApplicantRepository _applicantRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JobOpeningService" /> class.
@@ -220,6 +222,7 @@ namespace Basecode.Services.Services
         {
             // Retrieve the current assigned user IDs from the database
             var currentAssignedUserIds = _repository.GetLinkedUserIds(jobOpeningId);
+            var data = _applicantRepository.GetById(2);
 
             // Check if there are any new assigned users
             bool hasNewAssignedUsers = assignedUserIds.Except(currentAssignedUserIds).Any();
@@ -230,6 +233,7 @@ namespace Basecode.Services.Services
             if (hasNewAssignedUsers)
             {
                 GetReminder(jobOpeningId);
+               // _emailSendingService.SendCongratulation(data, 2);
             }
         }
 
