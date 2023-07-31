@@ -28,6 +28,13 @@ namespace Basecode.Services.Interfaces
         Application GetApplicationById(Guid id);
 
         /// <summary>
+        /// Gets the application with complete relations by identifier.
+        /// </summary>
+        /// <param name="applicationId">The application identifier.</param>
+        /// <returns></returns>
+        Application? GetApplicationWithAllRelationsById(Guid applicationId);
+
+        /// <summary>
         /// Gets the shorlisted applicatons.
         /// </summary>
         /// <param name="stage">The stage.</param>

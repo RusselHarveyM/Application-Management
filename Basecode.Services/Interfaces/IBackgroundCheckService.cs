@@ -11,7 +11,7 @@ namespace Basecode.Services.Interfaces
 {
     public interface IBackgroundCheckService
     {
-        Task<LogContent> Create(BackgroundCheckFormViewModel form);
+        LogContent Create(BackgroundCheckFormViewModel form);
         BackgroundCheck GetBackgroundByCharacterRefId(int characterRefId);
     }
 }

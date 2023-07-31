@@ -19,6 +19,13 @@ namespace Basecode.Data.Interfaces
         Application GetById(Guid id);
 
         /// <summary>
+        /// Gets the application with complete relations by identifier.
+        /// </summary>
+        /// <param name="applicationId">The application identifier.</param>
+        /// <returns></returns>
+        Application? GetApplicationWithAllRelationsById(Guid applicationId);
+
+        /// <summary>
         /// Creates a new application entry.
         /// </summary>
         /// <param name="application">The application to be added.</param>
