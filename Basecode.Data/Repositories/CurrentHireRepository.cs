@@ -43,9 +43,19 @@ namespace Basecode.Data.Repositories
         /// Get all useroffer
         /// </summary>
         /// <returns></returns>
-        public IQueryable<UserOffer> GetAll()
+        public IQueryable<CurrentHire> GetAll()
         {
-            return this.GetDbSet<UserOffer>();
+            return this.GetDbSet<CurrentHire>();
+        }
+
+        /// <summary>
+        /// Update useroffer
+        /// </summary>
+        /// <param name="userOffer"></param>
+        public void UpdateCurrentHire(CurrentHire currentHire)
+        {
+            _context.CurrentHire.Update(currentHire);
+            _context.SaveChanges();
         }
     }
 }
