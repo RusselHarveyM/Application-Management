@@ -12,15 +12,13 @@ namespace Basecode.Services.Services
     {
         private readonly IEmailService _emailService;
         private readonly IUserRepository _userRepository;
-        private readonly IConfiguration _config;
         private readonly TokenHelper _tokenHelper;
 
         public EmailSendingService(IEmailService emailService, IUserRepository userRepository, IConfiguration config)
         {
             _emailService = emailService;
             _userRepository = userRepository;
-            _config = config;
-            _tokenHelper = new TokenHelper(_config["TokenHelper:SecretKey"]);
+            _tokenHelper = new TokenHelper(config["TokenHelper:SecretKey"]);
         }
 
         /// <summary>
