@@ -18,8 +18,6 @@ namespace Basecode.WebApp
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ClaimsProvider, ClaimsProvider>();
             services.AddScoped<ResumeChecker>();
-            services.AddScoped<GraphHelper>();
-
 
             // Services 
             services.AddScoped<IUserService, UserService>();

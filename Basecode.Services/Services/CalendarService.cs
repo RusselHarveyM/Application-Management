@@ -1,51 +1,67 @@
 ﻿using Basecode.Data.Dto;
 using Basecode.Services.Interfaces;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RestSharp;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
+
+
 
 namespace Basecode.Domain;
 
 public class CalendarService : ICalendarService
 {
     private readonly IConfiguration _config;
-    private readonly IWebHostEnvironment _environment;
-    private string tokensFile;
 
-    public CalendarService(IConfiguration config, IWebHostEnvironment environment)
+    public CalendarService(IConfiguration config)
     {
         _config = config;
-        _environment = environment;
-        tokensFile = _environment.ContentRootPath + @"\tokens.json";
     }
 
-    public string CreateEvent(CalendarEvent calendarEvent, string email)
+    public async Task<string> CreateEvent(CalendarEvent calendarEvent, string email)
     {
-        var tokens = JObject.Parse(File.ReadAllText(tokensFile));
-        //var user = _config["GraphApi:ObjectId"];
-        
-        var restClient = new RestClient($"https://graph.microsoft.com/v1.0/users/{email}/calendar/events");
-        var restRequest = new RestRequest();
-
-        restRequest.AddHeader("Authorization", "Bearer " + tokens["access_token"].ToString());
-        restRequest.AddHeader("Content-Type", "application/json");
-        restRequest.AddParameter("application/json", JsonConvert.SerializeObject(calendarEvent), ParameterType.RequestBody);
-
-        var response = restClient.Post(restRequest);
-
-        if (response.StatusCode == System.Net.HttpStatusCode.Created)
+        var tenantId = _config["GraphApi:TenantId"];
+        string tokenEndpoint = $"https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/token";
+        // create an httpclient
+        using (HttpClient client = new HttpClient())
         {
-            if (response.Content != null)
+            var requestContent = new FormUrlEncodedContent(new[]
             {
-                var content = JObject.Parse(response.Content);
-                var joinUrl = content["onlineMeeting"]?["joinUrl"]?.ToString();
+                new KeyValuePair<string, string>("grant_type", "client_credentials"),
+                new KeyValuePair<string, string>("client_id", _config["GraphApi:ClientId"]),
+                new KeyValuePair<string, string>("client_secret", _config["GraphApi:ClientSecret"]),
+                new KeyValuePair<string, string>("scope", "https://graph.microsoft.com/.default"),
+            });
+            // retrieve access token
+            HttpResponseMessage response = await client.PostAsync(tokenEndpoint, requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+            var tokenResponse = JsonSerializer.Deserialize<JsonElement>(responseContent);
+            string accessToken = tokenResponse.GetProperty("access_token").GetString();
+
+            string endpoint = $"https://graph.microsoft.com/v1.0/users/{email}/calendar/events";
+
+            var jsonMessage = JsonSerializer.Serialize(calendarEvent);
+            var content = new StringContent(jsonMessage, Encoding.UTF8, "application/json");
+
+            var request = new HttpRequestMessage(HttpMethod.Post, endpoint);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            request.Content = content;
+
+            HttpResponseMessage responseHttp = await client.SendAsync(request);
+            string responseString = await responseHttp.Content.ReadAsStringAsync();
+
+            if (responseHttp.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Successful.");
+                var cont = JObject.Parse(responseString);
+                var joinUrl = cont["onlineMeeting"]?["joinUrl"]?.ToString();
                 return joinUrl;
             }
-        }
 
-        return "";
+            Console.WriteLine("Failed.");
+            return "";
+        }
     }
 
 }
