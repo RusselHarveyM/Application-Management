@@ -30,5 +30,24 @@ namespace Basecode.Services.Services
         {
             return _currenHireRepository.GetCurrentHireById(currenHireId);
         }
+
+        /// <summary>
+        /// AcceptOffer and return UserOffer Status
+        /// </summary>
+        /// <param name="userOfferId"></param>
+        /// <returns></returns>
+        public LogContent AcceptOffer(int currentHireId)
+        {
+            var currentHire = GetCurrentHireById(currentHireId);
+            LogContent logContent = CheckCurrentHireStatus(currentHire);
+
+            if (logContent.Result == false)
+            {
+                currentHire.Status = "confirm";
+                logContent = UpdateCurrentHire(currentHire);
+            }
+
+            return logContent;
+        }
     }
 }
