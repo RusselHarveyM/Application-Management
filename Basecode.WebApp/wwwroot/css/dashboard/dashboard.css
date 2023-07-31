@@ -23,6 +23,7 @@
 .admin-body {
     background-color: #FAFAFBFF;
     flex-direction: row !important;
+    height: 100%;
 }
 
 .card-custom1 {

@@ -5,6 +5,7 @@ using Basecode.WebApp.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Microsoft.AspNetCore.Identity;
+using NToastNotify;
 
 namespace Basecode.Tests.Controllers
 {
@@ -12,6 +13,7 @@ namespace Basecode.Tests.Controllers
     {
         private readonly Mock<IJobOpeningService> _fakeJobOpeningService;
         private readonly Mock<UserManager<IdentityUser>> _fakeUserManager;
+        private readonly Mock<IToastNotification> _fakeToastNotification; 
 
         private readonly JobController _controller;
 
@@ -19,8 +21,9 @@ namespace Basecode.Tests.Controllers
         {
             _fakeJobOpeningService = new Mock<IJobOpeningService>();
             _fakeUserManager = new Mock<UserManager<IdentityUser>>(Mock.Of<IUserStore<IdentityUser>>(), null, null, null, null, null, null, null, null);
-    
-            _controller = new JobController(_fakeJobOpeningService.Object, _fakeUserManager.Object);
+            _fakeToastNotification = new Mock<IToastNotification>();
+            
+            _controller = new JobController(_fakeJobOpeningService.Object, _fakeUserManager.Object, _fakeToastNotification.Object);
         }
 
 
@@ -91,8 +94,8 @@ namespace Basecode.Tests.Controllers
             var result = _controller.Index();
 
             // Assert
-            var viewResult = Assert.IsType<ObjectResult>(result);
-            Assert.Equal(500, ((ObjectResult)result).StatusCode);
+            var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", redirectResult.ActionName);
         }
 
         [Fact]
@@ -125,7 +128,7 @@ namespace Basecode.Tests.Controllers
         }
 
         [Fact]
-        public void JobView_NonExistingId_ReturnsNotFoundResult()
+        public void JobView_NonExistingId_ReturnsRedirectToActionResult()
         {
             // Arrange
             int id = 1;
@@ -135,11 +138,12 @@ namespace Basecode.Tests.Controllers
             var result = _controller.JobView(id);
 
             // Assert
-            Assert.IsType<NotFoundResult>(result);
+            var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", redirectResult.ActionName);
         }
 
         [Fact]
-        public void JobView_Exception_ReturnsServerError()
+        public void JobView_Exception_ReturnsRedirectToActionResult()
         {
             // Arrange
             int id = 1;
@@ -149,13 +153,13 @@ namespace Basecode.Tests.Controllers
             var result = _controller.JobView(id);
 
             // Assert
-            var viewResult = Assert.IsType<ObjectResult>(result);
-            Assert.Equal(500, ((ObjectResult)result).StatusCode);
+            var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", redirectResult.ActionName);
         }
 
 
         [Fact]
-        public async Task Create_Exception_ReturnsServerError()
+        public async Task Create_Exception_ReturnsRedirectToActionResult()
         {
             // Arrange
             var jobOpening = new JobOpeningViewModel();
@@ -165,8 +169,8 @@ namespace Basecode.Tests.Controllers
             var result = await _controller.Create(jobOpening);
 
             // Assert
-            var statusCodeResult = Assert.IsType<ObjectResult>(result);
-            Assert.Equal(500, statusCodeResult.StatusCode);
+            var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", redirectResult.ActionName);
         }
 
 
@@ -187,7 +191,7 @@ namespace Basecode.Tests.Controllers
         }
 
         [Fact]
-        public void UpdateView_NonExistingId_ReturnsNotFoundResult()
+        public void UpdateView_NonExistingId_ReturnsRedirectToActionResult()
         {
             // Arrange
             int id = 2;
@@ -199,11 +203,12 @@ namespace Basecode.Tests.Controllers
             var result = _controller.UpdateView(id);
 
             // Assert
-            Assert.IsType<NotFoundResult>(result);
+            var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", redirectResult.ActionName);
         }
 
         [Fact]
-        public void UpdateView_ExceptionThrown_ReturnsStatusCode500()
+        public void UpdateView_ExceptionThrown_ReturnsRedirectToActionResult()
         {
             // Arrange
             int id = 3;
@@ -215,9 +220,8 @@ namespace Basecode.Tests.Controllers
             var result = _controller.UpdateView(id);
 
             // Assert
-            Assert.IsType<ObjectResult>(result);
-            var statusCodeResult = Assert.IsType<ObjectResult>(result);
-            Assert.Equal(500, statusCodeResult.StatusCode);
+            var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", redirectResult.ActionName);
         }
 
         //[Fact]
@@ -266,7 +270,7 @@ namespace Basecode.Tests.Controllers
         //}
 
         [Fact]
-        public void Update_ExceptionThrown_ReturnsStatusCode500()
+        public void Update_ExceptionThrown_ReturnsRedirectToActionResult()
         {
             // Arrange
             var jobOpening = new JobOpeningViewModel
@@ -282,8 +286,8 @@ namespace Basecode.Tests.Controllers
             var result = _controller.Update(jobOpening);
 
             // Assert
-            var statusCodeResult = Assert.IsType<ObjectResult>(result);
-            Assert.Equal(500, statusCodeResult.StatusCode);
+            var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", redirectResult.ActionName);
         }
 
         [Fact]
@@ -303,7 +307,7 @@ namespace Basecode.Tests.Controllers
         }
 
         [Fact]
-        public void Delete_NonExistingId_ReturnsNotFoundResult()
+        public void Delete_NonExistingId_ReturnsRedirectToActionResult()
         {
             // Arrange
             int id = 2;
@@ -319,7 +323,7 @@ namespace Basecode.Tests.Controllers
         }
 
         [Fact]
-        public void Delete_ExceptionThrown_ReturnsStatusCode500()
+        public void Delete_ExceptionThrown_ReturnsRedirectToActionResult()
         {
             // Arrange
             int id = 3;
@@ -330,8 +334,8 @@ namespace Basecode.Tests.Controllers
             var result = _controller.Delete(id);
 
             // Assert
-            var statusCodeResult = Assert.IsType<ObjectResult>(result);
-            Assert.Equal(500, statusCodeResult.StatusCode);
+            var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", redirectResult.ActionName);
         }
     }
 }
