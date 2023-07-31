@@ -109,5 +109,44 @@ namespace Basecode.Services.Services
             string applicantFullName = applicant.Firstname + " " + applicant.Lastname;
             await _emailSendingService.SendRejectedHireNoticeToInterviewer(user.Email, user.Fullname, applicant.Application.JobOpening.Title, currentHire, applicantFullName);
         }
+
+        /// <summary>
+        /// update user offer
+        /// </summary>
+        /// <param name="userOffer"></param>
+        /// <param name="idToSetAsPending"></param>
+        /// <returns></returns>
+        public LogContent UpdateCurrentHire(CurrentHire currentHire, int? idToSetAsPending = null)
+        {
+            Applicant applicant = _applicantService.GetApplicantByApplicationId(currentHire.ApplicationId);
+            LogContent logContent = CheckCurrentHire(currentHire);
+
+            if (logContent.Result == false)
+            {
+                int idToUpdate = idToSetAsPending ?? currentHire.Id;
+
+                var hireToBeUpdated = _currentHireRepository.GetCurrentHireById(idToUpdate);
+                //offerToBeUpdated.Offer = userOffer.Offer;
+                hireToBeUpdated.Firstname = applicant.Firstname;
+                hireToBeUpdated.Middlename = applicant.Middlename;
+                hireToBeUpdated.Lastname = applicant.Lastname;
+                hireToBeUpdated.Phone = applicant.Phone;
+                hireToBeUpdated.Email = applicant.Email;
+                hireToBeUpdated.Status = currentHire.Status;
+                _currentHireRepository.UpdateCurrentHire(hireToBeUpdated);
+            }
+
+            return logContent;
+        }
+
+        /// <summary>
+        /// Get Id if user offer existed
+        /// </summary>
+        /// <param name="applicationId"></param>
+        /// <returns></returns>
+        public int GetIdIfCurrentHireExists(Guid applicationId)
+        {
+            return _currentHireRepository.GetIdIfCurrentHireExists(applicationId);
+        }
     }
 }

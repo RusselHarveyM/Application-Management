@@ -44,5 +44,14 @@ namespace Basecode.Services.Interfaces
         /// <param name="userOffer"></param>
         /// <returns></returns>
         Task SendRejectedHireNoticeToInterviewer(CurrentHire currentHire);
+
+        /// <summary>
+        /// update user offer
+        /// </summary>
+        /// <param name="userOffer"></param>
+        /// <param name="idToSetAsPending"></param>
+        /// <returns></returns>
+        LogContent UpdateCurrentHire(CurrentHire currentHire, int? idToSetAsPending = null);
+
     }
 }
