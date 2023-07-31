@@ -158,7 +158,7 @@ namespace Basecode.Services.Services
         /// <param name="applicant"></param>
         /// <param name="userOfferId"></param>
         /// <returns></returns>
-        public async Task AddCurrenHire(Applicant applicant, int currentHireId)
+        public async Task AddCurrentHire(Applicant applicant, int currentHireId)
         {
             List<int> successfullyAddedApplicantIds = new List<int>();
             var userSchedule = GetUserScheduleById(currentHireId);
