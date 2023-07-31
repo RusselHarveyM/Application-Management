@@ -97,19 +97,20 @@ namespace Basecode.WebApp.Controllers
         {
             try
             {
-                ViewBag.IsScheduleAccepted = false;
                 int userScheduleId = _tokenHelper.GetIdFromToken(token, "accept");
                 if (userScheduleId == 0)
                 {
+                    ViewBag.IsInvalidToken = true;
                     _logger.Warn("Invalid or expired token.");
                     return View();
                 }
 
+                ViewBag.IsSuccessfullyAccepted = false;
                 var data = await _schedulerService.AcceptSchedule(userScheduleId);
                 if (!data.Result)
                 {
                     _logger.Trace("User Schedule [" + userScheduleId + "] has been successfully accepted.");
-                    ViewBag.IsScheduleAccepted = true;
+                    ViewBag.IsSuccessfullyAccepted = true;
                 }
                 else _logger.Error(ErrorHandling.SetLog(data));
 
@@ -130,19 +131,20 @@ namespace Basecode.WebApp.Controllers
         {
             try
             {
-                ViewBag.IsScheduleRejected = false;
                 int userScheduleId = _tokenHelper.GetIdFromToken(token, "reject");
                 if (userScheduleId == 0)
                 {
+                    ViewBag.IsInvalidToken = true;
                     _logger.Warn("Invalid or expired token.");
                     return View();
                 }
 
+                ViewBag.IsSuccessfullyRejected = false;
                 var data = _schedulerService.RejectSchedule(userScheduleId);
                 if (!data.Result)
                 {
                     _logger.Trace("User Schedule [" + userScheduleId + "] has been successfully rejected.");
-                    ViewBag.IsScheduleRejected = true;
+                    ViewBag.IsSuccessfullyRejected = true;
                 }
                 else _logger.Error(ErrorHandling.SetLog(data));
 
