@@ -15,13 +15,17 @@ namespace Basecode.Services.Services
 {
     public class CurrenHireService : ErrorHandling, ICurrentHireService
     {
-        private readonly ICurrentHireRepository _currenHireRepository;
+        private readonly ICurrentHireRepository _currentHireRepository;
         private readonly IUserScheduleRepository _userScheduleRepository;
+        private readonly IApplicationRepository _applicationRepository;
+        private readonly IApplicantService _applicantService;
 
-        public CurrenHireService(ICurrentHireRepository currenHireRepository, IUserScheduleRepository userScheduleRepository)
+        public CurrenHireService(ICurrentHireRepository currentHireRepository, IUserScheduleRepository userScheduleRepository, IApplicationRepository applicationRepository, IApplicantService applicantService)
         {
-            _currenHireRepository = currenHireRepository;
+            _currentHireRepository = currentHireRepository;
             _userScheduleRepository = userScheduleRepository;
+            _applicationRepository = applicationRepository;
+            _applicantService = applicantService;
         }
 
         /// <summary>
@@ -31,7 +35,7 @@ namespace Basecode.Services.Services
         /// <returns></returns>
         public CurrentHire GetCurrentHireById(int currenHireId)
         {
-            return _currenHireRepository.GetCurrentHireById(currenHireId);
+            return _currentHireRepository.GetCurrentHireById(currenHireId);
         }
 
         /// <summary>
@@ -61,6 +65,31 @@ namespace Basecode.Services.Services
         public UserSchedule GetUserScheduleById(int userScheduleId)
         {
             return _userScheduleRepository.GetUserScheduleById(userScheduleId);
+        }
+
+        /// <summary>
+        /// Reject offer and return UserOffer Status
+        /// </summary>
+        /// <param name="userOfferId"></param>
+        /// <returns></returns>
+        public async Task<LogContent> RejectOffer(int currentHireId)
+        {
+            var userSchedule = GetUserScheduleById(currentHireId);
+            var application = _applicationRepository.GetById(userSchedule.ApplicationId);
+            var applicant = _applicantService.GetApplicantById(application.ApplicantId);
+            await AddCurrentHire(applicant, currentHireId);
+
+            var hireId = _currentHireRepository.GetCurrentHireIdByUserId(currentHireId);
+            var currentHire = _currentHireRepository.GetCurrentHireById(hireId);
+
+            LogContent logContent = CheckCurrentHireStatus(currentHire);
+            if (logContent.Result == false)
+            {
+                currentHire.Status = "rejected";
+                logContent = UpdateCurrentHire(currentHire);
+                await SendRejectedHireNoticeToInterviewer(currentHire);
+            }
+            return logContent;
         }
     }
 }

@@ -30,5 +30,12 @@ namespace Basecode.Services.Interfaces
         /// <param name="userScheduleId"></param>
         /// <returns></returns>
         UserSchedule GetUserScheduleById(int userScheduleId);
+
+        /// <summary>
+        /// Reject offer and return UserOffer Status
+        /// </summary>
+        /// <param name="userOfferId"></param>
+        /// <returns></returns>
+        Task<LogContent> RejectOffer(int currentHireId);
     }
 }
