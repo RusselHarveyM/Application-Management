@@ -41,6 +41,7 @@ namespace Basecode.Services.Services
                     ApplicationId = schedule.ApplicationId,
                     UserId = schedule.UserId,
                     Date = schedule.Schedule,
+                    TeamsLink = teamsLink,
                 };
 
                 _repository.AddExamination(examination);

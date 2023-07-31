@@ -20,7 +20,7 @@
         },
     });
 
-    document.getElementById('date').setAttribute('min', getCurrentDate());
+    document.getElementById('date').setAttribute('min', GetDateTomorrow());
 });
 
 $('#jobOpeningDropdown').on('change', function () {
@@ -125,12 +125,10 @@ function AddToDropdown(applicant) {
     $('#applicantDropdown').append(optionHtml);
 }
 
-function getCurrentDate() {
-    var today = new Date();
-    var day = String(today.getDate()).padStart(2, '0');
-    var month = String(today.getMonth() + 1).padStart(2, '0');
-    var year = today.getFullYear();
-    return year + '-' + month + '-' + day;
+function GetDateTomorrow() {
+    var tomorrow = new Date();
+    tomorrow = new Date(tomorrow.setDate(tomorrow.getDate() + 1)).toISOString().split('T')[0];
+    return tomorrow;
 }
 
 $('#scheduleForm').submit(function (event) {
@@ -151,7 +149,7 @@ $('#scheduleForm').submit(function (event) {
         JobOpeningId: $('#jobOpeningDropdown').val(),
         Type: $('#meetingTypeDropdown').val().split(' ').slice(1).join(' '), // Remove "For " from string
         Date: $('#date').val(),
-        ApplicantSchedules: applicantSchedules 
+        ApplicantSchedules: applicantSchedules
     };
 
     $("#scheduleForm").children().find(".text-danger").text("");

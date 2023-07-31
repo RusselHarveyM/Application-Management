@@ -30,6 +30,7 @@ namespace Basecode.Services.Services
                     UserId = schedule.UserId,
                     Date = schedule.Schedule,
                     Type = schedule.Type,
+                    TeamsLink = teamsLink,
                 };
 
                 _repository.AddInterview(interview);

@@ -45,10 +45,10 @@ namespace Basecode.Services.Services
         {
             (LogContent logContent, Dictionary<string, string> validationErrors) data = CheckSchedulerData(formData);
 
+            var newSchedules = new List<UserSchedule>();
+
             if (data.logContent.Result == false)
             {
-                List<int> successfullyAddedApplicantIds = new List<int>();
-
                 foreach (var schedule in formData.ApplicantSchedules)
                 {
                     Guid applicationId = _applicationService.GetApplicationIdByApplicantId(schedule.ApplicantId);
@@ -65,15 +65,21 @@ namespace Basecode.Services.Services
                     int existingId = _userScheduleService.GetIdIfUserScheduleExists(applicationId);
                     if (existingId != -1)   // Update "rejected" schedule to "pending"
                     {
-                        successfullyAddedApplicantIds = HandleExistingSchedule(userSchedule, existingId, schedule.ApplicantId, successfullyAddedApplicantIds);
+                        HandleExistingSchedule(userSchedule, existingId, schedule.ApplicantId);
                     }
                     else    // Create new schedule
                     {
-                        successfullyAddedApplicantIds = HandleNewSchedule(userSchedule, schedule.ApplicantId, successfullyAddedApplicantIds);
+                        LogContent logContent = CheckUserSchedule(userSchedule);
+                        if (logContent.Result == false) newSchedules.Add(userSchedule);
                     }
                 }
 
-                SendSchedulesToInterviewer(formData, userId, successfullyAddedApplicantIds);
+                _userScheduleService.AddUserSchedules(newSchedules);
+
+                foreach (var userSchedule in newSchedules)
+                    SendScheduleToApplicant(userSchedule, userSchedule.Id, userSchedule.Type);
+
+                SendSchedulesToInterviewer(formData, userId);
             }
 
             return data;
@@ -82,32 +88,15 @@ namespace Basecode.Services.Services
         /// <summary>
         /// Handles the existing schedule.
         /// </summary>
-        private List<int> HandleExistingSchedule(UserSchedule userSchedule, int existingId, int applicantId, List<int> successfullyAddedApplicantIds)
+        private void HandleExistingSchedule(UserSchedule userSchedule, int existingId, int applicantId)
         {
             LogContent logContent = _userScheduleService.UpdateUserSchedule(userSchedule, existingId);
             if (logContent.Result == false)
             {
                 _logger.Trace("Successfully updated User Schedule [ " + existingId + " ]");
-                SendScheduleToApplicant(userSchedule, existingId, applicantId, userSchedule.Type);
-                successfullyAddedApplicantIds.Add(applicantId);
+                userSchedule.Id = existingId;
+                SendScheduleToApplicant(userSchedule, existingId, userSchedule.Type, applicantId);
             }
-            return successfullyAddedApplicantIds;
-        }
-
-        /// <summary>
-        /// Handles the new schedule.
-        /// </summary>
-        private List<int> HandleNewSchedule(UserSchedule userSchedule, int applicantId, List<int> successfullyAddedApplicantIds)
-        {
-            (LogContent logContent, int userScheduleId) data = _userScheduleService.AddUserSchedule(userSchedule);
-
-            if (!data.logContent.Result && data.userScheduleId != -1)
-            {
-                _logger.Trace("Successfully created a new UserSchedule record.");
-                SendScheduleToApplicant(userSchedule, data.userScheduleId, applicantId, userSchedule.Type);
-                successfullyAddedApplicantIds.Add(applicantId);
-            }
-            return successfullyAddedApplicantIds;
         }
 
         /// <summary>
@@ -117,7 +106,7 @@ namespace Basecode.Services.Services
         /// <param name="userScheduleId">The user schedule identifier.</param>
         /// <param name="applicantId">The applicant identifier.</param>
         /// <param name="meetingType">Type of the meeting.</param>
-        public void SendScheduleToApplicant(UserSchedule userSchedule, int userScheduleId, int applicantId, string meetingType)
+        public void SendScheduleToApplicant(UserSchedule userSchedule, int userScheduleId, string meetingType, int applicantId = -1)
         {
             // time difference between now and 12hrs before the schedule
             TimeSpan timeDifference = userSchedule.Schedule.AddHours(-12) - DateTime.Now;
@@ -125,8 +114,13 @@ namespace Basecode.Services.Services
             int hoursLeft = (int)timeDifference.TotalHours;
 
             BackgroundJob.Schedule(() => CheckScheduleStatusAfterTokenExpiry(userScheduleId), TimeSpan.FromHours(hoursLeft));
+            Applicant applicant = new Applicant();
 
-            var applicant = _applicantService.GetApplicantById(applicantId);
+            if (applicantId == -1) 
+                applicant = _applicantService.GetApplicantByApplicationId(userSchedule.ApplicationId);
+            else 
+                applicant = _applicantService.GetApplicantById(applicantId);
+ 
             var applicantTemp = _mapper.Map<Applicant>(applicant);
             var userScheduleTemp = _mapper.Map<UserSchedule>(userSchedule);
             BackgroundJob.Enqueue(() => _emailSendingService.SendScheduleToApplicant(userScheduleTemp, applicantTemp, hoursLeft));
@@ -154,7 +148,7 @@ namespace Basecode.Services.Services
         /// </summary>
         /// <param name="formData">The form data.</param>
         /// <param name="userId">The user identifier.</param>
-        public void SendSchedulesToInterviewer(SchedulerDataViewModel formData, int userId, List<int> successfullyAddedApplicantIds)
+        public void SendSchedulesToInterviewer(SchedulerDataViewModel formData, int userId)
         {
             string jobOpeningTitle = _jobOpeningService.GetJobOpeningTitleById(formData.JobOpeningId);
             var user = _userService.GetById(userId);
@@ -162,11 +156,8 @@ namespace Basecode.Services.Services
 
             foreach (var schedule in formData.ApplicantSchedules)
             {
-                if (successfullyAddedApplicantIds.Contains(schedule.ApplicantId))
-                {
-                    var applicant = _applicantService.GetApplicantById(schedule.ApplicantId);
-                    scheduledTimes += $"{applicant.Firstname} {applicant.Lastname}'s Schedule: {schedule.Time}<br/>";
-                }
+                var applicant = _applicantService.GetApplicantById(schedule.ApplicantId);
+                scheduledTimes += $"{applicant.Firstname} {applicant.Lastname}'s Schedule: {schedule.Time}<br/>";
             }
 
             BackgroundJob.Enqueue(() => _emailSendingService.SendSchedulesToInterviewer(user.Fullname, user.Email, jobOpeningTitle, formData.Date, scheduledTimes, formData.Type));

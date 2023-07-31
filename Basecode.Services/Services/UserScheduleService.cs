@@ -44,6 +44,14 @@ namespace Basecode.Services.Services
         }
 
         /// <summary>
+        /// Adds multiple UserSchedules.
+        /// </summary>
+        public void AddUserSchedules(List<UserSchedule> userSchedules)
+        {
+            _repository.AddUserSchedules(userSchedules);
+        }
+
+        /// <summary>
         /// Gets the user schedule by identifier.
         /// </summary>
         /// <param name="userScheduleId">The user schedule identifier.</param>
