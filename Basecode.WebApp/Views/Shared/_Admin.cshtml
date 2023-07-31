@@ -37,13 +37,22 @@
                     </a>
                 </li>
                 <li class="nav-item mb-3">
-                    <a class="nav-link @((ViewContext.RouteData.Values["Controller"].ToString() == "User" && ViewContext.RouteData.Values["Action"].ToString() == "Index") ? "active-cus1" : "text-dark")" asp-area="" asp-controller="User" asp-action="Index">Users</a>
+                    <a class="nav-link @((ViewContext.RouteData.Values["Controller"].ToString() == "User" && ViewContext.RouteData.Values["Action"].ToString() == "Index") ? "active-cus1" : "text-dark") d-flex flex-row align-items-center gap-2" asp-area="" asp-controller="User" asp-action="Index">
+                        <img src="~/images/group.png" alt="group icon" style="width:24px; height:24px; fill: #6F7787FF;"/>
+                        Users
+                    </a>
                 </li>
                 <li class="nav-item mb-3">
-                    <a class="nav-link @((ViewContext.RouteData.Values["Controller"].ToString() == "Dashboard" && ViewContext.RouteData.Values["Action"].ToString() == "ApplicantDirectoryView") ? "active-cus1" : "text-dark")" asp-area="" asp-controller="Dashboard" asp-action="ApplicantDirectoryView">Directory</a>
+                    <a class="nav-link @((ViewContext.RouteData.Values["Controller"].ToString() == "Dashboard" && ViewContext.RouteData.Values["Action"].ToString() == "ApplicantDirectoryView") ? "active-cus1" : "text-dark") d-flex flex-row align-items-center gap-2" asp-area="" asp-controller="Dashboard" asp-action="ApplicantDirectoryView">
+                        <img src="~/images/directory.png" alt="directory icon" style="width:24px; height:24px; fill: #6F7787FF;"/>
+                        Directory
+                    </a>
                 </li>
                 <li class="nav-item mb-3">
-                    <a class="nav-link @((ViewContext.RouteData.Values["Controller"].ToString() == "Scheduler" && ViewContext.RouteData.Values["Action"].ToString() == "Create") ? "active-cus1" : "text-dark")" asp-controller="Scheduler" asp-action="Create">Scheduler</a>
+                    <a class="nav-link @((ViewContext.RouteData.Values["Controller"].ToString() == "Scheduler" && ViewContext.RouteData.Values["Action"].ToString() == "Create") ? "active-cus1" : "text-dark") d-flex flex-row align-items-center gap-2" asp-controller="Scheduler" asp-action="Create">
+                        <img src="~/images/clock.png" alt="clock icon" style="width:24px; height:24px; fill: #6F7787FF;"/>
+                        Scheduler
+                    </a>
                 </li>
             </ul>
             <ul class="nav flex-column border-top pt-3 mb-5">
