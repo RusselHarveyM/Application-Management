@@ -408,8 +408,8 @@ namespace Basecode.Services.Services
             string rejectToken = _tokenHelper.GenerateToken("reject", userId);
 
             string baseUrl = "https://localhost:61433";
-            var acceptUrl = $"{baseUrl}/JobOffer/AcceptOffer/{HttpUtility.UrlEncode(acceptToken)}";
-            var rejectUrl = $"{baseUrl}/JobOffer/RejectOffer/{HttpUtility.UrlEncode(rejectToken)}";
+            var acceptUrl = $"{baseUrl}/CurrentHire/AcceptOffer/{HttpUtility.UrlEncode(acceptToken)}";
+            var rejectUrl = $"{baseUrl}/CurrentHire/RejectOffer/{HttpUtility.UrlEncode(rejectToken)}";
 
             var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
             var templateContent = File.ReadAllText(templatePath);
@@ -426,7 +426,7 @@ namespace Basecode.Services.Services
                                      $"<br> <a href=\"{acceptUrl}\">Accept</a> " +
                                      $"<a href=\"{rejectUrl}\">Reject</a>");
 
-            await _emailService.SendEmail(applicant.Email, "Alliance Software Inc. Background Check", body);
+            await _emailService.SendEmail(applicant.Email, "Alliance Software Inc. Job Offer", body);
         }
 
         public async Task SendRejectedHireNoticeToInterviewer(string email, string fullname, string position, CurrentHire currentHire, string applicantFullName)
