@@ -54,5 +54,37 @@ namespace Basecode.WebApp.Controllers
                 return StatusCode(500, "Something went wrong.");
             }
         }
+
+        /// <summary>
+        /// Rejects the job offer.
+        /// </summary>
+        [Route("CurrentHire/RejectOffer/{token}")]
+        public async Task<IActionResult> RejectOffer(string token)
+        {
+            try
+            {
+                ViewBag.IsOfferRejected = false;
+                int userOfferId = _tokenHelper.GetIdFromToken(token, "reject");
+                if (userOfferId == 0)
+                {
+                    _logger.Warn("Invalid or expired token.");
+                    return View();
+                }
+
+                var data = await _currentHireService.RejectOffer(userOfferId);
+                if (!data.Result)
+                {
+                    _logger.Trace("User Offer [" + userOfferId + "] has been successfully rejected.");
+                    ViewBag.IsOfferRejected = true;
+                }
+
+                return View();
+            }
+            catch (Exception e)
+            {
+                _logger.Error(ErrorHandling.DefaultException(e.Message));
+                return StatusCode(500, "Something went wrong.");
+            }
+        }
     }
 }
