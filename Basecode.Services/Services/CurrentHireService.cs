@@ -21,9 +21,10 @@ namespace Basecode.Services.Services
         private readonly IApplicantService _applicantService;
         private readonly IUserService _userService;
         private readonly IEmailSendingService _emailSendingService;
+        private readonly IApplicationService _applicationService;
 
         public CurrenHireService(ICurrentHireRepository currentHireRepository, IUserScheduleRepository userScheduleRepository, IApplicationRepository applicationRepository, IApplicantService applicantService, IUserService userService, 
-            IEmailSendingService emailSendingService)
+            IEmailSendingService emailSendingService, IApplicationService applicationService)
         {
             _currentHireRepository = currentHireRepository;
             _userScheduleRepository = userScheduleRepository;
@@ -31,6 +32,7 @@ namespace Basecode.Services.Services
             _applicantService = applicantService;
             _userService = userService;
             _emailSendingService = emailSendingService;
+            _applicationService = applicationService;
         }
 
         /// <summary>
@@ -147,6 +149,44 @@ namespace Basecode.Services.Services
         public int GetIdIfCurrentHireExists(Guid applicationId)
         {
             return _currentHireRepository.GetIdIfCurrentHireExists(applicationId);
+        }
+
+        /// <summary>
+        /// Add useroffer
+        /// </summary>
+        /// <param name="applicant"></param>
+        /// <param name="userOfferId"></param>
+        /// <returns></returns>
+        public async Task AddCurrenHire(Applicant applicant, int currentHireId)
+        {
+            List<int> successfullyAddedApplicantIds = new List<int>();
+            var userSchedule = GetUserScheduleById(currentHireId);
+            Guid applicationId = _applicationService.GetApplicationIdByApplicantId(applicant.Id);
+
+            var currentHire = new CurrentHire
+            {
+                // Id = userOfferId,
+                UserId = currentHireId,
+                ApplicationId = userSchedule.ApplicationId,
+                Firstname = applicant.Firstname,
+                Middlename = applicant.Middlename,
+                Lastname = applicant.Lastname,
+                Phone = applicant.Phone,
+                Email = applicant.Email,
+                Status = "pending",
+                User = userSchedule.User,
+                Application = userSchedule.Application
+            };
+
+            int existingId = GetIdIfCurrentHireExists(applicationId);
+            if (existingId != -1)   // Update "rejected" schedule to "pending"
+            {
+                successfullyAddedApplicantIds = await HandleExistingHire(currentHire, existingId, applicant.Id, successfullyAddedApplicantIds);
+            }
+            else    // Create new schedule
+            {
+                successfullyAddedApplicantIds = await HandleNewHire(currentHire, applicant.Id, successfullyAddedApplicantIds);
+            }
         }
     }
 }

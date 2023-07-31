@@ -59,5 +59,13 @@ namespace Basecode.Services.Interfaces
         /// <param name="applicationId"></param>
         /// <returns></returns>
         int GetIdIfCurrentHireExists(Guid applicationId);
+
+        /// <summary>
+        /// Add useroffer
+        /// </summary>
+        /// <param name="applicant"></param>
+        /// <param name="userOfferId"></param>
+        /// <returns></returns>
+        Task AddCurrentHire(Applicant applicant, int currentHireId);
     }
 }
