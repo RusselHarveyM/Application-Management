@@ -223,5 +223,24 @@ namespace Basecode.Services.Services
             //await _emailSendingService.SendScheduleToApplicant(userOffer, userOfferId, applicant);
         }
 
+        /// <summary>
+        /// Handle new offer
+        /// </summary>
+        /// <param name="userOffer"></param>
+        /// <param name="applicantId"></param>
+        /// <param name="successfullyAddedApplicantIds"></param>
+        /// <returns></returns>
+        public async Task<List<int>> HandleNewHire(CurrentHire currentHire, int applicantId, List<int> successfullyAddedApplicantIds)
+        {
+            (LogContent logContent, int currentHireId) data = AddCurrentHires(currentHire);
+
+            if (!data.logContent.Result && data.currentHireId != -1)
+            {
+                _logger.Trace("Successfully created a new UserSchedule record.");
+                await SendHireToApplicant(currentHire, data.currentHireId, applicantId);
+                successfullyAddedApplicantIds.Add(applicantId);
+            }
+            return successfullyAddedApplicantIds;
+        }
     }
 }
