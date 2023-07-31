@@ -11,16 +11,16 @@ namespace Basecode.Services.Interfaces
     public interface ICurrentHireService
     {
         /// <summary>
-        /// Get UserOffer by Id
+        /// Get current hire by Id
         /// </summary>
-        /// <param name="userOfferId"></param>
+        /// <param name="currenHireId"></param>
         /// <returns></returns>
         CurrentHire GetCurrentHireById(int currenHireId);
 
         /// <summary>
-        /// AcceptOffer and return UserOffer Status
+        /// AcceptOffer and return current hire Status
         /// </summary>
-        /// <param name="userOfferId"></param>
+        /// <param name="currentHireId"></param>
         /// <returns></returns>
         LogContent AcceptOffer(int currentHireId);
 
@@ -32,46 +32,46 @@ namespace Basecode.Services.Interfaces
         UserSchedule GetUserScheduleById(int userScheduleId);
 
         /// <summary>
-        /// Reject offer and return UserOffer Status
+        /// Reject offer and return current hire Status
         /// </summary>
-        /// <param name="userOfferId"></param>
+        /// <param name="currentHireId"></param>
         /// <returns></returns>
         Task<LogContent> RejectOffer(int currentHireId);
 
         /// <summary>
         /// Send reject notice to interviewer
         /// </summary>
-        /// <param name="userOffer"></param>
+        /// <param name="currentHire"></param>
         /// <returns></returns>
         Task SendRejectedHireNoticeToInterviewer(CurrentHire currentHire);
 
         /// <summary>
-        /// update user offer
+        /// update current hire
         /// </summary>
-        /// <param name="userOffer"></param>
+        /// <param name="currentHire"></param>
         /// <param name="idToSetAsPending"></param>
         /// <returns></returns>
         LogContent UpdateCurrentHire(CurrentHire currentHire, int? idToSetAsPending = null);
 
         /// <summary>
-        /// Get Id if user offer existed
+        /// Get Id if current hire existed
         /// </summary>
         /// <param name="applicationId"></param>
         /// <returns></returns>
         int GetIdIfCurrentHireExists(Guid applicationId);
 
         /// <summary>
-        /// Add useroffer
+        /// Add current hire
         /// </summary>
         /// <param name="applicant"></param>
-        /// <param name="userOfferId"></param>
+        /// <param name="currentHireId"></param>
         /// <returns></returns>
         Task AddCurrentHire(Applicant applicant, int currentHireId);
 
         /// <summary>
-        /// Handle existing offer
+        /// Handle existing hire
         /// </summary>
-        /// <param name="userOffer"></param>
+        /// <param name="currentHire"></param>
         /// <param name="existingId"></param>
         /// <param name="applicantId"></param>
         /// <param name="successfullyAddedApplicantIds"></param>
@@ -81,25 +81,25 @@ namespace Basecode.Services.Interfaces
         /// <summary>
         /// Send offer to applicant
         /// </summary>
-        /// <param name="userOffer"></param>
-        /// <param name="userOfferId"></param>
+        /// <param name="currentHire"></param>
+        /// <param name="currentHireId"></param>
         /// <param name="applicantId"></param>
         /// <returns></returns>
         Task SendHireToApplicant(CurrentHire currentHire, int currentHireId, int applicantId);
 
         /// <summary>
-        /// Handle new offer
+        /// Handle new hire
         /// </summary>
-        /// <param name="userOffer"></param>
+        /// <param name="currentHire"></param>
         /// <param name="applicantId"></param>
         /// <param name="successfullyAddedApplicantIds"></param>
         /// <returns></returns>
         Task<List<int>> HandleNewHire(CurrentHire currentHire, int applicantId, List<int> successfullyAddedApplicantIds);
 
         /// <summary>
-        /// Add useroffers
+        /// Add current hire
         /// </summary>
-        /// <param name="userOffer"></param>
+        /// <param name="currentHire"></param>
         /// <returns></returns>
         (LogContent, int) AddCurrentHires(CurrentHire currentHire);
     }

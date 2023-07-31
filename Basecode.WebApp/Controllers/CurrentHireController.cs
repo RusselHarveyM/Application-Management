@@ -5,14 +5,14 @@ using NLog;
 
 namespace Basecode.WebApp.Controllers
 {
-    public class JobOfferController : Controller
+    public class CurrentHireController : Controller
     {
         private readonly TokenHelper _tokenHelper;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly ICurrentHireService _currentHireService;
         private const string SecretKey = "CDC1CAAACAA3269755F5EC44C7202F0055C9C322AEB5C4B6103F6E9C11EF136F";
 
-        public JobOfferController(ICurrentHireService currentHireService)
+        public CurrentHireController(ICurrentHireService currentHireService)
         {
             _currentHireService = currentHireService;
             _tokenHelper = new TokenHelper(SecretKey);

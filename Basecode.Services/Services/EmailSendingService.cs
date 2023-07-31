@@ -407,7 +407,7 @@ namespace Basecode.Services.Services
             string acceptToken = _tokenHelper.GenerateToken("accept", userId);
             string rejectToken = _tokenHelper.GenerateToken("reject", userId);
 
-            string baseUrl = "https://localhost:61433";
+            string baseUrl = "https://localhost:61952";
             var acceptUrl = $"{baseUrl}/CurrentHire/AcceptOffer/{HttpUtility.UrlEncode(acceptToken)}";
             var rejectUrl = $"{baseUrl}/CurrentHire/RejectOffer/{HttpUtility.UrlEncode(rejectToken)}";
 
