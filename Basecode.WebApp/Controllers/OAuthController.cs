@@ -7,12 +7,14 @@ namespace Basecode.WebApp.Controllers;
 public class OAuthController : Controller
 {
     private readonly IConfiguration _config;
-    private string tokensFile = @"C:\Users\Lenovo\Documents\vs_projects\newtemp\Application-Management\Basecode.WebApp\tokens.json";
-    
+    private readonly IWebHostEnvironment _environment;
+    private string tokensFile;
 
-    public OAuthController(IConfiguration config)
+    public OAuthController(IConfiguration config, IWebHostEnvironment environment)
     {
         _config = config;
+        _environment = environment;
+        tokensFile = _environment.ContentRootPath + @"\tokens.json";
     }
 
     public IActionResult Callback(string tenant, string state, string admin_consent)

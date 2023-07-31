@@ -120,5 +120,10 @@ namespace Basecode.Services.Interfaces
         /// <param name="aspId">The ASP identifier.</param>
         /// <returns></returns>
         int GetUserIdByAspId(string aspId);
+
+        /// <summary>
+        /// Gets the user email by identifier.
+        /// </summary>
+        string GetUserEmailById(int userId);
     }
 }

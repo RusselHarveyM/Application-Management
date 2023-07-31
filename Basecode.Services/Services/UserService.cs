@@ -229,5 +229,13 @@ namespace Basecode.Services.Services
         {
             return _repository.GetUserByAspId(aspId).Id;
         }
+
+        /// <summary>
+        /// Gets the user email by identifier.
+        /// </summary>
+        public string GetUserEmailById(int userId)
+        {
+            return _repository.GetById(userId).Email;
+        }
     }
 }

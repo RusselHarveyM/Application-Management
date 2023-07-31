@@ -1,4 +1,5 @@
-﻿using Basecode.Data.Models;
+﻿using Basecode.Data.Dto;
+using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
 using Newtonsoft.Json.Linq;
 using System;
@@ -357,6 +358,90 @@ namespace Basecode.Services.Services
                 return logContent;
             }
             return logContent;
+        }
+
+        public static LogContent CheckCalendarEvent(CalendarEvent calendarEvent)
+        {
+            LogContent logContent = new LogContent();
+            if (calendarEvent == null)
+            {
+                logContent.SetError("400", "Calendar event is null.");
+                return logContent;
+            }
+            if (string.IsNullOrEmpty(calendarEvent.Subject))
+            {
+                logContent.SetError("400", "Calendar event's Subject is null or empty.");
+                return logContent;
+            }
+            if (string.IsNullOrEmpty(calendarEvent.Body.Content))
+            {
+                logContent.SetError("400", "Calendar event's Body is null or empty.");
+                return logContent;
+            }
+            if (calendarEvent.Start.DateTime == default(DateTime))
+            {
+                logContent.SetError("400", "Calendar event's Start DateTime is not set.");
+                return logContent;
+            }
+            if (calendarEvent.End.DateTime == default(DateTime))
+            {
+                logContent.SetError("400", "Calendar event's End DateTime is not set.");
+                return logContent;
+            }
+            if (calendarEvent.OnlineMeetingProvider != "TeamsForBusiness")
+            {
+                logContent.SetError("400", "Calendar event's Online Meeting Provider is invalid.");
+                return logContent;
+            }
+            if (calendarEvent.IsOnlineMeeting == false)
+            {
+                logContent.SetError("400", "Calendar event is not an online meeting.");
+                return logContent;
+            }
+            return logContent;
+        }
+
+        public static (LogContent, Dictionary<string, string>) CheckSchedulerData(SchedulerDataViewModel formData)
+        {
+            var validationErrors = new Dictionary<string, string>();
+            LogContent logContent = new LogContent();
+            if (formData.JobOpeningId <= 0)
+            {
+                logContent.SetError("400", "JobOpeningId is invalid.");
+                validationErrors.Add("JobOpeningId", "Please select a job opening.");
+                return (logContent, validationErrors);
+            }
+            if (string.IsNullOrEmpty(formData.Type))
+            {
+                logContent.SetError("400", "Type is required but has no value.");
+                validationErrors.Add("Type", "Please select a type.");
+                return (logContent, validationErrors);
+            }
+            if (formData.Date == default)
+            {
+                logContent.SetError("400", "Date is required but has not been set.");
+                validationErrors.Add("Date", "Please select a date.");
+                return (logContent, validationErrors);
+            }
+            if (formData.ApplicantSchedules == null || formData.ApplicantSchedules.Count == 0)
+            {
+                logContent.SetError("400", "The ApplicantSchedules list is empty.");
+                validationErrors.Add("Applicant", "Please select an applicant.");
+                return (logContent, validationErrors);
+            }
+            else
+            {
+                foreach (var applicant in formData.ApplicantSchedules)
+                {
+                    if (string.IsNullOrEmpty(applicant.Time) || applicant.Time == " ")
+                    {
+                        logContent.SetError("400", "Time is required but has not been set.");
+                        validationErrors.Add("Time", "Please set a time.");
+                        return (logContent, validationErrors);
+                    }
+                }
+            }
+            return (logContent, validationErrors);
         }
     }
 }

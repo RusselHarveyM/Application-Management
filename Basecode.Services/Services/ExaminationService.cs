@@ -30,7 +30,7 @@ namespace Basecode.Services.Services
         /// </summary>
         /// <param name="schedule">The schedule.</param>
         /// <returns></returns>
-        public LogContent AddExamination(UserSchedule schedule)
+        public LogContent AddExamination(UserSchedule schedule, string teamsLink)
         {
             LogContent logContent = CheckUserSchedule(schedule);
 

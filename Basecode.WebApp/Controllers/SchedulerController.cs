@@ -9,21 +9,20 @@ namespace Basecode.WebApp.Controllers
 {
     public class SchedulerController : Controller
     {
-        private readonly IUserScheduleService _userScheduleService;
+        private readonly ISchedulerService _schedulerService;
         private readonly IUserService _userService;
         private readonly IApplicantService _applicantService;
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly TokenHelper _tokenHelper;
-        private const string SecretKey = "CDC1CAAACAA3269755F5EC44C7202F0055C9C322AEB5C4B6103F6E9C11EF136F";
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly TokenHelper _tokenHelper;
 
-        public SchedulerController(IUserScheduleService userScheduleService, IUserService userService, IApplicantService applicantService, UserManager<IdentityUser> userManager)
+        public SchedulerController(IUserService userService, IApplicantService applicantService, UserManager<IdentityUser> userManager, IConfiguration config, ISchedulerService schedulerService)
         {
-            _userScheduleService = userScheduleService;
             _userService = userService;
             _applicantService = applicantService;
             _userManager = userManager;
-            _tokenHelper = new TokenHelper(SecretKey);
+            _tokenHelper = new TokenHelper(config["TokenHelper:SecretKey"]);
+            _schedulerService = schedulerService;
         }
 
         /// <summary>
@@ -61,19 +60,27 @@ namespace Basecode.WebApp.Controllers
         /// <param name="formData">The HR Scheduler form data.</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(SchedulerDataViewModel formData)
+        public IActionResult Create(SchedulerDataViewModel formData)
         {
             try
             {
                 if (!ModelState.IsValid)
                 {
                     _logger.Warn("Model has validation error(s).");
-                    return View(formData);
+                    return BadRequest();
                 }
                 var userAspId = _userManager.GetUserId(User);
                 int userId = _userService.GetUserIdByAspId(userAspId);
-                await _userScheduleService.AddUserSchedules(formData, userId);
-                return RedirectToAction("Index", "Dashboard");
+                (ErrorHandling.LogContent logContent, Dictionary<string, string> validationErrors) data = _schedulerService.AddSchedules(formData, userId);
+
+                if (!data.logContent.Result)
+                {
+                    _logger.Trace("Successfully added new user schedule(s).");
+                    return Ok();
+                }
+
+                _logger.Error(ErrorHandling.SetLog(data.logContent));
+                return BadRequest(Json(data.validationErrors));
             }
             catch (Exception e)
             {
@@ -98,12 +105,13 @@ namespace Basecode.WebApp.Controllers
                     return View();
                 }
 
-                var data = _userScheduleService.AcceptSchedule(userScheduleId);
+                var data = _schedulerService.AcceptSchedule(userScheduleId);
                 if (!data.Result)
                 {
                     _logger.Trace("User Schedule [" + userScheduleId + "] has been successfully accepted.");
                     ViewBag.IsScheduleAccepted = true;
                 }
+                else _logger.Error(ErrorHandling.SetLog(data));
 
                 return View();
             }
@@ -118,7 +126,7 @@ namespace Basecode.WebApp.Controllers
         /// Rejects the schedule.
         /// </summary>
         [Route("Scheduler/RejectSchedule/{token}")]
-        public async Task<IActionResult> RejectSchedule(string token)
+        public IActionResult RejectSchedule(string token)
         {
             try
             {
@@ -130,12 +138,13 @@ namespace Basecode.WebApp.Controllers
                     return View();
                 }
 
-                var data = await _userScheduleService.RejectSchedule(userScheduleId);
+                var data = _schedulerService.RejectSchedule(userScheduleId);
                 if (!data.Result)
                 {
                     _logger.Trace("User Schedule [" + userScheduleId + "] has been successfully rejected.");
                     ViewBag.IsScheduleRejected = true;
                 }
+                else _logger.Error(ErrorHandling.SetLog(data));
 
                 return View();
             }

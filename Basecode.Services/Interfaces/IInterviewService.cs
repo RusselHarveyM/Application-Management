@@ -10,6 +10,6 @@ namespace Basecode.Services.Interfaces
         /// </summary>
         /// <param name="schedule">The schedule.</param>
         /// <returns></returns>
-        LogContent AddInterview(UserSchedule schedule);
+        LogContent AddInterview(UserSchedule schedule, string teamsLink);
     }
 }

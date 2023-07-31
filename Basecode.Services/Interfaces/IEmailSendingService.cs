@@ -1,4 +1,5 @@
 ﻿using Basecode.Data.Models;
+using Basecode.Data.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,7 +73,7 @@ namespace Basecode.Services.Interfaces
         /// <summary>
         /// Sends the schedule to applicant.
         /// </summary>
-        Task SendScheduleToApplicant(UserSchedule userSchedule, int userScheduleId, Applicant applicant, string meetingType);
+        Task SendScheduleToApplicant(UserSchedule userSchedule, Applicant applicant, int tokenExpiry);
 
         /// <summary>
         /// Sends the schedules to interviewer.
@@ -92,5 +93,15 @@ namespace Basecode.Services.Interfaces
         /// </summary>
         /// <returns></returns>
         Task SendRejectedScheduleNoticeToInterviewer(string email, string fullname, UserSchedule userSchedule, string applicantFullName);
+
+        /// <summary>
+        /// Sends the accepted schedule with Teams link to the interviewer.
+        /// </summary>
+        Task SendAcceptedScheduleToInterviewer(string email, string fullname, UserSchedule userSchedule, ApplicationViewModel application, string joinUrl);
+
+        /// <summary>
+        /// Sends the accepted schedule with Teams link to the applicant.
+        /// </summary>
+        Task SendAcceptedScheduleToApplicant(string email, UserSchedule userSchedule, ApplicationViewModel application, string joinUrl);
     }
 }

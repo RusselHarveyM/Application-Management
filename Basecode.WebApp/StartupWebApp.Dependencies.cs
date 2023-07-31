@@ -40,6 +40,7 @@ namespace Basecode.WebApp
             services.AddScoped<IDashboardService, DashboardService>();
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<ICalendarService, CalendarService>();
+            services.AddScoped<ISchedulerService, SchedulerService>();
 
             // Repositories
             services.AddScoped<IUserRepository, UserRepository>();

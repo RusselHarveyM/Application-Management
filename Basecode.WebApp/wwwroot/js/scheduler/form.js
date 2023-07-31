@@ -19,6 +19,8 @@
             noResults: () => "No applicants found",
         },
     });
+
+    document.getElementById('date').setAttribute('min', getCurrentDate());
 });
 
 $('#jobOpeningDropdown').on('change', function () {
@@ -131,11 +133,6 @@ function getCurrentDate() {
     return year + '-' + month + '-' + day;
 }
 
-// Set the minimum date for the date input to the current date
-document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById('date').setAttribute('min', getCurrentDate());
-});
-
 $('#scheduleForm').submit(function (event) {
     event.preventDefault();
 
@@ -157,6 +154,8 @@ $('#scheduleForm').submit(function (event) {
         ApplicantSchedules: applicantSchedules 
     };
 
+    $("#scheduleForm").children().find(".text-danger").text("");
+
     $.ajax({
         url: $('#scheduleForm').attr('action'),
         type: 'POST',
@@ -164,16 +163,16 @@ $('#scheduleForm').submit(function (event) {
             __RequestVerificationToken: token,
             formData: formData
         },
-        success: () => window.location.reload(),
+        success: () => window.location.href = '/Dashboard/Index',
         error: function (response) {
-            if (response.status === 400) {
+            if (response.status === 400 && response.responseJSON) {
                 var errors = response.responseJSON.value;
 
                 // Display custom validation errors
                 $.each(errors, function (key, value) {
                     $('#' + key + 'Error').text(value);
                 });
-            } else {
+            } else if (response.status != 400) {
                 console.log(response.status + " Something went wrong.");
             }
         }

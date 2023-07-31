@@ -54,5 +54,15 @@ namespace Basecode.Data.Repositories
             var id = _context.UserSchedule.FirstOrDefault(schedule => schedule.ApplicationId == applicationId);
             return id != null ? id.Id : -1;
         }
+
+        /// <summary>
+        /// Deletes the user schedule.
+        /// </summary>
+        /// <param name="userSchedule">The user schedule.</param>
+        public void DeleteUserSchedule(UserSchedule userSchedule)
+        {
+            _context.UserSchedule.Remove(userSchedule);
+            _context.SaveChanges();
+        }
     }
 }

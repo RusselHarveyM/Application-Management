@@ -1,6 +1,8 @@
 ﻿using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
+using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
+using Microsoft.Extensions.Configuration;
 using System.Web;
 
 namespace Basecode.Services.Services
@@ -9,15 +11,16 @@ namespace Basecode.Services.Services
     public class EmailSendingService : IEmailSendingService
     {
         private readonly IEmailService _emailService;
-        private readonly TokenHelper _tokenHelper;
-        private const string SecretKey = "CDC1CAAACAA3269755F5EC44C7202F0055C9C322AEB5C4B6103F6E9C11EF136F";
         private readonly IUserRepository _userRepository;
+        private readonly IConfiguration _config;
+        private readonly TokenHelper _tokenHelper;
 
-        public EmailSendingService(IEmailService emailService, IUserRepository userRepository)
+        public EmailSendingService(IEmailService emailService, IUserRepository userRepository, IConfiguration config)
         {
             _emailService = emailService;
-            _tokenHelper = new TokenHelper(SecretKey);
             _userRepository = userRepository;
+            _config = config;
+            _tokenHelper = new TokenHelper(_config["TokenHelper:SecretKey"]);
         }
 
         /// <summary>
@@ -214,10 +217,10 @@ namespace Basecode.Services.Services
         /// <summary>
         /// Sends the schedule to applicant.
         /// </summary>
-        public async Task SendScheduleToApplicant(UserSchedule userSchedule, int userScheduleId, Applicant applicant, string meetingType)
+        public async Task SendScheduleToApplicant(UserSchedule userSchedule, Applicant applicant, int tokenExpiry)
         {
-            string acceptToken = _tokenHelper.GenerateToken("accept", userScheduleId);
-            string rejectToken = _tokenHelper.GenerateToken("reject", userScheduleId);
+            string acceptToken = _tokenHelper.GenerateToken("accept", userSchedule.Id, tokenExpiry);
+            string rejectToken = _tokenHelper.GenerateToken("reject", userSchedule.Id, tokenExpiry);
 
             string baseUrl = "https://localhost:53813";
             var acceptUrl = $"{baseUrl}/Scheduler/AcceptSchedule/{HttpUtility.UrlEncode(acceptToken)}";
@@ -228,14 +231,17 @@ namespace Basecode.Services.Services
             var body = templateContent
                 .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
                 .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
-                .Replace("{{HEADLINE}}", $"{meetingType} Schedule")
-                .Replace("{{BODY}}", $"Dear {applicant.Firstname},<br>" +
-                                     $"<br> Your {meetingType} has been scheduled for {userSchedule.Schedule}.<br/>" +
-                                     $"<br> Please click the button to accept or reject the schedule:<br/>" +
-                                     $"<br> <a href=\"{acceptUrl}\">Accept</a> " +
-                                     $"<a href=\"{rejectUrl}\">Reject</a>");
+                .Replace("{{HEADLINE}}", $"{userSchedule.Type} Schedule")
+                .Replace("{{BODY}}", $"<br> Dear {applicant.Firstname} {applicant.Lastname}," +
+                                     $"<br><br> Your {userSchedule.Type} has been scheduled for {userSchedule.Schedule.ToShortDateString()} at {userSchedule.Schedule.ToShortTimeString()}." +
+                                     $"<br><br> If you are available on the said schedule, please click the Accept button. Otherwise, click the Reject button." +
+                                     $"<br><br> If you reject, the interviewer will be informed, and a new schedule will be set for you." +
+                                     $"<br><br> Please click the button below that corresponds to your choice:" +
+                                     $"<br><br> <a href=\"{acceptUrl}\">Accept</a> " +
+                                     $"<a href=\"{rejectUrl}\">Reject</a>" +
+                                     $"<br><br> Best regards,");
 
-            await _emailService.SendEmail(applicant.Email, $"Alliance Software Inc. {meetingType} Schedule", body);
+            await _emailService.SendEmail(applicant.Email, $"Alliance Software Inc. {userSchedule.Type} Schedule", body);
         }
 
         /// <summary>
@@ -312,7 +318,7 @@ namespace Basecode.Services.Services
             var body = templateContent
                 .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
                 .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
-                .Replace("{{HEADLINE}}", $"Applicant {userSchedule.Type} Schedule Rejection")
+                .Replace("{{HEADLINE}}", $"Applicant {userSchedule.Type} Schedule Rejected")
                 .Replace("{{BODY}}", $"Dear {fullname},<br>" +
                                      $"<br> We hope this email finds you well. We would like to inform you that the {userSchedule.Type} schedule that you set for Mr./Ms. {applicantFullName}" +
                                      $" on {userSchedule.Schedule} has been rejected. Please reschedule the meeting through our HR Automation System. <br> " +
@@ -322,7 +328,52 @@ namespace Basecode.Services.Services
                                      $"<br> Should you encounter any difficulties or require any support in the process, please do not hesitate to reach out to our support team, and we will be glad to assist you. <br>" +
                                      $"<br><br> Best regards,");
 
-            await _emailService.SendEmail(email, $"Alliance Software Inc. {userSchedule.Type} Schedule Rejection", body);
+            await _emailService.SendEmail(email, $"Alliance Software Inc. {userSchedule.Type} Schedule Rejection Notification", body);
+        }
+
+        /// <summary>
+        /// Sends the accepted schedule with Teams link to the interviewer.
+        /// </summary>
+        public async Task SendAcceptedScheduleToInterviewer(string email, string fullname, UserSchedule userSchedule, ApplicationViewModel application, string joinUrl)
+        {
+            var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
+            var templateContent = File.ReadAllText(templatePath);
+            var body = templateContent
+                .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+                .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+                .Replace("{{HEADLINE}}", $"Applicant {userSchedule.Type} Schedule Accepted")
+                .Replace("{{BODY}}", $"<br> Dear {fullname}," +
+                                     $"<br><br> Warm greetings! We are delighted to inform you that an applicant has accepted the {userSchedule.Type} schedule you proposed through our HR Automation System." +
+                                     $"<br><br> The details for the scheduled {userSchedule.Type} are as follows: <br> Applicant: {application.ApplicantName}" +
+                                     $"<br> Position: {application.JobOpeningTitle} <br> Date: {userSchedule.Schedule.ToShortDateString()} <br> Time: {userSchedule.Schedule.ToShortTimeString()} <br> Meeting Link: {joinUrl}" +
+                                     $"<br><br> With the provided Teams Meeting link, you and the applicant can effortlessly join the virtual meeting at the scheduled time. Please ensure you have access to a " +
+                                     $"stable internet connection and a working camera and microphone for a seamless meeting experience." +
+                                     $"<br><br>Should any unforeseen circumstances arise or if you encounter any challenges with the virtual meeting link, please reach out to our support team, and we will be more than happy to assist you." +
+                                     $"<br><br><br> Best regards,");
+
+            await _emailService.SendEmail(email, $"Alliance Software Inc. {userSchedule.Type} Schedule Acceptance Notification", body);
+        }
+
+        public async Task SendAcceptedScheduleToApplicant(string email, UserSchedule userSchedule, ApplicationViewModel application, string joinUrl)
+        {
+            var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
+            var templateContent = File.ReadAllText(templatePath);
+            var body = templateContent
+                .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+                .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+                .Replace("{{HEADLINE}}", $"{userSchedule.Type} Schedule Accepted")
+                .Replace("{{BODY}}", $"<br> Dear {application.ApplicantName}," +
+                                     $"<br><br> Warm greetings! We are delighted to inform you that an applicant has accepted the {userSchedule.Type} schedule you proposed through our HR Automation System." +
+                                     $"<br><br> The details for the scheduled {userSchedule.Type} are as follows: " +
+                                     $"<br> Position: {application.JobOpeningTitle} <br> Date: {userSchedule.Schedule.ToShortDateString()} <br> Time: {userSchedule.Schedule.ToShortTimeString()} <br> Meeting Link: {joinUrl}" +
+                                     $"<br><br> You can now look forward to your scheduled interview at the designated time. We will be utilizing Microsoft Teams for the virtual interview, so please ensure " +
+                                     $"you are familiar with the platform and have access to a stable internet connection. Additionally, make sure your camera and microphone are in good working order to " +
+                                     $"facilitate a smooth interview experience." +
+                                     $"<br><br>If you have any queries or require further assistance regarding the interview process or the Teams Meeting link, please feel free to contact us. We are here to support " +
+                                     $"you and ensure that your interview experience is both positive and successful." +
+                                     $"<br><br><br> Best regards,");
+
+            await _emailService.SendEmail(email, $"Alliance Software Inc. {userSchedule.Type} Schedule Acceptance Notification", body);
         }
     }
 }

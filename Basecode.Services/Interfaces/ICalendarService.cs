@@ -4,5 +4,5 @@ namespace Basecode.Services.Interfaces;
 
 public interface ICalendarService
 {
-    string CreateEvent(CalendarEvent calendarEvent);
+    string CreateEvent(CalendarEvent calendarEvent, string email);
 }
