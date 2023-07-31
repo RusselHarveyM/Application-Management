@@ -465,7 +465,7 @@ namespace Basecode.Services.Services
             return logContent;
         }
 
-        public static LogContent CheckCurrentOffer(CurrentHire hire)
+        public static LogContent CheckCurrentHire(CurrentHire hire)
         {
             LogContent logContent = new LogContent();
             if (hire == null)
