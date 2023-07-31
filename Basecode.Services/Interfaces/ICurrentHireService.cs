@@ -37,5 +37,12 @@ namespace Basecode.Services.Interfaces
         /// <param name="userOfferId"></param>
         /// <returns></returns>
         Task<LogContent> RejectOffer(int currentHireId);
+
+        /// <summary>
+        /// Send reject notice to interviewer
+        /// </summary>
+        /// <param name="userOffer"></param>
+        /// <returns></returns>
+        Task SendRejectedHireNoticeToInterviewer(CurrentHire currentHire);
     }
 }

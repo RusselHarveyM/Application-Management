@@ -19,13 +19,18 @@ namespace Basecode.Services.Services
         private readonly IUserScheduleRepository _userScheduleRepository;
         private readonly IApplicationRepository _applicationRepository;
         private readonly IApplicantService _applicantService;
+        private readonly IUserService _userService;
+        private readonly IEmailSendingService _emailSendingService;
 
-        public CurrenHireService(ICurrentHireRepository currentHireRepository, IUserScheduleRepository userScheduleRepository, IApplicationRepository applicationRepository, IApplicantService applicantService)
+        public CurrenHireService(ICurrentHireRepository currentHireRepository, IUserScheduleRepository userScheduleRepository, IApplicationRepository applicationRepository, IApplicantService applicantService, IUserService userService, 
+            IEmailSendingService emailSendingService)
         {
             _currentHireRepository = currentHireRepository;
             _userScheduleRepository = userScheduleRepository;
             _applicationRepository = applicationRepository;
             _applicantService = applicantService;
+            _userService = userService;
+            _emailSendingService = emailSendingService;
         }
 
         /// <summary>
@@ -90,6 +95,19 @@ namespace Basecode.Services.Services
                 await SendRejectedHireNoticeToInterviewer(currentHire);
             }
             return logContent;
+        }
+
+        /// <summary>
+        /// Send reject notice to interviewer
+        /// </summary>
+        /// <param name="userOffer"></param>
+        /// <returns></returns>
+        public async Task SendRejectedHireNoticeToInterviewer(CurrentHire currentHire)
+        {
+            User user = _userService.GetById(currentHire.UserId);
+            Applicant applicant = _applicantService.GetApplicantByApplicationId(currentHire.ApplicationId);
+            string applicantFullName = applicant.Firstname + " " + applicant.Lastname;
+            await _emailSendingService.SendRejectedHireNoticeToInterviewer(user.Email, user.Fullname, applicant.Application.JobOpening.Title, currentHire, applicantFullName);
         }
     }
 }
