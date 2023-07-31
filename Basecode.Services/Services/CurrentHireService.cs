@@ -9,16 +9,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Basecode.Data.Repositories;
 
 namespace Basecode.Services.Services
 {
     public class CurrenHireService : ErrorHandling, ICurrentHireService
     {
         private readonly ICurrentHireRepository _currenHireRepository;
+        private readonly IUserScheduleRepository _userScheduleRepository;
 
-        public CurrenHireService(ICurrentHireRepository currenHireRepository)
+        public CurrenHireService(ICurrentHireRepository currenHireRepository, IUserScheduleRepository userScheduleRepository)
         {
             _currenHireRepository = currenHireRepository;
+            _userScheduleRepository = userScheduleRepository;
         }
 
         /// <summary>
@@ -48,6 +51,16 @@ namespace Basecode.Services.Services
             }
 
             return logContent;
+        }
+
+        /// <summary>
+        /// Get UserSchedule by Id
+        /// </summary>
+        /// <param name="userScheduleId"></param>
+        /// <returns></returns>
+        public UserSchedule GetUserScheduleById(int userScheduleId)
+        {
+            return _userScheduleRepository.GetUserScheduleById(userScheduleId);
         }
     }
 }

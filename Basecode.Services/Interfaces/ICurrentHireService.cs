@@ -16,5 +16,19 @@ namespace Basecode.Services.Interfaces
         /// <param name="userOfferId"></param>
         /// <returns></returns>
         CurrentHire GetCurrentHireById(int currenHireId);
+
+        /// <summary>
+        /// AcceptOffer and return UserOffer Status
+        /// </summary>
+        /// <param name="userOfferId"></param>
+        /// <returns></returns>
+        LogContent AcceptOffer(int currentHireId);
+
+        /// <summary>
+        /// Get UserSchedule by Id
+        /// </summary>
+        /// <param name="userScheduleId"></param>
+        /// <returns></returns>
+        UserSchedule GetUserScheduleById(int userScheduleId);
     }
 }
