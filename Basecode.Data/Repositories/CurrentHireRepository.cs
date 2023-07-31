@@ -19,28 +19,28 @@ namespace Basecode.Data.Repositories
         }
 
         /// <summary>
-        /// Get user offer by Id
+        /// Get current hire by Id
         /// </summary>
-        /// <param name="userOfferId"></param>
+        /// <param name="currentHireId"></param>
         /// <returns></returns>
-        public CurrentHire GetUserOfferById(int userOfferId)
+        public CurrentHire GetUserOfferById(int currentHireId)
         {
-            return _context.CurrentHire.Find(userOfferId);
+            return _context.CurrentHire.Find(currentHireId);
         }
 
         /// <summary>
-        /// Get user offer id by user id
+        /// Get current hire id by user id
         /// </summary>
-        /// <param name="userOfferId"></param>
+        /// <param name="currentHireId"></param>
         /// <returns></returns>
-        public int GetCurrentHireIdByUserId(int userOfferId)
+        public int GetCurrentHireIdByUserId(int currentHireId)
         {
-            var id = _context.CurrentHire.FirstOrDefault(offer => offer.UserId == userOfferId);
+            var id = _context.CurrentHire.FirstOrDefault(offer => offer.UserId == currentHireId);
             return id != null ? id.Id : -1;
         }
 
         /// <summary>
-        /// Get all useroffer
+        /// Get all current hire
         /// </summary>
         /// <returns></returns>
         public IQueryable<CurrentHire> GetAll()
@@ -49,9 +49,9 @@ namespace Basecode.Data.Repositories
         }
 
         /// <summary>
-        /// Update useroffer
+        /// Update current hire
         /// </summary>
-        /// <param name="userOffer"></param>
+        /// <param name="currentHire"></param>
         public void UpdateCurrentHire(CurrentHire currentHire)
         {
             _context.CurrentHire.Update(currentHire);
@@ -62,16 +62,16 @@ namespace Basecode.Data.Repositories
         /// Update current hire
         /// </summary>
         /// <param name="userOffer"></param>
-        //public void UpdateCurrentHires(UserOffer userOffer)
+        //public void UpdateCurrentHires(CurrentHire currentHire)
         //{
-        //    _context.UserOffer.Update(userOffer);
+        //    _context.CurrentHire.Update(currentHire);
         //    _context.SaveChanges();
         //}
 
         /// <summary>
-        /// Add useroffer
+        /// Add current hire
         /// </summary>
-        /// <param name="userOffer"></param>
+        /// <param name="currentHire"></param>
         /// <returns></returns>
         public int AddCurrentHire(CurrentHire currentHire)
         {
@@ -81,7 +81,7 @@ namespace Basecode.Data.Repositories
         }
 
         /// <summary>
-        /// Get id if user offerexists
+        /// Get id if current hire exists
         /// </summary>
         /// <param name="applicationId"></param>
         /// <returns></returns>
