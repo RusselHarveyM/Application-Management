@@ -103,5 +103,13 @@ namespace Basecode.Services.Interfaces
         /// Sends the accepted schedule with Teams link to the applicant.
         /// </summary>
         Task SendAcceptedScheduleToApplicant(string email, UserSchedule userSchedule, ApplicationViewModel application, string joinUrl);
+
+        /// <summary>
+        /// Sends the password change.
+        /// </summary>
+        /// <param name="userEmail">The user email.</param>
+        /// <param name="callBackUrl">The call back URL.</param>
+        /// <returns></returns>
+        Task SendPasswordChange(string userEmail, string callBackUrl);
     }
 }
