@@ -18,16 +18,20 @@ namespace Basecode.WebApp.Controllers
         private readonly IJobOpeningService _jobOpeningService;
         private readonly IUserService _userService;
         private readonly ICharacterReferenceService _characterReferenceService;
+        private readonly IBackgroundCheckService _backgroundCheckService;
+        private readonly IEmailSendingService _emailSendingService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly IDashboardService _dashboardService;
         private readonly UserManager<IdentityUser> _userManager;
 
-        public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService, IUserService userService, ICharacterReferenceService characterReferenceService, IDashboardService  dashboardService, UserManager<IdentityUser> userManager)
+        public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService, IUserService userService, ICharacterReferenceService characterReferenceService, IBackgroundCheckService backgroundCheckService, IEmailSendingService emailSendingService, IDashboardService  dashboardService, UserManager<IdentityUser> userManager)
         {
             _applicantService = applicantService;
             _jobOpeningService = jobOpeningService;
             _userService = userService;
             _characterReferenceService = characterReferenceService;
+            _backgroundCheckService = backgroundCheckService;
+            _emailSendingService = emailSendingService;
             _dashboardService = dashboardService;
             _userManager = userManager;
         }
@@ -249,25 +253,26 @@ namespace Basecode.WebApp.Controllers
         /// Action method for displaying the details of an applicant and their associated character references.
         /// </summary>
         /// <returns>Returns a View containing the applicant details and character references.</returns>
-        public IActionResult ApplicantViewDetails()
+        public IActionResult ApplicantViewDetails(int applicantId)
         {
             try
             {
                 var applicant = new Applicant();
                 var characterReferences = new List<CharacterReference>();
+                var background = new List<BackgroundCheck>();
+                applicant = _applicantService.GetApplicantById(applicantId);
+                characterReferences = _characterReferenceService.GetReferencesByApplicantId(applicantId);
 
-                if (Request.Query.TryGetValue("applicantId", out var applicantIdValue))
+                foreach (var characterReference in characterReferences)
                 {
-                    int applicantId = int.Parse(applicantIdValue);
-                    applicant = _applicantService.GetApplicantById(applicantId);
-                    characterReferences = _characterReferenceService.GetReferencesByApplicantId(applicantId);
-
+                    background.Add(_backgroundCheckService.GetBackgroundByCharacterRefId(characterReference.Id));
                 }
 
                 var model = new ApplicantDetailsViewModel
                 {
                     Applicant = applicant,
-                    CharacterReferences = characterReferences
+                    CharacterReferences = characterReferences,
+                    BackgroundCheck = background
                 };
 
                 return View(model);
@@ -288,10 +293,43 @@ namespace Basecode.WebApp.Controllers
         {
             try
             {
+                
                 var applicant = _applicantService.GetApplicantById(applicantId);
                 var fileName = $"{applicant.Firstname}_{applicant.Lastname}_Resume.pdf";
 
                 return File(applicant.CV, "application/pdf", fileName);
+            }
+            catch (Exception e)
+            {
+                _logger.Error(ErrorHandling.DefaultException(e.Message));
+                return StatusCode(500, "Something went wrong.");
+            }
+        }
+
+        /// <summary>
+        /// Requests a background check by sending an email to the specified character reference for a particular applicant.
+        /// </summary>
+        /// <param name="characterReferenceId">The unique identifier of the character reference to whom the request is sent.</param>
+        /// <param name="applicantId">The unique identifier of the applicant for whom the background check is requested.</param>
+        /// <returns>An IActionResult representing the result of the request.</returns>
+        public IActionResult RequestBackgroundCheck(int characterReferenceId, int applicantId)
+        {
+            try
+            {
+                var userAspId = _userManager.GetUserId(User);
+                var userId = _userService.GetUserIdByAspId(userAspId);
+                var applicant = new Applicant();
+                var characterReferences = new CharacterReference();
+                applicant = _applicantService.GetApplicantById(applicantId);
+                characterReferences = _characterReferenceService.GetCharacterReferenceById(characterReferenceId);
+                _emailSendingService.SendRequestReference(characterReferences, applicant, userId);
+
+                if(applicant == null || characterReferences == null)
+                {
+                    return NotFound();
+                }
+
+                return RedirectToAction("ApplicantDirectoryView");
             }
             catch (Exception e)
             {

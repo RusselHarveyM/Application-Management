@@ -43,7 +43,12 @@ namespace Basecode.Services.Services
 
             return logContent;
         }
-    
+
+        /// <summary>
+        /// Retrieves a list of character references associated with the specified applicant ID.
+        /// </summary>
+        /// <param name="applicantId">The unique identifier of the applicant whose character references are to be retrieved.</param>
+        /// <returns>A list of CharacterReference objects representing the character references related to the specified applicant.</returns>
         public List<CharacterReference> GetReferencesByApplicantId(int applicantId) 
         {
             var data = _repository.GetAll()
@@ -53,17 +58,28 @@ namespace Basecode.Services.Services
                     Id = m.Id,
                     Name = m.Name,
                     Address = m.Address,
-                    Email = m.Email
+                    Email = m.Email,
+                    ApplicantId = m.ApplicantId,
                 }).ToList();
 
             return data;
         }
 
+        /// <summary>
+        /// Gets the character reference by identifier.
+        /// </summary>
+        /// <param name="characterReferenceId">The character reference identifier.</param>
+        /// <returns></returns>
         public CharacterReference GetCharacterReferenceById(int characterReferenceId)
         {
             return _repository.GetCharacterReferenceById(characterReferenceId) ?? throw new Exception("No data found");
         }
 
+        /// <summary>
+        /// Gets the character reference applicant identifier.
+        /// </summary>
+        /// <param name="characterReferenceId">The character reference identifier.</param>
+        /// <returns></returns>
         public int GetApplicantIdByCharacterReferenceId(int characterReferenceId)
         {
             return _repository.GetAll().Where(m => m.Id == characterReferenceId).Select(m => m.ApplicantId).SingleOrDefault();

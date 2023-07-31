@@ -126,15 +126,15 @@
     function addInputField(containerId, inputClass, inputName) {
         var container = document.getElementById(containerId);
         var inputContainerOne = document.createElement("div");
-        inputContainerOne.className = "row align-items-center justify-content-center text-end mb-4 mt-2";
+        inputContainerOne.className = "col justify-content-center text-start mb-4";
         var inputContainerTwo = document.createElement("div");
-        inputContainerTwo.className = "row align-items-center justify-content-center text-end mb-4";
+        inputContainerTwo.className = "col justify-content-center text-start mb-4";
         var inputContainerThree = document.createElement("div");
-        inputContainerThree.className = "row align-items-center justify-content-center text-end mb-4";
+        inputContainerThree.className = "col justify-content-center text-start mb-4";
         var nameRowContainerOne = document.createElement("div");
         nameRowContainerOne.className = "col-sm-2";
         var nameRowContainerTwo = document.createElement("div");
-        nameRowContainerTwo.className = "col-sm-10";
+        nameRowContainerTwo.className = "col";
         var nameLabel = document.createElement("p");
         nameLabel.className = "mb-0";
         nameLabel.innerHTML = "Name";
@@ -146,7 +146,7 @@
         var addressRowContainerOne = document.createElement("div");
         addressRowContainerOne.className = "col-sm-2";
         var addressRowContainerTwo = document.createElement("div");
-        addressRowContainerTwo.className = "col-sm-10";
+        addressRowContainerTwo.className = "col";
         var addressLabel = document.createElement("p");
         addressLabel.className = "mb-0";
         addressLabel.innerHTML = "Address";
@@ -158,7 +158,7 @@
         var emailRowContainerOne = document.createElement("div");
         emailRowContainerOne.className = "col-sm-2";
         var emailRowContainerTwo = document.createElement("div");
-        emailRowContainerTwo.className = "col-sm-10";
+        emailRowContainerTwo.className = "col";
         var emailLabel = document.createElement("p");
         emailLabel.className = "mb-0";
         emailLabel.innerHTML = "Email";
