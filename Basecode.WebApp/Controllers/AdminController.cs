@@ -38,11 +38,9 @@ namespace Basecode.WebApp.Controllers
                     if(result.Succeeded || result! == null)
                     {
                         _logger.Trace("Role Created Successfully");
-                        return RedirectToAction("Index", "Admin");
                     }
-                }
-
-                return View();
+                } 
+                return RedirectToAction("Index", "Admin");
             }
             catch (Exception e)
             {

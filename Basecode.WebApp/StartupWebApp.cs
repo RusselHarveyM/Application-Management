@@ -1,8 +1,7 @@
 ﻿using Basecode.Services.Interfaces;
 using Basecode.Services.Services;
-using Basecode.WebApp.Controllers;
 using Hangfire;
-using Hangfire.SqlServer;
+using NToastNotify;
 
 namespace Basecode.WebApp
 {
@@ -42,6 +41,11 @@ namespace Basecode.WebApp
             {
                 options.EnableEndpointRouting = false;
             });
+            services.AddMvc().AddNToastNotifyToastr(new ToastrOptions()
+            {
+                ProgressBar = false,
+                PositionClass = ToastPositions.TopRight
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -64,6 +68,8 @@ namespace Basecode.WebApp
             app.UseAuthentication();        // Enables the ConfigureAuth service.
             app.UseAuthorization();
             app.UseHangfireDashboard();
+            app.UseNToastNotify();
+
             
             ConfigureRoutes(app);      // Configuration for API controller routing
             ConfigureAuth(app);        // Configuration for Token Authentication

@@ -6,6 +6,7 @@ using Basecode.Services.Services;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using NToastNotify;
 
 namespace Basecode.WebApp.Controllers
 {
@@ -13,12 +14,14 @@ namespace Basecode.WebApp.Controllers
     {
         private readonly IJobOpeningService _jobOpeningService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly IToastNotification _toastNotification;
         private readonly UserManager<IdentityUser> _userManager;
 
-        public JobController(IJobOpeningService jobOpeningService, UserManager<IdentityUser> userManager)
+        public JobController(IJobOpeningService jobOpeningService, UserManager<IdentityUser> userManager, IToastNotification toastNotification)
         {
             _jobOpeningService = jobOpeningService;
             _userManager = userManager;
+            _toastNotification = toastNotification;
         }
 
         /// <summary>
@@ -46,7 +49,8 @@ namespace Basecode.WebApp.Controllers
             catch (Exception e)
             {
                 _logger.Error(ErrorHandling.DefaultException(e.Message));
-                return StatusCode(500, "Something went wrong.");
+                _toastNotification.AddErrorToastMessage(e.Message);
+                return RedirectToAction("Index");
             }
         }
 
@@ -69,7 +73,8 @@ namespace Basecode.WebApp.Controllers
             catch (Exception e)
             {
                 _logger.Error(ErrorHandling.DefaultException(e.Message));
-                return StatusCode(500, "Something went wrong.");
+                _toastNotification.AddErrorToastMessage(e.Message);
+                return RedirectToAction("Index");
             }
 
         }
@@ -88,8 +93,10 @@ namespace Basecode.WebApp.Controllers
                 var jobOpening = _jobOpeningService.GetById(id);
                 if (jobOpening == null)
                 {
-                    _logger.Error("Job Opening [" + id + "] not found!");
-                    return NotFound();
+                    var message = "Job Opening [" + id + "] not found!";
+                    _logger.Error(message);
+                    _toastNotification.AddInfoToastMessage(message);
+                    return RedirectToAction("Index");
                 }
                 _logger.Trace("Job Opening [" + id + "] found.");
                 return View(jobOpening);
@@ -97,7 +104,8 @@ namespace Basecode.WebApp.Controllers
             catch (Exception e)
             {
                 _logger.Error(ErrorHandling.DefaultException(e.Message));
-                return StatusCode(500, "Something went wrong.");
+                _toastNotification.AddErrorToastMessage(e.Message);
+                return RedirectToAction("Index");
             }
         }
 
@@ -114,7 +122,6 @@ namespace Basecode.WebApp.Controllers
             {
                 var user = await _userManager.GetUserAsync(User);
                 (ErrorHandling.LogContent logContent, int jobOpeningId) data = _jobOpeningService.Create(jobOpening, user.Email);
-
                 //Checks for any validation warning
                 if (!data.logContent.Result && data.jobOpeningId > 0)
                 {
@@ -123,17 +130,20 @@ namespace Basecode.WebApp.Controllers
                     // Assign logged-in user to the new job opening
                     List<string> assignedUser = new List<string>() { user.Id };
                     _jobOpeningService.UpdateJobOpeningUsers(data.jobOpeningId, assignedUser);
-
+                    _toastNotification.AddSuccessToastMessage("Job Created Succesfully.");
                     return RedirectToAction("Index");
                 }
                 //Fails the validation
                 _logger.Warn(ErrorHandling.SetLog(data.logContent));
+                _toastNotification.AddWarningToastMessage(ErrorHandling.SetLog(data.logContent));
                 return View("CreateView", jobOpening);
             }
             catch (Exception e)
             {
                 _logger.Error(ErrorHandling.DefaultException(e.Message));
-                return StatusCode(500, "Something went wrong.");
+                _toastNotification.AddErrorToastMessage(e.Message);
+                return RedirectToAction("Index");
+
             }
         }
 
@@ -154,8 +164,10 @@ namespace Basecode.WebApp.Controllers
 
                 if (jobOpening == null)
                 {
-                    _logger.Trace("Job Opening [" + id + "] not found!");
-                    return NotFound();
+                    var message = "Job Opening [" + id + "] not found!";
+                    _logger.Trace(message);
+                    _toastNotification.AddInfoToastMessage(message);
+                    return RedirectToAction("Index");
                 }
                 _logger.Trace("Successfully get JobOpening by the Id: { " + id + " }");
                 return View(jobOpening);
@@ -163,7 +175,8 @@ namespace Basecode.WebApp.Controllers
             catch (Exception e)
             {
                 _logger.Error(ErrorHandling.DefaultException(e.Message));
-                return StatusCode(500, "Something went wrong.");
+                _toastNotification.AddErrorToastMessage(e.Message);
+                return RedirectToAction("Index");
             }
         }
 
@@ -185,6 +198,7 @@ namespace Basecode.WebApp.Controllers
                 {
                     // Update the job opening
                     _logger.Trace("Updated [" + jobOpening.Id + "] successfully.");
+                    _toastNotification.AddInfoToastMessage("Job Updated.");
                     return RedirectToAction("Index");
                 }
                 _logger.Trace(ErrorHandling.SetLog(data));
@@ -193,7 +207,8 @@ namespace Basecode.WebApp.Controllers
             catch (Exception e)
             {
                 _logger.Error(ErrorHandling.DefaultException(e.Message));
-                return StatusCode(500, "Something went wrong.");
+                _toastNotification.AddErrorToastMessage(e.Message);
+                return RedirectToAction("Index");
             }
         }
 
@@ -220,35 +235,16 @@ namespace Basecode.WebApp.Controllers
                 }
                 _logger.Trace("Deleted [" + id + "] successfully.");
                 _jobOpeningService.Delete(jobOpening);
+                _toastNotification.AddSuccessToastMessage("Job Deleted Succesfully.");
                 return RedirectToAction("Index");
 
             }
             catch (Exception e)
             {
                 _logger.Error(ErrorHandling.DefaultException(e.Message));
-                return StatusCode(500, "Something went wrong.");
+                _toastNotification.AddErrorToastMessage(e.Message);
+                return RedirectToAction("Index");
             }
         }
-
-        // /// <summary>
-        // /// Updates the job opening assignments.
-        // /// </summary>
-        // /// <param name="assignedUserIds">The assigned user ids.</param>
-        // /// <param name="jobOpeningId">The job opening identifier.</param>
-        // /// <returns></returns>
-        // [HttpPost]
-        // public IActionResult UpdateJobOpeningAssignments(List<string> assignedUserIds, int jobOpeningId)
-        // {
-        //     try
-        //     {
-        //         _jobOpeningService.UpdateJobOpeningUsers(jobOpeningId, assignedUserIds);
-        //         return Ok();
-        //     }
-        //     catch (Exception e)
-        //     {
-        //         _logger.Error(ErrorHandling.DefaultException(e.Message));
-        //         return StatusCode(500, "Something went wrong.");
-        //     }
-        // }
     }
 }
