@@ -242,5 +242,23 @@ namespace Basecode.Services.Services
             }
             return successfullyAddedApplicantIds;
         }
+
+        /// <summary>
+        /// Add useroffers
+        /// </summary>
+        /// <param name="userOffer"></param>
+        /// <returns></returns>
+        public (LogContent, int) AddCurrentHires(CurrentHire currentHire)
+        {
+            LogContent logContent = CheckCurrentHire(currentHire);
+            int currentHireId = -1;
+
+            if (logContent.Result == false)
+            {
+                currentHireId = _currentHireRepository.AddCurrentHire(currentHire);
+            }
+
+            return (logContent, currentHireId);
+        }
     }
 }

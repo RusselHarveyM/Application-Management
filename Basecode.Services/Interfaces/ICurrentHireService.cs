@@ -95,5 +95,12 @@ namespace Basecode.Services.Interfaces
         /// <param name="successfullyAddedApplicantIds"></param>
         /// <returns></returns>
         Task<List<int>> HandleNewHire(CurrentHire currentHire, int applicantId, List<int> successfullyAddedApplicantIds);
+
+        /// <summary>
+        /// Add useroffers
+        /// </summary>
+        /// <param name="userOffer"></param>
+        /// <returns></returns>
+        (LogContent, int) AddCurrentHires(CurrentHire currentHire);
     }
 }
