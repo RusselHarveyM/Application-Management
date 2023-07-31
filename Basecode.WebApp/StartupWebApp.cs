@@ -43,8 +43,9 @@ namespace Basecode.WebApp
             });
             services.AddMvc().AddNToastNotifyToastr(new ToastrOptions()
             {
-                ProgressBar = false,
-                PositionClass = ToastPositions.TopRight
+                ProgressBar = true,
+                PositionClass = ToastPositions.TopRight,
+                CloseButton = true
             });
         }
 
