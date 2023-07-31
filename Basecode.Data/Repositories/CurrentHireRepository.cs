@@ -23,7 +23,7 @@ namespace Basecode.Data.Repositories
         /// </summary>
         /// <param name="currentHireId"></param>
         /// <returns></returns>
-        public CurrentHire GetUserOfferById(int currentHireId)
+        public CurrentHire GetCurrentHireById(int currentHireId)
         {
             return _context.CurrentHire.Find(currentHireId);
         }

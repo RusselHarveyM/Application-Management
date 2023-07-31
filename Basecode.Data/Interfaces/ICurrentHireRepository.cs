@@ -14,7 +14,7 @@ namespace Basecode.Data.Interfaces
         /// </summary>
         /// <param name="currentHireId"></param>
         /// <returns></returns>
-        CurrentHire GetUserOfferById(int currentHireId);
+        CurrentHire GetCurrentHireById(int currentHireId);
 
         /// <summary>
         /// Get current hire id by user id
