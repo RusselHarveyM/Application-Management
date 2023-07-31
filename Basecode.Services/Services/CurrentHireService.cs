@@ -22,6 +22,7 @@ namespace Basecode.Services.Services
         private readonly IUserService _userService;
         private readonly IEmailSendingService _emailSendingService;
         private readonly IApplicationService _applicationService;
+        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
         public CurrenHireService(ICurrentHireRepository currentHireRepository, IUserScheduleRepository userScheduleRepository, IApplicationRepository applicationRepository, IApplicantService applicantService, IUserService userService, 
             IEmailSendingService emailSendingService, IApplicationService applicationService)
@@ -187,6 +188,26 @@ namespace Basecode.Services.Services
             {
                 successfullyAddedApplicantIds = await HandleNewHire(currentHire, applicant.Id, successfullyAddedApplicantIds);
             }
+        }
+
+        /// <summary>
+        /// Handle existing offer
+        /// </summary>
+        /// <param name="userOffer"></param>
+        /// <param name="existingId"></param>
+        /// <param name="applicantId"></param>
+        /// <param name="successfullyAddedApplicantIds"></param>
+        /// <returns></returns>
+        public async Task<List<int>> HandleExistingHire(CurrentHire currentHire, int existingId, int applicantId, List<int> successfullyAddedApplicantIds)
+        {
+            LogContent logContent = UpdateCurrentHire(currentHire, existingId);
+            if (logContent.Result == false)
+            {
+                _logger.Trace("Successfully updated User Offer [ " + existingId + " ]");
+                // await SendScheduleToApplicant(userOffer, existingId, applicantId);
+                successfullyAddedApplicantIds.Add(applicantId);
+            }
+            return successfullyAddedApplicantIds;
         }
     }
 }

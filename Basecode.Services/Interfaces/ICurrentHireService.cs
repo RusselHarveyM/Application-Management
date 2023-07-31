@@ -67,5 +67,15 @@ namespace Basecode.Services.Interfaces
         /// <param name="userOfferId"></param>
         /// <returns></returns>
         Task AddCurrentHire(Applicant applicant, int currentHireId);
+
+        /// <summary>
+        /// Handle existing offer
+        /// </summary>
+        /// <param name="userOffer"></param>
+        /// <param name="existingId"></param>
+        /// <param name="applicantId"></param>
+        /// <param name="successfullyAddedApplicantIds"></param>
+        /// <returns></returns>
+        Task<List<int>> HandleExistingHire(CurrentHire currentHire, int existingId, int applicantId, List<int> successfullyAddedApplicantIds);
     }
 }
