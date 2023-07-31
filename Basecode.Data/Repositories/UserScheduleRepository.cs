@@ -1,5 +1,6 @@
 ﻿using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Basecode.Data.Repositories
 {
@@ -22,6 +23,15 @@ namespace Basecode.Data.Repositories
             _context.UserSchedule.Add(userSchedule);
             _context.SaveChanges();
             return userSchedule.Id;
+        }
+
+        /// <summary>
+        /// Inserts multiple UserSchedul records into the database.
+        /// </summary>
+        public void AddUserSchedules(List<UserSchedule> userSchedules)
+        {
+            _context.UserSchedule.AddRange(userSchedules);
+            _context.SaveChanges();
         }
 
         /// <summary>

@@ -13,6 +13,11 @@ namespace Basecode.Services.Interfaces
         (LogContent, int) AddUserSchedule(UserSchedule userSchedule);
 
         /// <summary>
+        /// Adds multiple UserSchedules.
+        /// </summary>
+        void AddUserSchedules(List<UserSchedule> userSchedules);
+
+        /// <summary>
         /// Gets the user schedule by identifier.
         /// </summary>
         /// <param name="userScheduleId">The user schedule identifier.</param>

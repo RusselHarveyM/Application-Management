@@ -86,28 +86,28 @@ namespace Basecode.Data.Models
         public IdentityUser IdentityUser { get; set; }
 
         /// <summary>
-        /// Gets or sets the user schedule.
+        /// Gets the user schedule.
         /// </summary>
         /// <value>
         /// The user schedule.
         /// </value>
-        public UserSchedule? UserSchedule { get; set; }
+        public ICollection<UserSchedule> UserSchedule { get; } = new List<UserSchedule>();
 
         /// <summary>
-        /// Gets or sets the interview.
+        /// Gets the interview.
         /// </summary>
         /// <value>
         /// The interview.
         /// </value>
-        public Interview? Interview { get; set; }
+        public ICollection<Interview> Interview { get; } = new List<Interview>();
 
         /// <summary>
-        /// Gets or sets the examination.
+        /// Gets the examination.
         /// </summary>
         /// <value>
         /// The examination.
         /// </value>
-        public Examination? Examination { get; set; }
+        public ICollection<Examination> Examination { get; } = new List<Examination>();
 
         /// <summary>
         /// Gets or sets the background check.

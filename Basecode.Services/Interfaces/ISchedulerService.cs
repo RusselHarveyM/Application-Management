@@ -19,7 +19,7 @@ namespace Basecode.Services.Interfaces
         /// <param name="userScheduleId">The user schedule identifier.</param>
         /// <param name="applicantId">The applicant identifier.</param>
         /// <param name="meetingType">Type of the meeting.</param>
-        void SendScheduleToApplicant(UserSchedule userSchedule, int userScheduleId, int applicantId, string meetingType);
+        void SendScheduleToApplicant(UserSchedule userSchedule, int userScheduleId, string meetingType, int applicantId = -1);
 
         /// <summary>
         /// Checks the schedule status after token expiry.
@@ -32,7 +32,7 @@ namespace Basecode.Services.Interfaces
         /// </summary>
         /// <param name="formData">The form data.</param>
         /// <param name="userId">The user identifier.</param>
-        void SendSchedulesToInterviewer(SchedulerDataViewModel formData, int userId, List<int> successfullyAddedApplicantIds);
+        void SendSchedulesToInterviewer(SchedulerDataViewModel formData, int userId);
 
         /// <summary>
         /// Accepts the schedule.

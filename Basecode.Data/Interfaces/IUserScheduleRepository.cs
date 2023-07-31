@@ -11,6 +11,11 @@ namespace Basecode.Data.Interfaces
         int AddUserSchedule(UserSchedule userSchedule);
 
         /// <summary>
+        /// Inserts multiple UserSchedule records into the database.
+        /// </summary>
+        void AddUserSchedules(List<UserSchedule> userSchedules);
+
+        /// <summary>
         /// Gets the user schedule by identifier.
         /// </summary>
         /// <param name="userScheduleId">The user schedule identifier.</param>
