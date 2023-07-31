@@ -43,6 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Views\CurrentHire\" />
     <Folder Include="wwwroot\js\scheduler\" />
   </ItemGroup>
 

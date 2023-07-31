@@ -1,0 +1,18 @@
+﻿@{
+    ViewData["Title"] = "Accept Hire";
+}
+
+<div class="container mt-5">
+    <div class="row text-center justify-content-center">
+        <div class="col-md-6">
+            @if (ViewBag.IsHireAccepted == true)
+            {
+                <h4>You have successfully accepted the offer.</h4>
+            }
+            else
+            {
+                <p>Your token is invalid or has expired.</p>
+            }
+        </div>
+    </div>
+</div>

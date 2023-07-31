@@ -31,19 +31,19 @@ namespace Basecode.WebApp.Controllers
         {
             try
             {
-                ViewBag.IsOfferAccepted = false;
-                int userOfferId = _tokenHelper.GetIdFromToken(token, "accept");
-                if (userOfferId == 0)
+                ViewBag.IsHireAccepted = false;
+                int currentHireId = _tokenHelper.GetIdFromToken(token, "accept");
+                if (currentHireId == 0)
                 {
                     _logger.Warn("Invalid or expired token.");
                     return View();
                 }
 
-                var data = _currentHireService.AcceptOffer(userOfferId);
+                var data = _currentHireService.AcceptOffer(currentHireId);
                 if (!data.Result)
                 {
-                    _logger.Trace("User Offer [" + userOfferId + "] has been successfully accepted.");
-                    ViewBag.IsOfferAccepted = true;
+                    _logger.Trace("User Offer [" + currentHireId + "] has been successfully accepted.");
+                    ViewBag.IsHireAccepted = true;
                 }
 
                 return View();
@@ -63,19 +63,19 @@ namespace Basecode.WebApp.Controllers
         {
             try
             {
-                ViewBag.IsOfferRejected = false;
-                int userOfferId = _tokenHelper.GetIdFromToken(token, "reject");
-                if (userOfferId == 0)
+                ViewBag.IsHireRejected = false;
+                int currentHireId = _tokenHelper.GetIdFromToken(token, "reject");
+                if (currentHireId == 0)
                 {
                     _logger.Warn("Invalid or expired token.");
                     return View();
                 }
 
-                var data = await _currentHireService.RejectOffer(userOfferId);
+                var data = await _currentHireService.RejectOffer(currentHireId);
                 if (!data.Result)
                 {
-                    _logger.Trace("User Offer [" + userOfferId + "] has been successfully rejected.");
-                    ViewBag.IsOfferRejected = true;
+                    _logger.Trace("User Offer [" + currentHireId + "] has been successfully rejected.");
+                    ViewBag.IsHireRejected = true;
                 }
 
                 return View();
