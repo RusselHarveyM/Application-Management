@@ -176,14 +176,14 @@ namespace Basecode.Services.Services
         /// Accepts the schedule.
         /// </summary>
         /// <param name="userScheduleId">The user schedule identifier.</param>
-        public LogContent AcceptSchedule(int userScheduleId)
+        public async Task<LogContent> AcceptSchedule(int userScheduleId)
         {
             var userSchedule = _userScheduleService.GetUserScheduleById(userScheduleId);
             LogContent logContent = CheckUserScheduleStatus(userSchedule);
 
             if (logContent.Result == false)
             {
-                string joinUrl = SetOnlineMeetingSchedule(userSchedule);
+                string joinUrl = await SetOnlineMeetingSchedule(userSchedule);
                 if (!string.IsNullOrEmpty(joinUrl))
                 {
                     _logger.Trace("Successfully generated a Teams meeting link.");
@@ -248,7 +248,7 @@ namespace Basecode.Services.Services
         /// <summary>
         /// Sets the online meeting schedule.
         /// </summary>
-        public string SetOnlineMeetingSchedule(UserSchedule userSchedule)
+        public async Task<string> SetOnlineMeetingSchedule(UserSchedule userSchedule)
         {
             ApplicationViewModel application = _applicationService.GetById(userSchedule.ApplicationId);
             string email = _userService.GetUserEmailById(userSchedule.UserId);
@@ -269,7 +269,7 @@ namespace Basecode.Services.Services
             LogContent logContent = CheckCalendarEvent(calendarEvent);
             if (logContent.Result == false)
             {
-                joinUrl = _calendarService.CreateEvent(calendarEvent, email);
+                joinUrl = await _calendarService.CreateEvent(calendarEvent, email);
             }
 
             return joinUrl;

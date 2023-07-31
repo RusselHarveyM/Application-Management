@@ -38,7 +38,7 @@ namespace Basecode.Services.Interfaces
         /// Accepts the schedule.
         /// </summary>
         /// <param name="userScheduleId">The user schedule identifier.</param>
-        LogContent AcceptSchedule(int userScheduleId);
+        Task<LogContent> AcceptSchedule(int userScheduleId);
 
         /// <summary>
         /// Rejects the schedule.
@@ -55,7 +55,7 @@ namespace Basecode.Services.Interfaces
         /// <summary>
         /// Sets the online meeting schedule.
         /// </summary>
-        string SetOnlineMeetingSchedule(UserSchedule userSchedule);
+        Task<string> SetOnlineMeetingSchedule(UserSchedule userSchedule);
 
         /// <summary>
         /// Sends the accepted schedule with Teams link to the interviewer.

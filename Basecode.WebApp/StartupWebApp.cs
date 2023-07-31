@@ -1,5 +1,6 @@
 ﻿using Basecode.Services.Interfaces;
 using Basecode.Services.Services;
+using Basecode.WebApp.Controllers;
 using Hangfire;
 using Hangfire.SqlServer;
 
@@ -62,11 +63,11 @@ namespace Basecode.WebApp
             app.UseRouting();               
             app.UseAuthentication();        // Enables the ConfigureAuth service.
             app.UseAuthorization();
+            app.UseHangfireDashboard();
             
             ConfigureRoutes(app);      // Configuration for API controller routing
             ConfigureAuth(app);        // Configuration for Token Authentication
 
-            app.UseHangfireDashboard();
 
             // Shortlisting of Applicants that runs every 2 weeks
             //RecurringJob.AddOrUpdate<IShortlistingService>("shortlisting", service => service.ShortlistApplications(), "0 8 1,15 * *");
