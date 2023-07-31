@@ -171,7 +171,7 @@
     <div class="row mt-4">
         @foreach (var jobOpening in Model)
         {
-            <div class="col-sm-4">
+                <div class="col-sm-4" data-tag="@jobOpening.Tag">
                 <a href="@Url.Action("JobView", "Job", new { id = jobOpening.Id })" style="text-decoration:none;">
 
                     <div class="card mb-4">
