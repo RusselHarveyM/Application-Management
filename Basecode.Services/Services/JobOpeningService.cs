@@ -21,8 +21,6 @@ namespace Basecode.Services.Services
         private readonly IMapper _mapper;
         private readonly IUserRepository _userRepository;
         private readonly IEmailSchedulerService _emailSchedulerService;
-        private readonly IEmailSendingService _emailSendingService;
-        private readonly IApplicantRepository _applicantRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JobOpeningService" /> class.
@@ -32,7 +30,7 @@ namespace Basecode.Services.Services
         /// <param name="qualificationService">The qualification service.</param>
         /// <param name="responsibilityService">The responsibility service.</param>
         public JobOpeningService(IJobOpeningRepository repository, IMapper mapper, IQualificationService qualificationService, IResponsibilityService responsibilityService, 
-            IUserRepository userRepository, IEmailSchedulerService emailSchedulerService, IEmailSendingService emailSendingService, IApplicantRepository applicantRepository)
+            IUserRepository userRepository, IEmailSchedulerService emailSchedulerService)
         {
             _repository = repository;
             _mapper = mapper;
@@ -40,8 +38,6 @@ namespace Basecode.Services.Services
             _responsibilityService = responsibilityService;
             _userRepository = userRepository;
             _emailSchedulerService = emailSchedulerService;
-            _emailSendingService = emailSendingService;
-            _applicantRepository = applicantRepository;
         }
 
         /// <summary>
@@ -225,8 +221,6 @@ namespace Basecode.Services.Services
         {
             // Retrieve the current assigned user IDs from the database
             var currentAssignedUserIds = _repository.GetLinkedUserIds(jobOpeningId);
-            var data = _applicantRepository.GetById(1);
-            //var data = _applicantRepository.GetById(jobOpeningId);
 
             // Check if there are any new assigned users
             bool hasNewAssignedUsers = assignedUserIds.Except(currentAssignedUserIds).Any();
@@ -237,7 +231,6 @@ namespace Basecode.Services.Services
             if (hasNewAssignedUsers)
             {
                 GetReminder(jobOpeningId);
-                _emailSendingService.SendCongratulation(data, 1);
             }
         }
 
