@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using NLog;
 
 namespace Basecode.WebApp.Areas.Identity.Pages.Account
 {
@@ -21,6 +22,7 @@ namespace Basecode.WebApp.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
+        private static readonly Logger _loggerWebApp = LogManager.GetCurrentClassLogger();
 
         public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger)
         {
@@ -74,8 +76,6 @@ namespace Basecode.WebApp.Areas.Identity.Pages.Account
             /// </summary>
             [Required]
             [DataType(DataType.Password)]
-            [RegularExpression("^(?=.*[^a-zA-Z0-9])(?=.*[0-9])(?=.*[A-Z]).{8,}$",
-        ErrorMessage = "At least 8 characters, 1 non-alphanumeric, digit, uppercase letter")]
             public string Password { get; set; }
 
             /// <summary>
@@ -88,6 +88,7 @@ namespace Basecode.WebApp.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
+            _loggerWebApp.Trace("Redirected to Login Page");
             if (!string.IsNullOrEmpty(ErrorMessage))
             {
                 ModelState.AddModelError(string.Empty, ErrorMessage);
@@ -116,6 +117,7 @@ namespace Basecode.WebApp.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
+                    _loggerWebApp.Info($"User {Input.Email} logged in.");
                     _logger.LogInformation("User logged in.");
                     return LocalRedirect(returnUrl);
                 }
@@ -130,7 +132,9 @@ namespace Basecode.WebApp.Areas.Identity.Pages.Account
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt");
+                    _loggerWebApp.Error("User information is not correct");
+                    ViewData["userEmail"] = "Email or password is invalid";
+                    ViewData["userPass"] = "Email or password is invalid";
                     return Page();
                 }
             }

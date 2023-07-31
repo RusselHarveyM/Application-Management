@@ -28,7 +28,6 @@ namespace Basecode.Data.ViewModels
         /// </value>
         [Required(ErrorMessage = "Password is required.")]
         [MaxLength(20, ErrorMessage = "Maximum length for the password is 20 characters.")]
-        [RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$",ErrorMessage = "At least eight characters, one letter, and one number")]
         public string Password { get; set; }
     }
 }

@@ -375,5 +375,26 @@ namespace Basecode.Services.Services
 
             await _emailService.SendEmail(email, $"Alliance Software Inc. {userSchedule.Type} Schedule Acceptance Notification", body);
         }
+
+        /// <summary>
+        /// Sends the password change.
+        /// </summary>
+        /// <param name="userEmail">The user email.</param>
+        /// <param name="callBackUrl">The call back URL.</param>
+        public async Task SendPasswordChange(string userEmail, string callBackUrl)
+        {
+            var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
+            var templateContent = File.ReadAllText(templatePath);
+            var body = templateContent
+                .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+                .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+                .Replace("{{HEADLINE}}", $"Forgot Password Link")
+                .Replace("{{BODY}}",$"You have requested to change your password click this link below" +
+                        $"<br><br><div style=\"display:flex; align-items:center; justify-content:center\"><a href=\"{callBackUrl}\" style=\"background-color: #FF0000;" +
+                        $"border: none; color: white; padding: 10px 24px; text-align: center; text-decoration: underline; border-radius:5px;" +
+                        $"font-size: 14px; margin: 4px 2px; cursor: pointer;\">CHANGE PASSWORD</a></div>");
+
+            await _emailService.SendEmail(userEmail, $"Alliance Software Inc. Forgot Password", body);
+        }
     }
 }
