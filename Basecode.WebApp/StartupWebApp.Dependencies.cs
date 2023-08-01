@@ -42,6 +42,7 @@ namespace Basecode.WebApp
             services.AddScoped<IOAuthService, OAuthService>();
             services.AddScoped<ISchedulerService, SchedulerService>();
             services.AddScoped<ICurrentHireService, CurrentHireService>();
+            services.AddScoped<IScheduleSendingService, ScheduleSendingService>();
 
             // Repositories
             services.AddScoped<IUserRepository, UserRepository>();
