@@ -67,8 +67,7 @@ namespace Basecode.Services.Services
                 }
                 else
                 {
-                    RegretNotification(application.Applicant, application.JobOpening.Title);
-                    return null;
+                    return UpdateApplicationStatus(application, application.JobOpening, "Rejected", "Regret");
                 }
             }
 
@@ -99,6 +98,9 @@ namespace Basecode.Services.Services
                         break;
                     case "Rejected":
                         BackgroundJob.Enqueue(() => _emailSendingService.SendRejectedEmail(applicantTemp, newStatus));
+                        break;
+                    case "Regret":
+                        RegretNotification(application.Applicant, application.JobOpening.Title);
                         break;
                     default:
                         break;

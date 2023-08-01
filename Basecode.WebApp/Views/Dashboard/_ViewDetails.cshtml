@@ -19,19 +19,6 @@
                     <p>Applicant Name: @Model.Applicant.Lastname, @Model.Applicant.Firstname</p>
                     <p>Applicant Email: @Model.Applicant.Email</p>
                 </div>
-                <div class="d-flex flex-column">
-                    <h4>File</h4>
-                    @if (Model.Applicant.CV != null)
-                    {
-                        <a href="@Url.Action("DownloadFile", "Dashboard", new { id = Model.ApplicantId })" class="btn btn-primary">
-                            Download File
-                        </a>
-                    }
-                    else
-                    {
-                        <p>No File Available</p>
-                    }
-                </div>
             </div>
            @* <a asp-controller="Email" asp-action="SendApprovalEmail" class="btn-danger" style="text-decoration:none; text-align:center; padding: 1.4rem; cursor:pointer">HR SCREENING</a>
       *@  

@@ -191,7 +191,7 @@ namespace Basecode.WebApp.Controllers
                 var application = _dashboardService.GetApplicationById(appId);
                 var foundUser = _userService.GetByEmail(email);
                  _dashboardService.UpdateStatus(application, foundUser, status);
-                 return RedirectToAction("ShortListView");
+                 return RedirectToAction("ApplicantDirectoryView");
             }
             catch(Exception e)
             {
