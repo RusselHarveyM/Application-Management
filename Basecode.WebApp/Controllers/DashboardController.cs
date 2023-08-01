@@ -272,6 +272,7 @@ namespace Basecode.WebApp.Controllers
                 {
                     Applicant = applicant,
                     Status = applicant.Application?.Status,
+                    UpdateDate = applicant.Application?.UpdateTime,
                     CharacterReferences = characterReferences,
                     BackgroundCheck = background
                 };

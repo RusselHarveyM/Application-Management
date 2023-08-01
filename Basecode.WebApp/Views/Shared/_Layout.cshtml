@@ -54,12 +54,16 @@
             </div>
         </div>
     </nav>
-        @await Component.InvokeAsync("NToastNotify")
 </header>
 <div class="container" style="min-height: 100vh;">
     <main role="main" class="pb-3">
+    @await Component.InvokeAsync("NToastNotify")
         @RenderBody()
     </main>
+    <!--Return Top feature-->
+        <div id="topButtonContainer" style="text-align: right; position: fixed; bottom: 50px; right: 50px; cursor: pointer">
+            <img src="~/images/home/GoUp.png" width="40" onclick="goToTop()" alt="Go to top" id="topButton"/>
+        </div>
 </div>
 
 <footer>
@@ -107,6 +111,31 @@
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
 <script src="~/js/home/home.js" asp-append-version="true"></script>
+<script>
+    // Get the topButtonContainer element
+    var topButtonContainer = document.getElementById("topButtonContainer");
+
+    // Get the footer element
+    var footer = document.getElementsByTagName("footer")[0];
+
+    // Get the height of the footer
+    var footerHeight = footer.offsetHeight;
+
+    // Add an event listener for the scroll event
+    window.addEventListener("scroll", function() {
+        // Get the distance from the bottom of the page
+        var distanceFromBottom = document.body.scrollHeight - window.scrollY - window.innerHeight;
+
+        // Check if the distance from the bottom is less than the height of the footer
+        if (distanceFromBottom < footerHeight) {
+            // Set the bottom property of the topButtonContainer to move it above the footer
+            topButtonContainer.style.bottom = (footerHeight - distanceFromBottom + 20) + "px";
+        } else {
+            // Set the bottom property of the topButtonContainer to its original value
+            topButtonContainer.style.bottom = "50px";
+        }
+    });
+</script>
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
