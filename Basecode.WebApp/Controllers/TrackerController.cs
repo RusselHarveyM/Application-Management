@@ -83,7 +83,7 @@ namespace Basecode.WebApp.Controllers
 
                 int userId = int.Parse(tokenClaims["userId"]);
                 Guid appId = Guid.Parse(tokenClaims["appId"]);
-                string status = tokenClaims["status"];
+                string status = tokenClaims["newStatus"];
                 string choice = tokenClaims["choice"];
 
                 //Check if applicant and user exists

@@ -183,7 +183,9 @@ namespace Basecode.Services.Services
                 .Replace("{{BODY}}", $"Dear {user.Fullname},<br> Applicant [{applicant.Id}] is ready for {newStatus}, please provide your feedback to" +
                     $" proceed to the next phase. Thank you.")
                 .Replace("{{REJECT_TOKEN}}", $"{rejectToken}")
-                .Replace("{{APPROVE_TOKEN}}", $"{approveToken}");
+                .Replace("{{NEGATIVE_FEEDBACK}}", "Reject")
+                .Replace("{{APPROVE_TOKEN}}", $"{approveToken}")
+                .Replace("{{POSITIVE_FEEDBACK}}", "Approve");
 
             await _emailService.SendEmail(user.Email, "Alliance Software Inc. Applicant Status Update", body);
         }
