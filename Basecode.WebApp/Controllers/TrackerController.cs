@@ -12,13 +12,15 @@ namespace Basecode.WebApp.Controllers
         private readonly IApplicantService _applicantService;
         private readonly IUserService _userService;
         private readonly ITrackService _trackService;
+        private readonly TokenHelper _tokenHelper;
 
-        public TrackerController(IApplicationService applicationService, IApplicantService applicantService, IUserService userService, ITrackService trackService)
+        public TrackerController(IApplicationService applicationService, IApplicantService applicantService, IUserService userService, ITrackService trackService, IConfiguration config)
         {
             _applicationService = applicationService;
             _applicantService = applicantService;
             _userService = userService;
             _trackService = trackService;
+            _tokenHelper = new TokenHelper(config["TokenHelper:SecretKey"]);
         }
 
         /// <summary>
@@ -67,21 +69,28 @@ namespace Basecode.WebApp.Controllers
         /// <summary>
         /// Changes the status.
         /// </summary>
-        /// <param name="userId">The user identifier.</param>
-        /// <param name="appId">The application identifier.</param>
-        /// <param name="status">The status.</param>
-        /// <param name="choice">The choice.</param>
-        /// <returns></returns>
-        [Route("Tracker/ChangeStatus/{userId}/{appId}/{status}/{choice}")]
-        public IActionResult ChangeStatus(int userId,Guid appId, string status, string choice)
+        /// <param name="token">The token.</param>
+        [Route("Tracker/ChangeStatus/{token}")]
+        public IActionResult ChangeStatus(string token)
         {
             try
             {
+                Dictionary<string, string> tokenClaims = _tokenHelper.GetTokenClaims(token, "ChangeStatus");
+                if (tokenClaims.Count == 0)
+                {
+                    _logger.Warn("Invalid or expired token.");
+                }
+
+                int userId = int.Parse(tokenClaims["userId"]);
+                Guid appId = Guid.Parse(tokenClaims["appId"]);
+                string status = tokenClaims["status"];
+                string choice = tokenClaims["choice"];
+
                 //Check if applicant and user exists
                 var application = _applicationService.GetApplicationById(appId);
                 var user = _userService.GetById(userId);
 
-                if(application != null && user != null)
+                if (application != null && user != null)
                 {
                     var result = _trackService.UpdateApplicationStatusByEmailResponse(application, user, choice, status);
                     _applicationService.Update(result);
@@ -89,7 +98,7 @@ namespace Basecode.WebApp.Controllers
 
                 return RedirectToAction("ChangeStatusView");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 _logger.Error(ErrorHandling.DefaultException(e.Message));
                 return StatusCode(500, "Something went wrong.");

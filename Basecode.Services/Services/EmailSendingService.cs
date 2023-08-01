@@ -155,6 +155,25 @@ namespace Basecode.Services.Services
         /// <param name="newStatus">The new status.</param>
         public async Task SendApprovalEmail(User user, Applicant applicant, Guid appId, string newStatus)
         {
+            Dictionary<string, string> approveTokenClaims = new Dictionary<string, string>()
+            {
+                { "action", "ChangeStatus" },
+                { "userId", user.Id.ToString() },
+                { "appId", appId.ToString() },
+                { "newStatus", newStatus },
+                { "choice", "approved" },
+            };
+            Dictionary<string, string> rejectTokenClaims = new Dictionary<string, string>()
+            {
+                { "action", "ChangeStatus" },
+                { "userId", user.Id.ToString() },
+                { "appId", appId.ToString() },
+                { "newStatus", newStatus },
+                { "choice", "rejected" },
+            };
+            string approveToken = _tokenHelper.GenerateToken(approveTokenClaims);
+            string rejectToken = _tokenHelper.GenerateToken(rejectTokenClaims);
+
             var templatePath = Path.Combine("wwwroot", "template", "ApprovalEmail.html");
             var templateContent = File.ReadAllText(templatePath);
             var body = templateContent
@@ -163,9 +182,8 @@ namespace Basecode.Services.Services
                 .Replace("{{HEADLINE}}", "Approval Email")
                 .Replace("{{BODY}}", $"Dear {user.Fullname},<br> Applicant [{applicant.Id}] is ready for {newStatus}, please provide your feedback to" +
                     $" proceed to the next phase. Thank you.")
-                .Replace("{{APPLICATION_ID}}", $"{appId}")
-                .Replace("{{USER_ID}}", $"{user.Id}")
-                .Replace("{{STATUS}}", $"{newStatus}");
+                .Replace("{{REJECT_TOKEN}}", $"{rejectToken}")
+                .Replace("{{APPROVE_TOKEN}}", $"{approveToken}");
 
             await _emailService.SendEmail(user.Email, "Alliance Software Inc. Applicant Status Update", body);
         }
