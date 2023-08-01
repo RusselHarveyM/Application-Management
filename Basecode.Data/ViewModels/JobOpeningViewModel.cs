@@ -41,6 +41,9 @@ namespace Basecode.Data.ViewModels
         /// </summary>
         [Required(ErrorMessage = "The Location is required.")]
         public string Location { get; set; }
+        
+        
+        public DateTime? UpdatedTime { get; set; }
 
         /// <summary>
         /// Gets or sets the tag.
@@ -64,6 +67,8 @@ namespace Basecode.Data.ViewModels
         /// Collection navigation for related Applications.
         /// </summary>
         public ICollection<Application> Applications { get; } = new List<Application>();
+        
+        public List<string>? usersId { get; set; } 
 
     }
 }

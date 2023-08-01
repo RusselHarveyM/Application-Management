@@ -106,12 +106,13 @@ namespace Basecode.Services.Services
         /// </summary>
         /// <param name="stage">The stage.</param>
         /// <returns></returns>
-        public List<Application> GetShorlistedApplicatons(string stage)
+        public List<Application> GetShorlistedApplicatons(string stage, int jobId)
         {
             var data = _repository.GetAll()
                 .Include(a => a.JobOpening)
                 .Include(a => a.Applicant)
                 .Where(m => m.Status == stage)
+                .Where(m => m.JobOpeningId == jobId)
                 .ToList();
             return data;
         }

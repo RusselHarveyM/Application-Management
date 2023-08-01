@@ -23,6 +23,7 @@ namespace Basecode.WebApp.Controllers
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly IDashboardService _dashboardService;
         private readonly UserManager<IdentityUser> _userManager;
+        
 
         public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService, IUserService userService, ICharacterReferenceService characterReferenceService, IBackgroundCheckService backgroundCheckService, IEmailSendingService emailSendingService, IDashboardService  dashboardService, UserManager<IdentityUser> userManager)
         {
@@ -45,13 +46,21 @@ namespace Basecode.WebApp.Controllers
             try
             {
                 List<JobOpeningViewModel> jobs = _jobOpeningService.GetJobsWithApplications();
-                if(jobs.IsNullOrEmpty())
+        
+                if (jobs.IsNullOrEmpty())
                 {
                     _logger.Info("Job List is null or empty.");
                     return View(new List<JobOpeningViewModel>());
                 }
+        
+                // Sort the job openings by updatedTime in descending order
+                jobs.Sort((job1, job2) => DateTime.Compare((DateTime)job2.UpdatedTime, (DateTime)job1.UpdatedTime));
+
+                // Take the first 5 job openings from the sorted list
+                List<JobOpeningViewModel> recentJobs = jobs.Take(5).ToList();
+        
                 _logger.Trace("Job List is rendered successfully.");
-                return View(jobs);
+                return View(recentJobs);
             }
             catch (Exception e)
             {
@@ -59,6 +68,7 @@ namespace Basecode.WebApp.Controllers
                 return StatusCode(500, "Something went wrong.");
             }
         }
+
 
         /// <summary>
         /// Assigns the users view.
@@ -125,26 +135,26 @@ namespace Basecode.WebApp.Controllers
             }
         }
 
-        /// <summary>
-        /// Shorts the ListView.
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult ShortListView()
-        {
-            try
-            {
-                var shortlistedModel = new ShortListedViewModel();
-                shortlistedModel.HRShortlisted = _dashboardService.GetShorlistedApplicatons("HR Shortlisted");
-                shortlistedModel.TechShortlisted = _dashboardService.GetShorlistedApplicatons("Technical Shortlisted");
-
-                return View(shortlistedModel);
-            }
-            catch (Exception e)
-            {
-                _logger.Error(ErrorHandling.DefaultException(e.Message));
-                return StatusCode(500, "Something went wrong.");
-            }
-        }
+        // /// <summary>
+        // /// Shorts the ListView.
+        // /// </summary>
+        // /// <returns></returns>
+        // public IActionResult ShortListView()
+        // {
+        //     try
+        //     {
+        //         var shortlistedModel = new ShortListedViewModel();
+        //         shortlistedModel.HRShortlisted = _dashboardService.GetShorlistedApplicatons("HR Shortlisted");
+        //         shortlistedModel.TechShortlisted = _dashboardService.GetShorlistedApplicatons("Technical Shortlisted");
+        //
+        //         return View(shortlistedModel);
+        //     }
+        //     catch (Exception e)
+        //     {
+        //         _logger.Error(ErrorHandling.DefaultException(e.Message));
+        //         return StatusCode(500, "Something went wrong.");
+        //     }
+        // }
 
         /// <summary>
         /// Views the details.
@@ -191,7 +201,7 @@ namespace Basecode.WebApp.Controllers
                 var application = _dashboardService.GetApplicationById(appId);
                 var foundUser = _userService.GetByEmail(email);
                  _dashboardService.UpdateStatus(application, foundUser, status);
-                 return RedirectToAction("ApplicantDirectoryView");
+                 return RedirectToAction("DirectoryView");
             }
             catch(Exception e)
             {
@@ -223,22 +233,51 @@ namespace Basecode.WebApp.Controllers
         /// and information about shortlisted applicants for HR and Technical positions.
         /// </summary>
         /// <returns>An IActionResult representing the Applicant Directory view populated with the required data.</returns>
-        public IActionResult ApplicantDirectoryView()
+        public async Task<IActionResult> DirectoryView()
         {
             try
             {
                 var userAspId = _userManager.GetUserId(User);
                 var applicants = _applicantService.GetApplicantsWithJobAndReferences(userAspId);
+                
+              
+                List<JobOpeningViewModel> jobs = _jobOpeningService.GetJobsWithApplications();
 
-                var shortlistedModel = new ShortListedViewModel();
-                shortlistedModel.HRShortlisted = _dashboardService.GetShorlistedApplicatons("HR Shortlisted");
-                shortlistedModel.TechShortlisted = _dashboardService.GetShorlistedApplicatons("Technical Shortlisted");
+                // Sort the job openings by updatedTime in descending order
+                jobs.Sort((job1, job2) => DateTime.Compare((DateTime)job2.UpdatedTime, (DateTime)job1.UpdatedTime));
 
-                var applicantDirectoryViewModel = new ApplicantDirectoryViewModel
+                foreach (var job in jobs)
                 {
-                    Applicants = applicants,
-                    Shortlists = shortlistedModel
-                };
+                    job.usersId = _jobOpeningService.GetLinkedUserIds(job.Id);
+                }
+
+                var user = await _userManager.GetUserAsync(User);
+                var applicantDirectoryViewModel = new ApplicantDirectoryViewModel();
+                if (user.Email == "Admin-2-alliance@5183ny.onmicrosoft.com")
+                {
+                    applicantDirectoryViewModel = new ApplicantDirectoryViewModel
+                    {
+                        Applicants = applicants,
+                        JobOpenings = jobs
+                    };
+                }
+                else
+                {
+                    var newJobs = new List<JobOpeningViewModel>();
+                    foreach (var job in jobs)
+                    {
+                        if (job.usersId.Contains(userAspId))
+                        {
+                            newJobs.Add(job);
+                        }
+                    }
+                    applicantDirectoryViewModel = new ApplicantDirectoryViewModel
+                    {
+                        Applicants = applicants,
+                        JobOpenings = newJobs
+                    };
+                }
+                
 
                 return View(applicantDirectoryViewModel);
             }
@@ -249,28 +288,67 @@ namespace Basecode.WebApp.Controllers
             }
         }
 
+        [HttpPost]
+        public IActionResult JobOpeningsView(int jobId)
+        {
+            try
+            {
+                var userAspId = _userManager.GetUserId(User);
+                var applicants = _applicantService.GetApplicantsWithJobAndReferences(userAspId);
+                
+                List<JobOpeningViewModel> jobs = _jobOpeningService.GetJobsWithApplications();
+
+                foreach (var job in jobs)
+                {
+                    job.usersId = _jobOpeningService.GetLinkedUserIds(job.Id);
+                }
+                var shortlistedModel = new ShortListedViewModel();
+                shortlistedModel.HRShortlisted = _dashboardService.GetShorlistedApplicatons("HR Shortlisted", jobId);
+                shortlistedModel.TechShortlisted = _dashboardService.GetShorlistedApplicatons("Technical Shortlisted", jobId);
+
+                
+                var directoryViewModel = new ApplicantDirectoryViewModel
+                {
+                    Applicants = applicants,
+                    Shortlists = shortlistedModel,
+                    JobOpenings = jobs
+                };
+                return View(directoryViewModel);
+            }
+            catch (Exception e)
+            {
+                _logger.Error(ErrorHandling.DefaultException(e.Message));
+                return StatusCode(500, "Something went wrong.");
+            }
+            
+        }
+
         /// <summary>
         /// Action method for displaying the details of an applicant and their associated character references.
         /// </summary>
         /// <returns>Returns a View containing the applicant details and character references.</returns>
-        public IActionResult ApplicantViewDetails(int applicantId)
+        public IActionResult DirectoryViewDetails(int applicantId)
         {
             try
             {
                 var applicant = new Applicant();
                 var characterReferences = new List<CharacterReference>();
                 var background = new List<BackgroundCheck>();
-                applicant = _applicantService.GetApplicantById(applicantId);
+                applicant = _applicantService.GetApplicantByIdAll(applicantId);
                 characterReferences = _characterReferenceService.GetReferencesByApplicantId(applicantId);
+                
+
 
                 foreach (var characterReference in characterReferences)
                 {
                     background.Add(_backgroundCheckService.GetBackgroundByCharacterRefId(characterReference.Id));
                 }
-
+                
                 var model = new ApplicantDetailsViewModel
                 {
                     Applicant = applicant,
+                    Status = applicant.Application?.Status,
+                    UpdateDate = applicant.Application?.UpdateTime,
                     CharacterReferences = characterReferences,
                     BackgroundCheck = background
                 };
@@ -329,7 +407,7 @@ namespace Basecode.WebApp.Controllers
                     return NotFound();
                 }
 
-                return RedirectToAction("ApplicantDirectoryView");
+                return RedirectToAction("DirectoryView");
             }
             catch (Exception e)
             {

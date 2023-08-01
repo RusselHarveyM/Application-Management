@@ -25,9 +25,9 @@ namespace Basecode.Services.Services
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns></returns>
-        public List<Application> GetShorlistedApplicatons(string type)
+        public List<Application> GetShorlistedApplicatons(string type, int jobId)
         {
-            return _applicationService.GetShorlistedApplicatons(type);
+            return _applicationService.GetShorlistedApplicatons(type, jobId);
         }
 
         /// <summary>

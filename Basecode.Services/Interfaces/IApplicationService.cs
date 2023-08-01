@@ -39,7 +39,7 @@ namespace Basecode.Services.Interfaces
         /// </summary>
         /// <param name="stage">The stage.</param>
         /// <returns></returns>
-        List<Application> GetShorlistedApplicatons(string stage);
+        List<Application> GetShorlistedApplicatons(string stage, int jobId);
 
         /// <summary>
         /// Creates the specified application.

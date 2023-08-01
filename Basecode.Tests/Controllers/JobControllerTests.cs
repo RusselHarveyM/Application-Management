@@ -12,18 +12,16 @@ namespace Basecode.Tests.Controllers
     public class JobControllerTests
     {
         private readonly Mock<IJobOpeningService> _fakeJobOpeningService;
-        private readonly Mock<UserManager<IdentityUser>> _fakeUserManager;
-        private readonly Mock<IToastNotification> _fakeToastNotification; 
 
         private readonly JobController _controller;
 
         public JobControllerTests()
         {
             _fakeJobOpeningService = new Mock<IJobOpeningService>();
-            _fakeUserManager = new Mock<UserManager<IdentityUser>>(Mock.Of<IUserStore<IdentityUser>>(), null, null, null, null, null, null, null, null);
-            _fakeToastNotification = new Mock<IToastNotification>();
+            Mock<UserManager<IdentityUser>> fakeUserManager = new(Mock.Of<IUserStore<IdentityUser>>(), null, null, null, null, null, null, null, null);
+            Mock<IToastNotification> fakeToastNotification = new();
             
-            _controller = new JobController(_fakeJobOpeningService.Object, _fakeUserManager.Object, _fakeToastNotification.Object);
+            _controller = new JobController(_fakeJobOpeningService.Object, fakeUserManager.Object, fakeToastNotification.Object);
         }
 
 
@@ -313,7 +311,6 @@ namespace Basecode.Tests.Controllers
             int id = 2;
 
             _fakeJobOpeningService.Setup(service => service.GetById(id)).Returns((JobOpeningViewModel)null);
-
 
             // Act
             var result = _controller.Delete(id);

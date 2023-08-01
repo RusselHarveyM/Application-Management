@@ -4,9 +4,7 @@ using Basecode.Services.Interfaces;
 using Basecode.Services.Util;
 using Hangfire;
 using Microsoft.IdentityModel.Tokens;
-using System.IO;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Basecode.Services.Services
 {
@@ -45,7 +43,8 @@ namespace Basecode.Services.Services
         /// <returns></returns>
         public async Task<Application?> CheckAndSendApplicationStatus(Application application)
         {
-            var result = await _resumeChecker.CheckResume(application.JobOpening.Title, application.JobOpening.Qualifications, application.Applicant.CV);
+            var result = await _resumeChecker.CheckResume(application.JobOpening.Title,
+                application.JobOpening.Qualifications, application.Applicant.CV);
             //var result = "test";
 
             if (!string.IsNullOrEmpty(result))
@@ -59,19 +58,14 @@ namespace Basecode.Services.Services
                 string score = jsonObject.GetProperty("Score").GetString();
                 string explanation = jsonObject.GetProperty("Explanation").GetString();
 
-                //int convertedScore = 70;
                 if (int.Parse(score.Replace("%", "")) > 60)
-                //if (convertedScore > 60)
                 {
-                    return UpdateApplicationStatus(application, application.JobOpening, "HR Shortlisted", "GUID");
-                }
-                else
-                {
-                    return UpdateApplicationStatus(application, application.JobOpening, "Rejected", "Regret");
+                    return UpdateApplicationStatus(application, application.JobOpening, "HR Shortlisted", "GUID",
+                        result);
                 }
             }
 
-            return null;
+            return UpdateApplicationStatus(application, application.JobOpening, "Rejected", "Regret", "");
         }
 
         /// <summary>
@@ -94,7 +88,8 @@ namespace Basecode.Services.Services
                         BackgroundJob.Enqueue(() => _emailSendingService.SendGUIDEmail(application.Id, applicantTemp));
                         break;
                     case "Approval":
-                        BackgroundJob.Enqueue(() => _emailSendingService.SendApprovalEmail(user, applicantTemp, application.Id, newStatus));
+                        BackgroundJob.Enqueue(() =>
+                            _emailSendingService.SendApprovalEmail(user, applicantTemp, application.Id, newStatus));
                         break;
                     case "Rejected":
                         BackgroundJob.Enqueue(() => _emailSendingService.SendRejectedEmail(applicantTemp, newStatus));
@@ -143,12 +138,13 @@ namespace Basecode.Services.Services
         /// <param name="mailType">Type of the mail.</param>
         /// <returns></returns>
         private Application UpdateApplicationStatus(Application application, JobOpening jobOpening,
-            string newStatus, string mailType)
+            string newStatus, string mailType, string result)
         {
             try
             {
                 application.UpdateTime = DateTime.Now;
                 application.Status = newStatus;
+                application.Result = result;
 
                 StatusNotification(application.Applicant, jobOpening.Users.First(), newStatus);
                 UpdateTrackStatusEmail(application, jobOpening.Users.First(), newStatus, mailType);
@@ -181,6 +177,7 @@ namespace Basecode.Services.Services
                     var statusIndex = _statuses.IndexOf(status);
                     newStatus = _statuses[statusIndex + 1];
                 }
+
                 return UpdateApplicationStatus(application, user, newStatus, "Approval");
             }
             else
@@ -196,14 +193,15 @@ namespace Basecode.Services.Services
         /// <param name="applicant">The applicant.</param>
         /// <param name="user">The user.</param>
         /// <param name="newStatus">The new status.</param>
-            public void StatusNotification(Applicant applicant, User user, string newStatus)
+        public void StatusNotification(Applicant applicant, User user, string newStatus)
         {
             if (applicant.Id >= 0)
             {
                 var applicantTemp = _mapper.Map<Applicant>(applicant);
                 var userTemp = _mapper.Map<User>(user);
                 //Notify HR and Applicant for every status change.
-                BackgroundJob.Enqueue(() => _emailSendingService.SendStatusNotification(userTemp, applicantTemp, newStatus));
+                BackgroundJob.Enqueue(() =>
+                    _emailSendingService.SendStatusNotification(userTemp, applicantTemp, newStatus));
             }
         }
 

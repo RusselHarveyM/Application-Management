@@ -15,6 +15,7 @@ namespace Basecode.Data.Models
         public DateTime ApplicationDate { get; set; }
         public DateTime UpdateTime { get; set; }
 
+        public string? Result { get; set; }
         public JobOpening JobOpening { get; set; } = null!;
         public Applicant Applicant { get; set; } = null!;
         public UserSchedule? UserSchedule { get; set; }
