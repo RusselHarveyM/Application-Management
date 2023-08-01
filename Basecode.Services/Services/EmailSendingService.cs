@@ -217,8 +217,18 @@ namespace Basecode.Services.Services
         /// </summary>
         public async Task SendScheduleToApplicant(UserSchedule userSchedule, Applicant applicant, int tokenExpiry)
         {
-            string acceptToken = _tokenHelper.GenerateToken("accept", userSchedule.Id, tokenExpiry);
-            string rejectToken = _tokenHelper.GenerateToken("reject", userSchedule.Id, tokenExpiry);
+            Dictionary<string, string> acceptTokenClaims = new Dictionary<string, string>()
+            {
+                { "action", "AcceptSchedule" },
+                { "userScheduleId", userSchedule.Id.ToString() },
+            };
+            Dictionary<string, string> rejectTokenClaims = new Dictionary<string, string>()
+            {
+                { "action", "RejectSchedule" },
+                { "userScheduleId", userSchedule.Id.ToString() },
+            };
+            string acceptToken = _tokenHelper.GenerateToken(acceptTokenClaims, tokenExpiry);
+            string rejectToken = _tokenHelper.GenerateToken(rejectTokenClaims, tokenExpiry);
 
             string baseUrl = "https://localhost:53813";
             var acceptUrl = $"{baseUrl}/Scheduler/AcceptSchedule/{HttpUtility.UrlEncode(acceptToken)}";
@@ -402,8 +412,18 @@ namespace Basecode.Services.Services
         /// </summary>
         public async Task SendCongratulation(Applicant applicant, int userId)
         {
-            string acceptToken = _tokenHelper.GenerateToken("accept", userId);
-            string rejectToken = _tokenHelper.GenerateToken("reject", userId);
+            Dictionary<string, string> acceptTokenClaims = new Dictionary<string, string>()
+            {
+                { "action", "AcceptOffer" },
+                { "userId", userId.ToString() },
+            };
+            Dictionary<string, string> rejectTokenClaims = new Dictionary<string, string>()
+            {
+                { "action", "RejectOffer" },
+                { "userId", userId.ToString() },
+            };
+            string acceptToken = _tokenHelper.GenerateToken(acceptTokenClaims);
+            string rejectToken = _tokenHelper.GenerateToken(rejectTokenClaims);
 
             string baseUrl = "https://localhost:61952";
             var acceptUrl = $"{baseUrl}/CurrentHire/AcceptOffer/{HttpUtility.UrlEncode(acceptToken)}";
