@@ -260,7 +260,7 @@ namespace Basecode.WebApp.Controllers
                 var applicant = new Applicant();
                 var characterReferences = new List<CharacterReference>();
                 var background = new List<BackgroundCheck>();
-                applicant = _applicantService.GetApplicantById(applicantId);
+                applicant = _applicantService.GetApplicantByIdAll(applicantId);
                 characterReferences = _characterReferenceService.GetReferencesByApplicantId(applicantId);
 
                 foreach (var characterReference in characterReferences)
@@ -271,6 +271,7 @@ namespace Basecode.WebApp.Controllers
                 var model = new ApplicantDetailsViewModel
                 {
                     Applicant = applicant,
+                    Status = applicant.Application?.Status,
                     CharacterReferences = characterReferences,
                     BackgroundCheck = background
                 };

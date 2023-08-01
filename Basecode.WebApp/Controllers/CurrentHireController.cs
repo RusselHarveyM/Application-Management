@@ -18,11 +18,6 @@ namespace Basecode.WebApp.Controllers
             _tokenHelper = new TokenHelper(SecretKey);
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
         /// <summary>
         /// Accepts the job offer.
         /// </summary>
