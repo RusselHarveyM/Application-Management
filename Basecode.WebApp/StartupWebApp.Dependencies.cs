@@ -41,6 +41,7 @@ namespace Basecode.WebApp
             services.AddScoped<ICalendarService, CalendarService>();
             services.AddScoped<IOAuthService, OAuthService>();
             services.AddScoped<ISchedulerService, SchedulerService>();
+            services.AddScoped<ICurrentHireService, CurrentHireService>();
 
             // Repositories
             services.AddScoped<IUserRepository, UserRepository>();
@@ -55,6 +56,7 @@ namespace Basecode.WebApp
             services.AddScoped<IBackgroundCheckRepository, BackgroundCheckRepository>();
             services.AddScoped<IInterviewRepository, InterviewRepository>();
             services.AddScoped<IAdminRepository, AdminRepository>();
+            services.AddScoped<ICurrentHireRepository, CurrentHireRepository>();
         }
     }
 }

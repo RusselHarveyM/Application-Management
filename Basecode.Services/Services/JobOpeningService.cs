@@ -29,7 +29,8 @@ namespace Basecode.Services.Services
         /// <param name="mapper">The mapper.</param>
         /// <param name="qualificationService">The qualification service.</param>
         /// <param name="responsibilityService">The responsibility service.</param>
-        public JobOpeningService(IJobOpeningRepository repository, IMapper mapper, IQualificationService qualificationService, IResponsibilityService responsibilityService, IUserRepository userRepository, IEmailSchedulerService emailSchedulerService)
+        public JobOpeningService(IJobOpeningRepository repository, IMapper mapper, IQualificationService qualificationService, IResponsibilityService responsibilityService, 
+            IUserRepository userRepository, IEmailSchedulerService emailSchedulerService)
         {
             _repository = repository;
             _mapper = mapper;

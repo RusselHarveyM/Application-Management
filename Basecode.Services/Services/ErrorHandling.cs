@@ -443,5 +443,52 @@ namespace Basecode.Services.Services
             }
             return (logContent, validationErrors);
         }
+
+        public static LogContent CheckCurrentHireStatus(CurrentHire hire)
+        {
+            LogContent logContent = new LogContent();
+            if (hire == null)
+            {
+                logContent.SetError("404", "Current hire is not found.");
+                return logContent;
+            }
+            if (hire.Status == "accepted")
+            {
+                logContent.SetError("401", "Offer has already been accepted.");
+                return logContent;
+            }
+            if (hire.Status == "rejected")
+            {
+                logContent.SetError("401", "Offer has already been rejected.");
+                return logContent;
+            }
+            return logContent;
+        }
+
+        public static LogContent CheckCurrentHire(CurrentHire hire)
+        {
+            LogContent logContent = new LogContent();
+            if (hire == null)
+            {
+                logContent.SetError("400", "No data found");
+                return logContent;
+            }
+            if (hire.UserId <= 0)
+            {
+                logContent.SetError("400", "UserId is invalid.");
+                return logContent;
+            }
+            if (hire.ApplicationId == Guid.Empty)
+            {
+                logContent.SetError("400", "ApplicationId is invalid.");
+                return logContent;
+            }
+            if (string.IsNullOrEmpty(hire.Status))
+            {
+                logContent.SetError("400", "Offer Status is required but has no value.");
+                return logContent;
+            }
+            return logContent;
+        }
     }
 }
