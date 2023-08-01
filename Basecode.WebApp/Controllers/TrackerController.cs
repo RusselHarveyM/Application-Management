@@ -9,15 +9,13 @@ namespace Basecode.WebApp.Controllers
     {
         private readonly IApplicationService _applicationService;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
-        private readonly IApplicantService _applicantService;
         private readonly IUserService _userService;
         private readonly ITrackService _trackService;
         private readonly TokenHelper _tokenHelper;
 
-        public TrackerController(IApplicationService applicationService, IApplicantService applicantService, IUserService userService, ITrackService trackService, IConfiguration config)
+        public TrackerController(IApplicationService applicationService, IUserService userService, ITrackService trackService, IConfiguration config)
         {
             _applicationService = applicationService;
-            _applicantService = applicantService;
             _userService = userService;
             _trackService = trackService;
             _tokenHelper = new TokenHelper(config["TokenHelper:SecretKey"]);
