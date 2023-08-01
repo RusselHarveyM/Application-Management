@@ -15,21 +15,16 @@ public class TokenHelper
     /// <summary>
     /// Generates the token.
     /// </summary>
-    /// <param name="action">The action name.</param>
-    /// <param name="id">The identifier to store.</param>
-    /// <param name="expirationMinutes">The expiration minutes.</param>
+    /// <param name="claims">The claims.</param>
+    /// <param name="expirationHours">Number of hours before the token expires.</param>
     /// <returns></returns>
-    public string GenerateToken(string action, int id, int expirationHours = 72)
+    public string GenerateToken(Dictionary<string, string> claims, int expirationHours = 672)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(_key);
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new Claim[]
-            {
-                new Claim("action", action),
-                new Claim("id", id.ToString())
-            }),
+            Subject = new ClaimsIdentity(claims.Select(x => new Claim(x.Key, x.Value))),
             Expires = DateTime.UtcNow.AddHours(expirationHours),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
@@ -61,7 +56,7 @@ public class TokenHelper
             }, out SecurityToken validatedToken);
 
             var jwtToken = (JwtSecurityToken)validatedToken;
-            var action = jwtToken.Claims.First(x => x.Type == "action").Value;
+            var action = jwtToken.Claims.FirstOrDefault(x => x.Type == "action")?.Value;
 
             return action == expectedAction;
         }
@@ -73,38 +68,24 @@ public class TokenHelper
     }
 
     /// <summary>
-    /// Gets the claim value.
-    /// </summary>
-    /// <param name="token">The token.</param>
-    /// <param name="claimType">Type of the claim.</param>
-    /// <returns></returns>
-    public string GetClaimValue(string token, string claimType)
-    {
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var jwtToken = tokenHandler.ReadJwtToken(token);
-
-        return jwtToken.Claims.FirstOrDefault(c => c.Type == claimType)?.Value;
-    }
-
-    /// <summary>
-    /// Gets the identifier from token.
+    /// Gets the token claims.
     /// </summary>
     /// <param name="token">The token.</param>
     /// <param name="action">The action.</param>
     /// <returns></returns>
-    public int GetIdFromToken(string token, string action)
+    public Dictionary<string, string> GetTokenClaims(string token, string action)
     {
-        int userScheduleId = 0;
+        var claims = new Dictionary<string, string>();
 
         if (ValidateToken(token, action))
         {
-            var idClaim = GetClaimValue(token, "id");
-            if (int.TryParse(idClaim, out int id))
-            {
-                userScheduleId = id;
-            }
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var jwtToken = tokenHandler.ReadJwtToken(token);
+
+            foreach (var claim in jwtToken.Claims)
+                claims.Add(claim.Type, claim.Value);
         }
 
-        return userScheduleId;
+        return claims;
     }
 }

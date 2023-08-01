@@ -2,30 +2,27 @@
 using Basecode.Services.Interfaces;
 using Basecode.WebApp.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Basecode.Tests.Controllers
 {
     public class TrackerControllerTestsface
     {
         private readonly Mock<IApplicationService> _fakeApplicationService;
-        private readonly Mock<IApplicantService> _fakeApplicantService;
         private readonly Mock<IUserService> _fakeUserService;
         private readonly Mock<ITrackService> _fakeTrackService;
         private readonly TrackerController _controller;
+        private readonly Mock<IConfiguration> _fakeConfig;
 
         public TrackerControllerTestsface()
         {
             _fakeApplicationService = new Mock<IApplicationService>();
-            _fakeApplicantService = new Mock<IApplicantService>();
             _fakeTrackService = new Mock<ITrackService>();
             _fakeUserService = new Mock<IUserService>();
-            _controller = new TrackerController(_fakeApplicationService.Object, _fakeApplicantService.Object, _fakeUserService.Object, _fakeTrackService.Object);
+            _fakeConfig = new Mock<IConfiguration>();
+            _fakeConfig.Setup(x => x["TokenHelper:SecretKey"]).Returns("fakeSecretKey");
+            _controller = new TrackerController(_fakeApplicationService.Object, _fakeUserService.Object, _fakeTrackService.Object, _fakeConfig.Object);
         }
 
         [Fact]

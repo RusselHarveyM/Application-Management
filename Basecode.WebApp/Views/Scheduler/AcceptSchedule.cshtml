@@ -5,14 +5,18 @@
 <div class="container mt-5">
     <div class="row text-center justify-content-center">
         <div class="col-md-6">
-            @if (ViewBag.IsScheduleAccepted == true)
+            @if (ViewBag.IsInvalidToken)
+            {
+                <p>Your token is invalid or has expired.</p>
+            }
+            else if (ViewBag.IsSuccessfullyAccepted)
             {
                 <h4>You have successfully accepted the schedule.</h4>
                 <p>The interviewer will be informed. Please wait for a meeting link to be sent to your email.</p>
             }
             else
             {
-                <p>Your token is invalid or has expired.</p>
+                <p>Something went wrong.</p>
             }
         </div>
     </div>

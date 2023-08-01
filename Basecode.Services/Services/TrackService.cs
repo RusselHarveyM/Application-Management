@@ -120,7 +120,12 @@ namespace Basecode.Services.Services
                 application.Status = newStatus;
 
                 StatusNotification(application.Applicant, user, newStatus);
-                UpdateTrackStatusEmail(application, user, newStatus, mailType);
+
+                if ((newStatus == "For HR Screening" && mailType == "Approval") || mailType != "Approval")
+                {
+                    UpdateTrackStatusEmail(application, user, newStatus, mailType);
+                }
+
                 return application;
             }
             catch (Exception e)

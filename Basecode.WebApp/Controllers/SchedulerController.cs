@@ -97,21 +97,27 @@ namespace Basecode.WebApp.Controllers
         {
             try
             {
-                ViewBag.IsScheduleAccepted = false;
-                int userScheduleId = _tokenHelper.GetIdFromToken(token, "accept");
-                if (userScheduleId == 0)
+                ViewBag.IsInvalidToken = false;
+                Dictionary<string, string> tokenClaims = _tokenHelper.GetTokenClaims(token, "AcceptSchedule");
+                if (tokenClaims.Count == 0)
                 {
+                    ViewBag.IsInvalidToken = true;
                     _logger.Warn("Invalid or expired token.");
                     return View();
                 }
 
-                var data = await _schedulerService.AcceptSchedule(userScheduleId);
-                if (!data.Result)
+                ViewBag.IsSuccessfullyAccepted = false;
+                if (tokenClaims.TryGetValue("userScheduleId", out string userScheduleIdString))
                 {
-                    _logger.Trace("User Schedule [" + userScheduleId + "] has been successfully accepted.");
-                    ViewBag.IsScheduleAccepted = true;
+                    int userScheduleId = int.Parse(userScheduleIdString);
+                    var data = await _schedulerService.AcceptSchedule(userScheduleId);
+                    if (!data.Result)
+                    {
+                        _logger.Trace("User Schedule [" + userScheduleId + "] has been successfully accepted.");
+                        ViewBag.IsSuccessfullyAccepted = true;
+                    }
+                    else _logger.Error(ErrorHandling.SetLog(data));
                 }
-                else _logger.Error(ErrorHandling.SetLog(data));
 
                 return View();
             }
@@ -130,21 +136,27 @@ namespace Basecode.WebApp.Controllers
         {
             try
             {
-                ViewBag.IsScheduleRejected = false;
-                int userScheduleId = _tokenHelper.GetIdFromToken(token, "reject");
-                if (userScheduleId == 0)
+                ViewBag.IsInvalidToken = false;
+                Dictionary<string, string> tokenClaims = _tokenHelper.GetTokenClaims(token, "RejectSchedule");
+                if (tokenClaims.Count == 0)
                 {
+                    ViewBag.IsInvalidToken = true;
                     _logger.Warn("Invalid or expired token.");
                     return View();
                 }
 
-                var data = _schedulerService.RejectSchedule(userScheduleId);
-                if (!data.Result)
+                ViewBag.IsSuccessfullyRejected = false;
+                if (tokenClaims.TryGetValue("userScheduleId", out string userScheduleIdString))
                 {
-                    _logger.Trace("User Schedule [" + userScheduleId + "] has been successfully rejected.");
-                    ViewBag.IsScheduleRejected = true;
+                    int userScheduleId = int.Parse(userScheduleIdString);
+                    var data = _schedulerService.RejectSchedule(userScheduleId);
+                    if (!data.Result)
+                    {
+                        _logger.Trace("User Schedule [" + userScheduleId + "] has been successfully rejected.");
+                        ViewBag.IsSuccessfullyRejected = true;
+                    }
+                    else _logger.Error(ErrorHandling.SetLog(data));
                 }
-                else _logger.Error(ErrorHandling.SetLog(data));
 
                 return View();
             }

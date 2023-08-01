@@ -10,12 +10,11 @@ namespace Basecode.WebApp.Controllers
         private readonly TokenHelper _tokenHelper;
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly ICurrentHireService _currentHireService;
-        private const string SecretKey = "CDC1CAAACAA3269755F5EC44C7202F0055C9C322AEB5C4B6103F6E9C11EF136F";
 
-        public CurrentHireController(ICurrentHireService currentHireService)
+        public CurrentHireController(ICurrentHireService currentHireService, IConfiguration config)
         {
             _currentHireService = currentHireService;
-            _tokenHelper = new TokenHelper(SecretKey);
+            _tokenHelper = new TokenHelper(config["TokenHelper:SecretKey"]);
         }
 
         /// <summary>
@@ -27,18 +26,22 @@ namespace Basecode.WebApp.Controllers
             try
             {
                 ViewBag.IsHireAccepted = false;
-                int currentHireId = _tokenHelper.GetIdFromToken(token, "accept");
-                if (currentHireId == 0)
+                Dictionary<string, string> tokenClaims = _tokenHelper.GetTokenClaims(token, "AcceptOffer");
+                if (tokenClaims.Count == 0)
                 {
                     _logger.Warn("Invalid or expired token.");
                     return View();
                 }
 
-                var data = _currentHireService.AcceptOffer(currentHireId);
-                if (!data.Result)
+                if (tokenClaims.TryGetValue("userId", out string userId))
                 {
-                    _logger.Trace("User Offer [" + currentHireId + "] has been successfully accepted.");
-                    ViewBag.IsHireAccepted = true;
+                    int currentHireId = int.Parse(userId);
+                    var data = _currentHireService.AcceptOffer(currentHireId);
+                    if (!data.Result)
+                    {
+                        _logger.Trace("User Offer [" + currentHireId + "] has been successfully accepted.");
+                        ViewBag.IsHireAccepted = true;
+                    }
                 }
 
                 return View();
@@ -59,20 +62,24 @@ namespace Basecode.WebApp.Controllers
             try
             {
                 ViewBag.IsHireRejected = false;
-                int currentHireId = _tokenHelper.GetIdFromToken(token, "reject");
-                if (currentHireId == 0)
+                Dictionary<string, string> tokenClaims = _tokenHelper.GetTokenClaims(token, "RejectOffer");
+                if (tokenClaims.Count == 0)
                 {
                     _logger.Warn("Invalid or expired token.");
                     return View();
                 }
 
-                var data = await _currentHireService.RejectOffer(currentHireId);
-                if (!data.Result)
+                if (tokenClaims.TryGetValue("userId", out string userId))
                 {
-                    _logger.Trace("User Offer [" + currentHireId + "] has been successfully rejected.");
-                    ViewBag.IsHireRejected = true;
+                    int currentHireId = int.Parse(userId);
+                    var data = await _currentHireService.RejectOffer(currentHireId);
+                    if (!data.Result)
+                    {
+                        _logger.Trace("User Offer [" + currentHireId + "] has been successfully rejected.");
+                        ViewBag.IsHireRejected = true;
+                    }
                 }
-
+                
                 return View();
             }
             catch (Exception e)
