@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Basecode.Data.Dto;
+﻿using Basecode.Data.Dto;
 using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
@@ -11,30 +10,24 @@ namespace Basecode.Services.Services
     public class SchedulerService : ErrorHandling, ISchedulerService
     {
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly IScheduleSendingService _scheduleSendingService;
         private readonly IUserScheduleService _userScheduleService;
-        private readonly IEmailSendingService _emailSendingService;
         private readonly IApplicationService _applicationService;
         private readonly IExaminationService _examinationService;
-        private readonly IJobOpeningService _jobOpeningService;
         private readonly IInterviewService _interviewService;
-        private readonly IApplicantService _applicantService;
         private readonly ICalendarService _calendarService;
         private readonly IUserService _userService;
-        private readonly IMapper _mapper;
 
-        public SchedulerService(IUserScheduleService userScheduleService, IApplicationService applicationService, IEmailSendingService emailSendingService, IApplicantService applicantService, IUserService userService, 
-            ICalendarService calendarService, IInterviewService interviewService, IExaminationService examinationService, IJobOpeningService jobOpeningService, IMapper mapper)
+        public SchedulerService(IScheduleSendingService scheduleSendingService, IUserScheduleService userScheduleService, IApplicationService applicationService, 
+            IUserService userService, ICalendarService calendarService, IInterviewService interviewService, IExaminationService examinationService)
         {
+            _scheduleSendingService = scheduleSendingService;
             _userScheduleService = userScheduleService;
-            _emailSendingService = emailSendingService;
             _applicationService = applicationService;
             _examinationService = examinationService;
-            _jobOpeningService = jobOpeningService;
             _interviewService = interviewService;
-            _applicantService = applicantService;
             _calendarService = calendarService;
             _userService = userService;   
-            _mapper = mapper;
         }
 
         /// <summary>
@@ -76,9 +69,12 @@ namespace Basecode.Services.Services
                 }
                     
                 foreach (var userSchedule in newSchedules)
-                    SendScheduleToApplicant(userSchedule, userSchedule.Id, userSchedule.Type);
+                {
+                    _scheduleSendingService.SendScheduleToApplicant(userSchedule, userSchedule.Id, userSchedule.Type);
+                    CheckScheduleStatusAfterTokenExpiry(userSchedule.Id, userSchedule.Schedule);
+                }
 
-                SendSchedulesToInterviewer(formData, userId);
+                _scheduleSendingService.SendSchedulesToInterviewer(formData, userId);
             }
 
             return data;
@@ -94,7 +90,8 @@ namespace Basecode.Services.Services
             {
                 _logger.Trace("Successfully updated User Schedule [ " + existingId + " ]");
                 userSchedule.Id = existingId;
-                SendScheduleToApplicant(userSchedule, existingId, userSchedule.Type, applicantId);
+                _scheduleSendingService.SendScheduleToApplicant(userSchedule, existingId, userSchedule.Type, applicantId);
+                CheckScheduleStatusAfterTokenExpiry(userSchedule.Id, userSchedule.Schedule);
             }
         }
 
@@ -108,38 +105,21 @@ namespace Basecode.Services.Services
             return newSchedules;
         }
 
-        /// <summary>
-        /// Sends the schedule to applicant.
-        /// </summary>
-        /// <param name="userSchedule">The user schedule.</param>
-        /// <param name="userScheduleId">The user schedule identifier.</param>
-        /// <param name="applicantId">The applicant identifier.</param>
-        /// <param name="meetingType">Type of the meeting.</param>
-        public void SendScheduleToApplicant(UserSchedule userSchedule, int userScheduleId, string meetingType, int applicantId = -1)
+        private void CheckScheduleStatusAfterTokenExpiry(int userScheduleId, DateTime schedule)
         {
             // time difference between now and 12hrs before the schedule
-            TimeSpan timeDifference = userSchedule.Schedule.AddHours(-12) - DateTime.Now;
-            // number of hours left, to be used as the token expiry
+            TimeSpan timeDifference = schedule.AddHours(-12) - DateTime.Now;
+            // number of hours left until token expires
             int hoursLeft = (int)timeDifference.TotalHours;
 
-            BackgroundJob.Schedule(() => CheckScheduleStatusAfterTokenExpiry(userScheduleId), TimeSpan.FromHours(hoursLeft));
-
-            Applicant applicant = new Applicant();
-            if (applicantId == -1)  // existing schedule
-                applicant = _applicantService.GetApplicantByApplicationId(userSchedule.ApplicationId);
-            else    // new schedule
-                applicant = _applicantService.GetApplicantById(applicantId);
- 
-            var applicantTemp = _mapper.Map<Applicant>(applicant);
-            var userScheduleTemp = _mapper.Map<UserSchedule>(userSchedule);
-            BackgroundJob.Enqueue(() => _emailSendingService.SendScheduleToApplicant(userScheduleTemp, applicantTemp, hoursLeft));
+            BackgroundJob.Schedule(() => CheckScheduleStatus(userScheduleId), TimeSpan.FromHours(hoursLeft));
         }
 
         /// <summary>
         /// Checks the schedule status after token expiry.
         /// </summary>
         /// <param name="userScheduleId">The user schedule identifier.</param>
-        public void CheckScheduleStatusAfterTokenExpiry(int userScheduleId)
+        public void CheckScheduleStatus(int userScheduleId)
         {
             UserSchedule userSchedule = _userScheduleService.GetUserScheduleById(userScheduleId);
             if (userSchedule.Status == "pending")
@@ -148,26 +128,6 @@ namespace Basecode.Services.Services
                 if (!logContent.Result)
                     _logger.Trace($"Token has expired and was not used. UserSchedule [{userSchedule.Id}] has been automatically rejected.");
             }
-        }
-
-        /// <summary>
-        /// Sends the schedules to interviewer.
-        /// </summary>
-        /// <param name="formData">The form data.</param>
-        /// <param name="userId">The user identifier.</param>
-        public void SendSchedulesToInterviewer(SchedulerDataViewModel formData, int userId)
-        {
-            string jobOpeningTitle = _jobOpeningService.GetJobOpeningTitleById(formData.JobOpeningId);
-            var user = _userService.GetById(userId);
-            string scheduledTimes = "";
-
-            foreach (var schedule in formData.ApplicantSchedules)
-            {
-                var applicant = _applicantService.GetApplicantById(schedule.ApplicantId);
-                scheduledTimes += $"{applicant.Firstname} {applicant.Lastname}'s Schedule: {schedule.Time}<br/>";
-            }
-
-            BackgroundJob.Enqueue(() => _emailSendingService.SendSchedulesToInterviewer(user.Fullname, user.Email, jobOpeningTitle, formData.Date, scheduledTimes, formData.Type));
         }
 
         /// <summary>
@@ -186,25 +146,26 @@ namespace Basecode.Services.Services
                 {
                     _logger.Trace("Successfully generated a Teams meeting link.");
 
-                    SendAcceptedScheduleToInterviewer(userSchedule, joinUrl);
-                    SendAcceptedScheduleToApplicant(userSchedule, joinUrl);
+                    _scheduleSendingService.SendAcceptedScheduleToInterviewer(userSchedule, joinUrl);
+                    _scheduleSendingService.SendAcceptedScheduleToApplicant(userSchedule, joinUrl);
 
                     _userScheduleService.DeleteUserSchedule(userSchedule);
                 }
 
+                LogContent data = new LogContent();
                 string scheduleType = userSchedule.Type.Split(' ').Skip(1).FirstOrDefault();    // Remove first word from string
+
                 if (scheduleType == "Interview")
+                    data = _interviewService.AddInterview(userSchedule, joinUrl);
+                else   
+                    data = _examinationService.AddExamination(userSchedule, joinUrl);
+
+                if (!data.Result)
                 {
-                    var data = _interviewService.AddInterview(userSchedule, joinUrl);
-                    if (!data.Result) _logger.Trace("Successfully created a new Interview record.");
-                    else _logger.Error(SetLog(data));
+                    _logger.Trace($"Successfully created a new {userSchedule.Type} record.");
+                    _scheduleSendingService.ScheduleSendApprovalEmail(userSchedule);    // Send approval email on the hour of the schedule
                 }
-                else    // schedule type is "Exam"
-                {
-                    var data = _examinationService.AddExamination(userSchedule, joinUrl);
-                    if (!data.Result) _logger.Trace("Successfully created a new Examination record.");
-                    else _logger.Error(SetLog(data));
-                }
+                else _logger.Error(SetLog(data));
             }
 
             return logContent;
@@ -223,24 +184,10 @@ namespace Basecode.Services.Services
             {
                 userSchedule.Status = "rejected";
                 logContent = _userScheduleService.UpdateUserSchedule(userSchedule);
-                SendRejectedScheduleNoticeToInterviewer(userSchedule);
+                _scheduleSendingService.SendRejectedScheduleNoticeToInterviewer(userSchedule);
             }
 
             return logContent;
-        }
-
-        /// <summary>
-        /// Informs the interviewer that a schedule has been rejected.
-        /// </summary>
-        /// <param name="userSchedule">The user schedule.</param>
-        public void SendRejectedScheduleNoticeToInterviewer(UserSchedule userSchedule)
-        {
-            User user = _userService.GetById(userSchedule.UserId);
-            Applicant applicant = _applicantService.GetApplicantByApplicationId(userSchedule.ApplicationId);
-            string applicantFullName = applicant.Firstname + " " + applicant.Lastname;
-
-            var userScheduleTemp = _mapper.Map<UserSchedule>(userSchedule);
-            BackgroundJob.Enqueue(() => _emailSendingService.SendRejectedScheduleNoticeToInterviewer(user.Email, user.Fullname, userScheduleTemp, applicantFullName));
         }
 
         /// <summary>
@@ -268,30 +215,6 @@ namespace Basecode.Services.Services
                 return await _calendarService.CreateEvent(calendarEvent, email);
 
             return "";
-        }
-
-        /// <summary>
-        /// Sends the accepted schedule with Teams link to the interviewer.
-        /// </summary>
-        public void SendAcceptedScheduleToInterviewer(UserSchedule userSchedule, string joinUrl)
-        {
-            User user = _userService.GetById(userSchedule.UserId);
-            ApplicationViewModel application = _applicationService.GetById(userSchedule.ApplicationId);
-
-            var userScheduleTemp = _mapper.Map<UserSchedule>(userSchedule);
-            BackgroundJob.Enqueue(() => _emailSendingService.SendAcceptedScheduleToInterviewer(user.Email, user.Fullname, userScheduleTemp, application, joinUrl));
-        }
-
-        /// <summary>
-        /// Sends the accepted schedule with Teams link to the applicant.
-        /// </summary>
-        public void SendAcceptedScheduleToApplicant(UserSchedule userSchedule, string joinUrl)
-        {
-            string email = _applicantService.GetApplicantByApplicationId(userSchedule.ApplicationId).Email;
-            ApplicationViewModel application = _applicationService.GetById(userSchedule.ApplicationId);
-
-            var userScheduleTemp = _mapper.Map<UserSchedule>(userSchedule);
-            BackgroundJob.Enqueue(() => _emailSendingService.SendAcceptedScheduleToApplicant(email, userScheduleTemp, application, joinUrl));
         }
     }
 }
