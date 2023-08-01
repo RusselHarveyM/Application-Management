@@ -18,7 +18,7 @@ public class TokenHelper
     /// <param name="claims">The claims.</param>
     /// <param name="expirationHours">Number of hours before the token expires.</param>
     /// <returns></returns>
-    public string GenerateToken(Dictionary<string, string> claims, int expirationHours = 72)
+    public string GenerateToken(Dictionary<string, string> claims, int expirationHours = 672)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(_key);
