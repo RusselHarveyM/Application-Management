@@ -97,6 +97,7 @@ namespace Basecode.WebApp.Controllers
         {
             try
             {
+                ViewBag.IsInvalidToken = false;
                 int userScheduleId = _tokenHelper.GetIdFromToken(token, "accept");
                 if (userScheduleId == 0)
                 {
@@ -131,6 +132,7 @@ namespace Basecode.WebApp.Controllers
         {
             try
             {
+                ViewBag.IsInvalidToken = false;
                 int userScheduleId = _tokenHelper.GetIdFromToken(token, "reject");
                 if (userScheduleId == 0)
                 {

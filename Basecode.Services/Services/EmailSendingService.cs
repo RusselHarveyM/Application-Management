@@ -363,7 +363,7 @@ namespace Basecode.Services.Services
                 .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
                 .Replace("{{HEADLINE}}", $"{userSchedule.Type} Schedule Accepted")
                 .Replace("{{BODY}}", $"<br> Dear {application.ApplicantName}," +
-                                     $"<br><br> Warm greetings! We are delighted to inform you that an applicant has accepted the {userSchedule.Type} schedule you proposed through our HR Automation System." +
+                                     $"<br><br> Warm greetings! Thank you for accepting the {userSchedule.Type} schedule." +
                                      $"<br><br> The details for the scheduled {userSchedule.Type} are as follows: " +
                                      $"<br> Position: {application.JobOpeningTitle} <br> Date: {userSchedule.Schedule.ToShortDateString()} <br> Time: {userSchedule.Schedule.ToShortTimeString()} <br> Meeting Link: {joinUrl}" +
                                      $"<br><br> You can now look forward to your scheduled interview at the designated time. We will be utilizing Microsoft Teams for the virtual interview, so please ensure " +
