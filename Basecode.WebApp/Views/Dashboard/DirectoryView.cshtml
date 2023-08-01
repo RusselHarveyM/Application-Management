@@ -1,0 +1,60 @@
+﻿@model Basecode.Data.ViewModels.ApplicantDirectoryViewModel
+
+@{
+    Layout = "/Views/Shared/_Admin.cshtml";
+}
+
+
+
+<div class="container">
+    <!-- Table -->
+    <div class="tab-content" id="directoryTabContent">
+        <div class="tab-pane fade show active" id="jobOpening-tab-pane" role="tabpanel" aria-labelledby="jobOpening-tab" tabindex="0">
+            <div class="row">
+                <h3>Job openings</h3>
+                <div class="col">
+                    <table class="table table-striped text-center align-middle mt-2 overflow-hidden">
+                        <thead>
+                        <!-- Table header -->
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Applications</th>
+                            <th>Assigned</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!-- Add the table rows -->
+                        @foreach (var jobOpening in Model.JobOpenings)
+                        {
+                            <tr>
+                                <td>@jobOpening.Id</td>
+                                <td>@jobOpening.Title</td>
+                                <td>@jobOpening.Applications.Count</td>
+                                @if (@jobOpening.usersId.Count > 0)
+                                {
+                                    <td>@jobOpening.usersId.Count</td>
+                                }
+                                else
+                                {
+                                    <td>1</td>
+                                }
+                                <td>
+                                    <form asp-controller="Dashboard" asp-action="JobOpeningsView" method="post">
+                                        <!-- Include the necessary input fields for your model properties here -->
+                                        <input type="hidden" name="model" value="@Model"/>
+                                        <input type="hidden" name="jobId" value="@jobOpening.Id"/>
+                                        <button type="submit" class="btn" style="background-color: #EC2224; color: white;">View</button>
+                                    </form>
+                                </td>
+
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -22,7 +22,7 @@ namespace Basecode.Services.Interfaces
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns></returns>
-        List<Application> GetShorlistedApplicatons(string type);
+        List<Application> GetShorlistedApplicatons(string type, int jobId);
         /// <summary>
         /// Gets the application by identifier.
         /// </summary>
