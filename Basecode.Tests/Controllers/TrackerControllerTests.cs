@@ -4,11 +4,6 @@ using Basecode.WebApp.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Basecode.Tests.Controllers
 {
@@ -25,6 +20,8 @@ namespace Basecode.Tests.Controllers
             _fakeApplicationService = new Mock<IApplicationService>();
             _fakeTrackService = new Mock<ITrackService>();
             _fakeUserService = new Mock<IUserService>();
+            _fakeConfig = new Mock<IConfiguration>();
+            _fakeConfig.Setup(x => x["TokenHelper:SecretKey"]).Returns("fakeSecretKey");
             _controller = new TrackerController(_fakeApplicationService.Object, _fakeUserService.Object, _fakeTrackService.Object, _fakeConfig.Object);
         }
 
