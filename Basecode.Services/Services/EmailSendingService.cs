@@ -167,6 +167,8 @@ public class EmailSendingService : IEmailSendingService
         tokenClaims["choice"] = "rejected";
         string rejectToken = _tokenHelper.GenerateToken(tokenClaims);
 
+        newStatus.Replace("For ", "");
+
         var templatePath = Path.Combine("wwwroot", "template", "ApprovalEmail.html");
         var templateContent = File.ReadAllText(templatePath);
         var body = templateContent
@@ -174,27 +176,15 @@ public class EmailSendingService : IEmailSendingService
             .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
             .Replace("{{HEADLINE}}", "Approval Email")
             .Replace("{{REJECT_TOKEN}}", $"{rejectToken}")
-            .Replace("{{APPROVE_TOKEN}}", $"{approveToken}");
-
-        newStatus.Replace("For ", "");
-        if (newStatus == "HR Screening")
-        {
-            body.Replace("{{BODY}}", $"Dear {user.Fullname},<br> Applicant [{applicant.Id}] is ready for {newStatus}. Please provide your feedback to" +
-                $" proceed to the next phase. Thank you.")
-                .Replace("{{NEGATIVE_FEEDBACK}}", "Reject")
-                .Replace("{{POSITIVE_FEEDBACK}}", "Approve");
-        }
-        else
-        {
-            body.Replace("{{BODY}}", $"Dear {user.Fullname}," +
-                $"<br> We would like to request your input regarding the current status of the applicant, {applicant.Firstname} {applicant.Lastname}, " +
-                $"in the {newStatus} phase of the hiring process." +
-                $"<br><br> Applicant ID: {applicant.Id} <br> Applicant Name: {applicant.Firstname} {applicant.Lastname}" +
-                $"<br><br> Please click the Pass button if the applicant has successfully passed the {newStatus}. Otherwise, click Fail if the applicant" +
-                $"did not meet the criteria for progressing. Thank you. <br><br>")
-                .Replace("{{NEGATIVE_FEEDBACK}}", "Fail")
-                .Replace("{{POSITIVE_FEEDBACK}}", "Pass");
-        }
+            .Replace("{{APPROVE_TOKEN}}", $"{approveToken}")
+            .Replace("{{BODY}}", $"Dear {user.Fullname}," +
+                        $"<br> We would like to request your input regarding the current status of the applicant, {applicant.Firstname} {applicant.Lastname}, " +
+                        $"in the {newStatus} phase of the hiring process." +
+                        $"<br><br> Applicant ID: {applicant.Id} <br> Applicant Name: {applicant.Firstname} {applicant.Lastname}" +
+                        $"<br><br> Please click the Pass button if the applicant has successfully passed the {newStatus}. Otherwise, click Fail if the applicant" +
+                        $"did not meet the criteria for progressing. Thank you. <br><br>")
+            .Replace("{{NEGATIVE_FEEDBACK}}", "Fail")
+            .Replace("{{POSITIVE_FEEDBACK}}", "Pass");
 
         await _emailService.SendEmail(user.Email, "Alliance Software Inc. Applicant Status Update", body);
     }

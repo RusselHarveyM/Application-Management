@@ -129,9 +129,6 @@ public interface IEmailSendingService
     /// </summary>
     Task SendExamScoreReminder(string email, string fullname, ApplicationViewModel application);
 
-    Task SendRejectedHireNoticeToInterviewer(string email, string fullname, string position, CurrentHire currentHire,
-        string applicantFullName);
-
     /// <summary>
     /// Sends notification to HR if a reference has successfully answered a form.
     /// </summary>
