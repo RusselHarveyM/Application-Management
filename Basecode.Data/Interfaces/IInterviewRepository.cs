@@ -36,4 +36,12 @@ public interface IInterviewRepository
     /// </summary>
     /// <param name="interview">The interview.</param>
     void DeleteInterview(Interview interview);
+
+    /// <summary>
+    /// Gets the interview by application identifier and status.
+    /// </summary>
+    /// <param name="applicationId">The application identifier.</param>
+    /// <param name="status">The status.</param>
+    /// <returns></returns>
+    Interview? GetInterviewByApplicationIdAndStatus(Guid applicationId, string status);
 }

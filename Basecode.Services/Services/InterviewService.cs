@@ -7,10 +7,12 @@ namespace Basecode.Services.Services;
 public class InterviewService : ErrorHandling, IInterviewService
 {
     private readonly IInterviewRepository _repository;
+    private readonly IUserScheduleService _userScheduleService;
 
-    public InterviewService(IInterviewRepository repository)
+    public InterviewService(IInterviewRepository repository, IUserScheduleService userScheduleService)
     {
         _repository = repository;
+        _userScheduleService = userScheduleService;
     }
 
     /// <summary>
@@ -34,6 +36,41 @@ public class InterviewService : ErrorHandling, IInterviewService
             };
 
             _repository.AddInterview(interview);
+        }
+
+        return logContent;
+    }
+
+    /// <summary>
+    /// Updates the interview result.
+    /// </summary>
+    /// <param name="applicationId">The application identifier.</param>
+    /// <param name="status">The status.</param>
+    /// <returns></returns>
+    public LogContent UpdateInterviewResult(Guid applicationId, string status, string choice)
+    {
+        var logContent = new LogContent();
+        status = status.Replace("For ", "");
+
+        var interview = _repository.GetInterviewByApplicationIdAndStatus(applicationId, status);
+
+        if (interview != null)
+        {
+            var result = "Fail";
+            if (choice == "approved") result = "Pass";
+
+            interview.Result = result;
+
+            logContent = CheckInterview(interview);
+            if (!logContent.Result)
+            {
+                _repository.UpdateInterview(interview);
+                var userSchedule = _userScheduleService.GetUserScheduleByApplicationId(applicationId);
+                if (userSchedule != null)
+                {
+                    _userScheduleService.DeleteUserSchedule(userSchedule);
+                }
+            }
         }
 
         return logContent;
