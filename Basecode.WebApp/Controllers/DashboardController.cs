@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using NLog;
+using NToastNotify;
 
 namespace Basecode.WebApp.Controllers;
 
@@ -22,12 +23,13 @@ public class DashboardController : Controller
     private readonly IJobOpeningService _jobOpeningService;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IUserService _userService;
+    private readonly IToastNotification _toastNotification;
 
 
     public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService,
         IUserService userService, ICharacterReferenceService characterReferenceService,
         IBackgroundCheckService backgroundCheckService, IEmailSendingService emailSendingService,
-        IDashboardService dashboardService, UserManager<IdentityUser> userManager)
+        IDashboardService dashboardService, UserManager<IdentityUser> userManager, IToastNotification toastNotification)
     {
         _applicantService = applicantService;
         _jobOpeningService = jobOpeningService;
@@ -37,6 +39,7 @@ public class DashboardController : Controller
         _emailSendingService = emailSendingService;
         _dashboardService = dashboardService;
         _userManager = userManager;
+        _toastNotification = toastNotification;
     }
 
     /// <summary>
@@ -209,46 +212,22 @@ public class DashboardController : Controller
         try
         {
             var userAspId = _userManager.GetUserId(User);
-            var applicants = _applicantService.GetApplicantsWithJobAndReferences(userAspId);
-
-
-            var jobs = _jobOpeningService.GetJobsWithApplications();
-
-            // Sort the job openings by updatedTime in descending order
-            jobs.Sort((job1, job2) => DateTime.Compare((DateTime)job2.UpdatedTime, (DateTime)job1.UpdatedTime));
-
-            foreach (var job in jobs) job.usersId = _jobOpeningService.GetLinkedUserIds(job.Id);
-
             var user = await _userManager.GetUserAsync(User);
-            var applicantDirectoryViewModel = new ApplicantDirectoryViewModel();
-            if (user.Email == "Admin-2-alliance@5183ny.onmicrosoft.com")
-            {
-                applicantDirectoryViewModel = new ApplicantDirectoryViewModel
-                {
-                    Applicants = applicants,
-                    JobOpenings = jobs
-                };
-            }
-            else
-            {
-                var newJobs = new List<JobOpeningViewModel>();
-                foreach (var job in jobs)
-                    if (job.usersId.Contains(userAspId))
-                        newJobs.Add(job);
-                applicantDirectoryViewModel = new ApplicantDirectoryViewModel
-                {
-                    Applicants = applicants,
-                    JobOpenings = newJobs
-                };
-            }
+            var applicantDirectoryViewModel = await _dashboardService.GetDirectoryViewModel(user.Email, userAspId);
 
+            if (applicantDirectoryViewModel.JobOpenings == null)
+            {
+                applicantDirectoryViewModel = new ApplicantDirectoryViewModel();
+                _toastNotification.AddWarningToastMessage("Directory View Model - JobOpenings not found.");
+            }
 
             return View(applicantDirectoryViewModel);
         }
         catch (Exception e)
         {
             _logger.Error(ErrorHandling.DefaultException(e.Message));
-            return StatusCode(500, "Something went wrong.");
+            _toastNotification.AddErrorToastMessage(e.Message);
+            return RedirectToAction("DirectoryView");
         }
     }
 
@@ -257,39 +236,20 @@ public class DashboardController : Controller
     {
         try
         {
-            // var userAspId = _userManager.GetUserId(User);
-            // var applicants = _applicantService.GetApplicantsWithJobAndReferences(userAspId);
-            var applicants = _applicantService.GetApplicantsByJobOpeningIdApplicant(jobId);
-
-            var jobs = _jobOpeningService.GetJobsWithApplications();
-            foreach (var job in jobs) job.usersId = _jobOpeningService.GetLinkedUserIds(job.Id);
-            var shortlistedModel = new ShortListedViewModel();
-            shortlistedModel.HRShortlisted = _dashboardService.GetShorlistedApplicatons("HR Shortlisted", jobId);
-            shortlistedModel.TechShortlisted =
-                _dashboardService.GetShorlistedApplicatons("Technical Shortlisted", jobId);
-            var directoryViewModel = new ApplicantDirectoryViewModel();
             var user = await _userManager.GetUserAsync(User);
-            if (user.Email == "Admin-2-alliance@5183ny.onmicrosoft.com")
-                directoryViewModel = new ApplicantDirectoryViewModel
-                {
-                    Applicants = applicants,
-                    Shortlists = shortlistedModel,
-                    JobOpenings = jobs
-                };
-            else
-                directoryViewModel = new ApplicantDirectoryViewModel
-                {
-                    Applicants = applicants,
-                    Shortlists = shortlistedModel,
-                    JobOpenings = jobs
-                };
-
+            var directoryViewModel = _dashboardService.GetApplicantDirectoryViewModel(user.Email, jobId);
+            if (directoryViewModel == null)
+            {
+                directoryViewModel = new ApplicantDirectoryViewModel();
+                _toastNotification.AddWarningToastMessage("Directory View Model is not found.");
+            }
             return View(directoryViewModel);
         }
         catch (Exception e)
         {
             _logger.Error(ErrorHandling.DefaultException(e.Message));
-            return StatusCode(500, "Something went wrong.");
+            _toastNotification.AddErrorToastMessage(e.Message);
+            return RedirectToAction("DirectoryView");
         }
     }
 
