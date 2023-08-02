@@ -138,6 +138,7 @@ namespace Basecode.Services.Services
                 _mapper.Map(jobOpening, jobExisting);
                 jobExisting.UpdatedBy = updatedBy;
                 jobExisting.UpdatedTime = DateTime.Now;
+                jobExisting.Tag = jobOpening.Tag;
 
                 // Update qualifications and responsibilities
                 jobExisting.Responsibilities = jobOpening.Responsibilities ?? new List<Responsibility>();
