@@ -18,7 +18,6 @@ public class BackgroundCheck
     public string? Q2 { get; set; }
     public string? Q3 { get; set; }
     public string? Q4 { get; set; }
-    public bool IsSeen { get; set; }
     public CharacterReference CharacterReference { get; set; } = null!;
     public User User { get; set; }
 }
