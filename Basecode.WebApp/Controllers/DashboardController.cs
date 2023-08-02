@@ -231,11 +231,16 @@ public class DashboardController : Controller
         }
     }
 
-    [HttpPost]
-    public async Task<IActionResult> JobOpeningsView(int jobId)
+    public async Task<IActionResult> JobOpeningsView(int? id)
     {
         try
         {
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }
+
+            int jobId = (int)id;
             var user = await _userManager.GetUserAsync(User);
             var directoryViewModel = _dashboardService.GetApplicantDirectoryViewModel(user.Email, jobId);
             if (directoryViewModel == null)
