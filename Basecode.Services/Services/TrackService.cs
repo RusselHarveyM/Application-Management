@@ -118,9 +118,13 @@ public class TrackService : ITrackService
 
             StatusNotification(application.Applicant, user, newStatus);
 
-            if ((newStatus == "For HR Screening" && mailType == "Approval") || mailType != "Approval")
+            // If newStatus is "For HR Screening" and mailType is "Approval"
+            // or if mailType is not "Approval" and mailType is not null/empty
+            if ((newStatus == "For HR Screening" && mailType == "Approval") || (mailType != "Approval" && !string.IsNullOrEmpty(mailType)))
+            {
                 UpdateTrackStatusEmail(application, user, newStatus, mailType);
-
+            }
+                
             return application;
         }
         catch (Exception e)
