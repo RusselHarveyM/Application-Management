@@ -12,6 +12,28 @@
     .nav-tabs .nav-link:not(.active) {
         color: black;
     }
+    
+    tbody, td, tfoot, th, thead, tr {
+        border-color: inherit;
+        border: none !important;
+    }
+    
+    th {
+        line-height: 40px;
+        color: #565d6dff;
+        font-size:  14px;
+        font-weight: 500;
+    }
+    
+    tbody{
+                text-align: center;
+            }
+    
+    .col{
+        flex: 1 0 0%;
+        border: 2px solid rgba(0, 0, 0, 0.03);
+        border-radius: 10px;
+        }
 </style>
 
 <div class="container">
@@ -30,38 +52,36 @@
         <div class="tab-content" id="directoryTabContent">
             <div class="tab-pane fade show active" id="applicants-tab-pane" role="tabpanel" aria-labelledby="applicants-tab" tabindex="0">
                 <div class="container d-flex flex-row align-content-center justify-content-start">
-                    <table class="table table-striped align-middle">
-                        <thead class="text-center">
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Job Applied</th>
-                            <th>Action</th>
-                        </tr>
-                        </thead>
-                        <tbody class="text-center">
-                        @foreach (var applicant in Model.Applicants)
-                        {
-                            <tr>
-                                <td>
-                                    @if (!string.IsNullOrEmpty(applicant.Middlename))
-                                    {
-                                        @Html.Raw($"{applicant.Firstname} {applicant.Middlename} {applicant.Lastname}")
-                                    }
-                                    else
-                                    {
-                                        @Html.Raw($"{applicant.Firstname} {applicant.Lastname}")
-                                    }
-                                </td>
-                                <td>@(applicant.Email)</td>
-                                <td>@(applicant.Application.JobOpening.Title)</td>
-                                <td>
-                                    <a asp-controller="Dashboard" asp-action="DirectoryViewDetails" asp-route-applicantId="@applicant.Id" class="btn" style="background-color: #EC2224; color: white;">View Details</a>
-                                </td>
-                            </tr>
-                        }
-                        </tbody>
-                    </table>
+                        <div class="col">
+                            <table class="table table-striped align-middle" style="border-radius: 10px;--bs-table-striped-bg: rgba(0, 0, 0, 0.03);">
+                                <tr>
+                                    <th>NAME</th>
+                                    <th>EMAIL</th>
+                                    <th>JOB APPLIED</th>
+                                    <th>ACTION</th>
+                                </tr>
+                                @foreach (var applicant in Model.Applicants)
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(applicant.Middlename))
+                                            {
+                                                @Html.Raw($"{applicant.Firstname} {applicant.Middlename} {applicant.Lastname}")
+                                            }
+                                            else
+                                            {
+                                                @Html.Raw($"{applicant.Firstname} {applicant.Lastname}")
+                                            }
+                                        </td>
+                                        <td>@(applicant.Email)</td>
+                                        <td>@(applicant.Application.JobOpening.Title)</td>
+                                        <td>
+                                            <a asp-controller="Dashboard" asp-action="DirectoryViewDetails" asp-route-applicantId="@applicant.Id" class="btn" style="background-color: #EC2224; color: white;">View Details</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
                 </div>
             </div>
             <div class="tab-pane fade" id="shortlists-tab-pane" role="tabpanel" aria-labelledby="shortlists-tab" tabindex="0">

@@ -98,14 +98,12 @@ namespace Basecode.Services.Services
         {
             LogContent logContent = new LogContent();
             int createdApplicantId = 0;
-            var jobOpening = _jobOpeningService.GetById(applicant.JobOpeningId);
             var jobOpeningClone = _jobOpeningService.GetByIdClean(applicant.JobOpeningId);
 
             logContent = CheckApplicant(applicant);
             if (logContent.Result == false)
             {
                 var applicantModel = _mapper.Map<Applicant>(applicant);
-                var newJobOpening = _mapper.Map<JobOpening>(jobOpening);
                 
                 createdApplicantId = _repository.CreateApplicant(applicantModel);
 
@@ -121,7 +119,7 @@ namespace Basecode.Services.Services
                 };
 
                 _applicationService.Create(application);
-
+                
                 BackgroundJob.Enqueue(() => CheckAndSendApplicationStatus(application.Id)); 
             }
 
@@ -158,6 +156,11 @@ namespace Basecode.Services.Services
                     Status = applicant.Application.Status // Retrieve the Status from the related Application
                 })
                 .ToList();
+        }
+        
+        public List<Applicant> GetApplicantsByJobOpeningIdApplicant(int jobOpeningId)
+        {
+            return _repository.GetApplicantsByJobOpeningId(jobOpeningId).ToList();
         }
 
         /// <summary>

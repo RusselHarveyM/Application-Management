@@ -117,6 +117,7 @@ namespace Basecode.Services.Services
             try
             {
                 application.UpdateTime = DateTime.Now;
+                application.JobOpening.UpdatedTime = DateTime.Now;
                 application.Status = newStatus;
 
                 StatusNotification(application.Applicant, user, newStatus);
@@ -148,6 +149,7 @@ namespace Basecode.Services.Services
             try
             {
                 application.UpdateTime = DateTime.Now;
+                application.JobOpening.UpdatedTime = DateTime.Now;
                 application.Status = newStatus;
                 application.Result = result;
 

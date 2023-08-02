@@ -2,6 +2,7 @@
 using Basecode.Services.Services;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
+using NToastNotify;
 
 namespace Basecode.WebApp.Controllers
 {
@@ -11,14 +12,16 @@ namespace Basecode.WebApp.Controllers
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly IUserService _userService;
         private readonly ITrackService _trackService;
+        private readonly IToastNotification _toastNotification;
         private readonly TokenHelper _tokenHelper;
 
-        public TrackerController(IApplicationService applicationService, IUserService userService, ITrackService trackService, IConfiguration config)
+        public TrackerController(IApplicationService applicationService, IUserService userService, ITrackService trackService, IConfiguration config, IToastNotification toastNotification)
         {
             _applicationService = applicationService;
             _userService = userService;
             _trackService = trackService;
             _tokenHelper = new TokenHelper(config["TokenHelper:SecretKey"]);
+            _toastNotification = toastNotification;
         }
 
         /// <summary>
@@ -93,24 +96,15 @@ namespace Basecode.WebApp.Controllers
                     var result = _trackService.UpdateApplicationStatusByEmailResponse(application, user, choice, status);
                     _applicationService.Update(result);
                 }
-
-                return RedirectToAction("ChangeStatusView");
+                _toastNotification.AddSuccessToastMessage("Status Successfully Changed.");
+                return RedirectToAction("Index", "Home");
             }
             catch (Exception e)
             {
                 _logger.Error(ErrorHandling.DefaultException(e.Message));
-                return StatusCode(500, "Something went wrong.");
+                _toastNotification.AddErrorToastMessage(e.Message);
+                return RedirectToAction("Index", "Home");
             }
-        }
-
-
-        /// <summary>
-        /// Changes the status view.
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult ChangeStatusView()
-        {
-            return View();
         }
     }
 }

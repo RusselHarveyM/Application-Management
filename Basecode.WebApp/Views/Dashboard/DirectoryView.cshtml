@@ -4,7 +4,25 @@
     Layout = "/Views/Shared/_Admin.cshtml";
 }
 
-
+<style>
+    tbody, td, tfoot, th, thead, tr {
+        border-color: inherit;
+        border: none !important;
+    }
+    
+     th {
+            line-height: 40px;
+            color: #565d6dff;
+            font-size:  14px;
+            font-weight: 500;
+        }
+    
+    .col{
+        flex: 1 0 0%;
+        border: 2px solid rgba(0, 0, 0, 0.03);
+        border-radius: 10px;
+        }
+</style>
 
 <div class="container">
     <!-- Table -->
@@ -13,18 +31,15 @@
             <div class="row">
                 <h3>Job openings</h3>
                 <div class="col">
-                    <table class="table table-striped text-center align-middle mt-2 overflow-hidden">
-                        <thead>
+                    <table class="table table-striped text-center align-middle mt-2 overflow-hidden" style="iborder-radius: 10px;--bs-table-striped-bg: rgba(0, 0, 0, 0.03);">
                         <!-- Table header -->
                         <tr>
                             <th>ID</th>
-                            <th>Name</th>
-                            <th>Applications</th>
-                            <th>Assigned</th>
+                            <th>NAME</th>
+                            <th>APPLICATIONS</th>
+                            <th>ASSIGNED</th>
                             <th></th>
                         </tr>
-                        </thead>
-                        <tbody>
                         <!-- Add the table rows -->
                         @foreach (var jobOpening in Model.JobOpenings)
                         {
@@ -51,7 +66,6 @@
 
                             </tr>
                         }
-                        </tbody>
                     </table>
                 </div>
             </div>

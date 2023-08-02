@@ -289,7 +289,7 @@ namespace Basecode.WebApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult JobOpeningsView(int jobId)
+        public async Task<IActionResult> JobOpeningsView(int jobId)
         {
             try
             {
@@ -305,14 +305,28 @@ namespace Basecode.WebApp.Controllers
                 var shortlistedModel = new ShortListedViewModel();
                 shortlistedModel.HRShortlisted = _dashboardService.GetShorlistedApplicatons("HR Shortlisted", jobId);
                 shortlistedModel.TechShortlisted = _dashboardService.GetShorlistedApplicatons("Technical Shortlisted", jobId);
-
-                
-                var directoryViewModel = new ApplicantDirectoryViewModel
+                var directoryViewModel = new ApplicantDirectoryViewModel();
+                var user = await _userManager.GetUserAsync(User);
+                if (user.Email == "Admin-2-alliance@5183ny.onmicrosoft.com")
                 {
-                    Applicants = applicants,
-                    Shortlists = shortlistedModel,
-                    JobOpenings = jobs
-                };
+                    var newApplicants = _applicantService.GetApplicantsByJobOpeningIdApplicant(jobId);
+                    directoryViewModel = new ApplicantDirectoryViewModel
+                    {
+                        Applicants = newApplicants,
+                        Shortlists = shortlistedModel,
+                        JobOpenings = jobs
+                    };
+                }
+                else
+                {
+                    directoryViewModel = new ApplicantDirectoryViewModel
+                    {
+                        Applicants = applicants,
+                        Shortlists = shortlistedModel,
+                        JobOpenings = jobs
+                    };
+                }
+               
                 return View(directoryViewModel);
             }
             catch (Exception e)
