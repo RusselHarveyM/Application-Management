@@ -1,30 +1,27 @@
-﻿using Basecode.Data;
-using Basecode.Data.Interfaces;
+﻿using Basecode.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
 
-namespace Basecode.Data.Repositories
+namespace Basecode.Data.Repositories;
+
+public class BaseRepository
 {
-    public class BaseRepository
+    public BaseRepository(IUnitOfWork unitOfWork)
     {
-        protected IUnitOfWork UnitOfWork { get; set; }
+        if (unitOfWork == null) throw new ArgumentNullException(nameof(unitOfWork));
+        UnitOfWork = unitOfWork;
+    }
 
-        protected BasecodeContext Context => (BasecodeContext)UnitOfWork.Database;
+    protected IUnitOfWork UnitOfWork { get; set; }
 
-        public BaseRepository(IUnitOfWork unitOfWork)
-        {
-            if (unitOfWork == null) throw new ArgumentNullException(nameof(unitOfWork));
-            UnitOfWork = unitOfWork;
-        }
+    protected BasecodeContext Context => (BasecodeContext)UnitOfWork.Database;
 
-        protected virtual DbSet<TEntity> GetDbSet<TEntity>() where TEntity : class
-        {
-            return Context.Set<TEntity>();
-        }
+    protected virtual DbSet<TEntity> GetDbSet<TEntity>() where TEntity : class
+    {
+        return Context.Set<TEntity>();
+    }
 
-        protected virtual void SetEntityState(object entity, EntityState entityState)
-        {
-            Context.Entry(entity).State = entityState;
-        }
+    protected virtual void SetEntityState(object entity, EntityState entityState)
+    {
+        Context.Entry(entity).State = entityState;
     }
 }

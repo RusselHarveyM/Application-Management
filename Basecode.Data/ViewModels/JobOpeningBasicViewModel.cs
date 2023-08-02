@@ -1,8 +1,7 @@
-﻿namespace Basecode.Data.ViewModels
+﻿namespace Basecode.Data.ViewModels;
+
+public class JobOpeningBasicViewModel
 {
-    public class JobOpeningBasicViewModel
-    {
-        public int Id { get; set; }
-        public string Title { get; set; }
-    }
+    public int Id { get; set; }
+    public string Title { get; set; }
 }

@@ -160,7 +160,7 @@
                             @* { *@
                             @*     <a asp-controller="Dashboard" asp-action="RequestBackgroundCheck" asp-route-characterReferenceId="@reference.Id" asp-route-applicantId="@reference.ApplicantId" class="btn" style="background-color: #EC2224; color: white;">Request Background Check</a> *@
                             @* } *@
-                            @if (@Model.Status == "Undergoing Background Check")
+                            @if (Model.Status == "Undergoing Background Check")
                             {
                                 <a asp-controller="Dashboard" asp-action="RequestBackgroundCheck" asp-route-characterReferenceId="@reference.Id" asp-route-applicantId="@reference.ApplicantId" class="btn" style="background-color: #EC2224; color: white;">Request Background Check</a>
                             }

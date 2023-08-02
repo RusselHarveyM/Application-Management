@@ -153,75 +153,73 @@
 
 <div class="actions-btn">
     <a asp-action="Index" class="back-btn">Go Back</a>
-    <div class = "admin-btn">
+    <div class="admin-btn">
         @*Admin view*@
         <partial name="_LoginPartialJobView"/>
     </div>
 </div>
 
 <div class="job-details-container">
-    <img class="banner" src="~/images/login/sign_in.png" />
+    <img class="banner" src="~/images/login/sign_in.png"/>
     <div class="p-5">
 
-    <div class="header-cont">
-        <div class="header-title">
-            <img src="~/images/job-icon-dummy02.png" />
-            <h2>@Model.Title</h2>
+        <div class="header-cont">
+            <div class="header-title">
+                <img src="~/images/job-icon-dummy02.png"/>
+                <h2>@Model.Title</h2>
+            </div>
+            <a class="apply-now-button" asp-controller="PublicApplication" asp-action="Index" asp-route-id="@Model.Id">Apply Now</a>
         </div>
-        <a class="apply-now-button" asp-controller="PublicApplication" asp-action="Index" asp-route-id="@Model.Id">Apply Now</a>
-    </div>
 
-    <div class="tags-container">
-        <div class="location locContainer">
-            <img src="~/images/location-icon.png" alt="Location Icon" class="location-icon">
-            <p class="location">@Model.Location</p>
+        <div class="tags-container">
+            <div class="location locContainer">
+                <img src="~/images/location-icon.png" alt="Location Icon" class="location-icon">
+                <p class="location">@Model.Location</p>
+            </div>
+            <div class="employment-work-container">
+                <p class="employment-type">@Model.EmploymentType</p>
+                <p class="work-setup">@Model.WorkSetup</p>
+            </div>
         </div>
-        <div class="employment-work-container">
-            <p class="employment-type">@Model.EmploymentType</p>
-            <p class="work-setup">@Model.WorkSetup</p>
+        <div class="job-qualifications mt-3">
+            <h5>Job Qualifications</h5>
+            @if (Model.Qualifications != null && Model.Qualifications.Any())
+            {
+                <ul>
+                    @foreach (var qualification in Model.Qualifications)
+                    {
+                        <li class="qualification-item">
+                            <img src="~/images/check.png" alt="check Icon">
+                            <span>@qualification.Description</span>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>No qualifications found.</p>
+            }
         </div>
-    </div>
-    <div class="job-qualifications mt-3">
-        <h5>Job Qualifications</h5>
-        @if (Model.Qualifications != null && Model.Qualifications.Any())
-        {
-            <ul>
-                @foreach (var qualification in Model.Qualifications)
-                {
-                    <li class="qualification-item">
-                        <img src="~/images/check.png" alt="check Icon">
-                        <span>@qualification.Description</span>
-                    </li>
-                }
-            </ul>
-        }
-        else
-        {
-            <p>No qualifications found.</p>
-        }
-    </div>
 
-    <div class="job-responsibilities">
-        <h5>Job Responsibilities</h5>
-        @if (Model.Responsibilities != null && Model.Responsibilities.Any())
-        {
-            <ul>
-                @foreach (var responsibility in Model.Responsibilities)
-                {
-                    <li class="responsibility-item">
-                        <img src="~/images/check.png" alt="check Icon">
-                        <span>@responsibility.Description</span>
-                    </li>
-                }
-            </ul>
-        }
-        else
-        {
-            <p>No responsibilities found.</p>
-        }
-    </div>
+        <div class="job-responsibilities">
+            <h5>Job Responsibilities</h5>
+            @if (Model.Responsibilities != null && Model.Responsibilities.Any())
+            {
+                <ul>
+                    @foreach (var responsibility in Model.Responsibilities)
+                    {
+                        <li class="responsibility-item">
+                            <img src="~/images/check.png" alt="check Icon">
+                            <span>@responsibility.Description</span>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>No responsibilities found.</p>
+            }
+        </div>
     </div>
 
 </div>
-
-

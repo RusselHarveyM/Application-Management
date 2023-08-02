@@ -6,7 +6,7 @@
 
 <!doctype html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Tracker</title>
@@ -45,40 +45,41 @@
             background: #AB2314FF;
         }
     </style>
-  </head>
-  <body>
-      <div>
-          <div class="d-flex flex-column justify-content-center align-items-center">
-              <h1 class="mb-5 mt-5">Track Application Status</h1>
-              <form id="track-form" asp-controller="Tracker" asp-action="ResultView" method="get" class="input-group mb-5 w-50">
-                  <div class="input-group">
-                      <input type="text" asp-for="Id" class="form-control" placeholder="Application ID" aria-label="Application ID" aria-describedby="button-track">
-                      <button class="button" type="submit" id="button-track">
-                          <i class="bi bi-search"></i> Track
-                      </button>
-                  </div>
-                  <span asp-validation-for="Id" class="text-danger"></span>
-              </form>
-          </div>
-
-          @if (!string.IsNullOrEmpty(ViewData["ErrorMessage"] as string))
-          {
-            <div class="alert alert-danger text-center" id="error-message">
-                @ViewData["ErrorMessage"]
+</head>
+<body>
+<div>
+    <div class="d-flex flex-column justify-content-center align-items-center">
+        <h1 class="mb-5 mt-5">Track Application Status</h1>
+        <form id="track-form" asp-controller="Tracker" asp-action="ResultView" method="get" class="input-group mb-5 w-50">
+            <div class="input-group">
+                <input type="text" asp-for="Id" class="form-control" placeholder="Application ID" aria-label="Application ID" aria-describedby="button-track">
+                <button class="button" type="submit" id="button-track">
+                    <i class="bi bi-search"></i> Track
+                </button>
             </div>
-          }
+            <span asp-validation-for="Id" class="text-danger"></span>
+        </form>
+    </div>
 
-          @if (Model != null)
-          {
-              <div class="mt-5 mb-5">
-                  @Html.Partial("_ResultView", Model)
-              </div>
-          }
-      </div>
+    @if (!string.IsNullOrEmpty(ViewData["ErrorMessage"] as string))
+    {
+        <div class="alert alert-danger text-center" id="error-message">
+            @ViewData["ErrorMessage"]
+        </div>
+    }
 
-      @section Scripts
-      {
-          <partial name="_ValidationScriptsPartial" />
-      }
-  </body>
+    @if (Model != null)
+    {
+        <div class="mt-5 mb-5">
+            @Html.Partial("_ResultView", Model)
+        </div>
+    }
+</div>
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial"/>
+}
+
+</body>
 </html>

@@ -1,23 +1,18 @@
-﻿using Microsoft.Extensions.Configuration;
-using System.IO;
+﻿namespace Basecode.WebApp.Utilities;
 
-namespace Basecode.WebApp.Utilities
+public class Configuration
 {
-    public class Configuration
+    static Configuration()
     {
-        public static IConfigurationRoot Config { get; set; }
-        
-        static Configuration()
-        {
-            var builder = new ConfigurationBuilder()
-             .SetBasePath(Directory.GetCurrentDirectory())
-             .AddJsonFile("appsettings.json");
-            Config = builder.Build();
+        var builder = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json");
+        Config = builder.Build();
 
-            Configuration.Config = Config;
-        }
-
-        public static string DbConnection => Config["DefaultConnection"];
+        Config = Config;
     }
-}
 
+    public static IConfigurationRoot Config { get; set; }
+
+    public static string DbConnection => Config["DefaultConnection"];
+}

@@ -2,27 +2,27 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace Basecode.WebApp
+namespace Basecode.WebApp;
+
+public partial class StartupWebApp
 {
-    public partial class StartupWebApp
+    private void ConfigureDatabase(IServiceCollection services)
     {
-        private void ConfigureDatabase(IServiceCollection services)
-        {
-            services.AddDbContext<BasecodeContext>(
+        services.AddDbContext<BasecodeContext>(
             options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found."),
+                    Configuration.GetConnectionString("DefaultConnection") ??
+                    throw new InvalidOperationException("Connection string 'DefaultConnection' not found."),
                     optionsAction => { }
                 )
-            );
+        );
 
-            services.AddDatabaseDeveloperPageExceptionFilter();
+        services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddIdentity<IdentityUser, IdentityRole>()
-                    .AddRoles<IdentityRole>()
-                    .AddEntityFrameworkStores<BasecodeContext>()
-                    .AddDefaultUI()
-                    .AddDefaultTokenProviders();      
-        }
+        services.AddIdentity<IdentityUser, IdentityRole>()
+            .AddRoles<IdentityRole>()
+            .AddEntityFrameworkStores<BasecodeContext>()
+            .AddDefaultUI()
+            .AddDefaultTokenProviders();
     }
 }

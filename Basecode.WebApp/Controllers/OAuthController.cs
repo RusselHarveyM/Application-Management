@@ -7,13 +7,13 @@ namespace Basecode.WebApp.Controllers;
 public class OAuthController : Controller
 {
     private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
-    private readonly IOAuthService _oAuthService;
     private readonly IConfiguration _config;
 
     private readonly IWebHostEnvironment _environment;
+    private readonly IOAuthService _oAuthService;
     private string tokensFile;
 
-    public OAuthController(IOAuthService oAuthService,IConfiguration config, IWebHostEnvironment environment)
+    public OAuthController(IOAuthService oAuthService, IConfiguration config, IWebHostEnvironment environment)
     {
         _oAuthService = oAuthService;
         _config = config;
@@ -49,5 +49,4 @@ public class OAuthController : Controller
     //                       "&client_id=" + _config["GraphApi:ClientId"];
     //     return Redirect(redirectUrl);
     // }
-
 }

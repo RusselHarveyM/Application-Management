@@ -31,25 +31,25 @@
                     <p class="fs-6 fw-semibold text-secondary">Working space</p>
                 </li>
                 <li class="nav-item mb-3">
-                    <a class="nav-link @((ViewContext.RouteData.Values["Controller"].ToString() == "Dashboard" && ViewContext.RouteData.Values["Action"].ToString() == "Index") ? "active-cus1" : "text-dark") d-flex flex-row align-items-center gap-2" asp-area="" asp-controller="Dashboard" asp-action="Index">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Dashboard" && ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active-cus1" : "text-dark") d-flex flex-row align-items-center gap-2" asp-area="" asp-controller="Dashboard" asp-action="Index">
                         <img src="~/images/dashboard-icon.png" alt="dashboard icon" style="width:24px; height:24px; fill: #6F7787FF;"/>
                         Dashboard
                     </a>
                 </li>
                 <li class="nav-item mb-3">
-                    <a class="nav-link @((ViewContext.RouteData.Values["Controller"].ToString() == "User" && ViewContext.RouteData.Values["Action"].ToString() == "Index") ? "active-cus1" : "text-dark") d-flex flex-row align-items-center gap-2" asp-area="" asp-controller="User" asp-action="Index">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "User" && ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active-cus1" : "text-dark") d-flex flex-row align-items-center gap-2" asp-area="" asp-controller="User" asp-action="Index">
                         <img src="~/images/group.png" alt="group icon" style="width:24px; height:24px; fill: #6F7787FF;"/>
                         Users
                     </a>
                 </li>
                 <li class="nav-item mb-3">
-                    <a class="nav-link @((ViewContext.RouteData.Values["Controller"].ToString() == "Dashboard" && ViewContext.RouteData.Values["Action"].ToString() == "DirectoryView") ? "active-cus1" : "text-dark") d-flex flex-row align-items-center gap-2" asp-area="" asp-controller="Dashboard" asp-action="DirectoryView">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Dashboard" && ViewContext.RouteData.Values["Action"].ToString() == "DirectoryView" ? "active-cus1" : "text-dark") d-flex flex-row align-items-center gap-2" asp-area="" asp-controller="Dashboard" asp-action="DirectoryView">
                         <img src="~/images/directory.png" alt="directory icon" style="width:24px; height:24px; fill: #6F7787FF;"/>
                         Directory
                     </a>
                 </li>
                 <li class="nav-item mb-3">
-                    <a class="nav-link @((ViewContext.RouteData.Values["Controller"].ToString() == "Scheduler" && ViewContext.RouteData.Values["Action"].ToString() == "Create") ? "active-cus1" : "text-dark") d-flex flex-row align-items-center gap-2" asp-controller="Scheduler" asp-action="Create">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Scheduler" && ViewContext.RouteData.Values["Action"].ToString() == "Create" ? "active-cus1" : "text-dark") d-flex flex-row align-items-center gap-2" asp-controller="Scheduler" asp-action="Create">
                         <img src="~/images/clock.png" alt="clock icon" style="width:24px; height:24px; fill: #6F7787FF;"/>
                         Scheduler
                     </a>
@@ -60,19 +60,19 @@
                     <p class="fs-6 fw-semibold text-secondary">Personal</p>
                 </li>
                 <li class="nav-item mb-3">
-                    <a class="nav-link @((ViewContext.RouteData.Values["Controller"].ToString() == "Messages" && ViewContext.RouteData.Values["Action"].ToString() == "Index") ? "active-cus1" : "text-dark") d-flex flex-row align-items-center gap-2" asp-area="" asp-controller="Dashboard" asp-action="Index">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Messages" && ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active-cus1" : "text-dark") d-flex flex-row align-items-center gap-2" asp-area="" asp-controller="Dashboard" asp-action="Index">
                         <img src="~/images/message-icon.png" alt="messages icon" style="width:24px; height:24px; fill: #6F7787FF;"/>
                         Messages
                     </a>
                 </li>
                 <li class="nav-item mb-3">
-                    <a class="nav-link @((ViewContext.RouteData.Values["Controller"].ToString() == "Notification" && ViewContext.RouteData.Values["Action"].ToString() == "Index") ? "active-cus1" : "text-dark")" asp-area="" asp-controller="User" asp-action="Index">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Notification" && ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active-cus1" : "text-dark")" asp-area="" asp-controller="User" asp-action="Index">
                         <img src="~/images/notification-bell-icon.png" alt="notification bell icon" style="width:24px; height:24px; fill: #6F7787FF;"/>
                         Notifications
                     </a>
                 </li>
                 <li class="nav-item mb-3">
-                    <a class="nav-link @((ViewContext.RouteData.Values["Controller"].ToString() == "Setting" && ViewContext.RouteData.Values["Action"].ToString() == "Index") ? "active-cus1" : "text-dark")" asp-area="" asp-controller="User" asp-action="Index">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Setting" && ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active-cus1" : "text-dark")" asp-area="" asp-controller="User" asp-action="Index">
                         <img src="~/images/setting-icon.png" alt="setting icon" style="width:24px; height:24px; fill: #6F7787FF;"/>
                         Setting
                     </a>
@@ -92,7 +92,7 @@
 
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
-@await RenderSectionAsync("Scripts", required: false)
+@await RenderSectionAsync("Scripts", false)
 
 <script>
         $(document).ready(function () {

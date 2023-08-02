@@ -1,57 +1,53 @@
-﻿using Basecode.Main.Models;
-using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
+﻿using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
-using NLog;
-using Basecode.Data.ViewModels;
 using Basecode.Services.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using Basecode.Services.Util;
+using NLog;
 
-namespace Basecode.Main.Controllers
+namespace Basecode.Main.Controllers;
+
+public class HomeController : Controller
 {
-    public class HomeController : Controller
+    private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+    private readonly IJobOpeningService _jobOpeningService;
+
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="HomeController" /> class.
+    /// </summary>
+    /// <param name="jobOpeningService">The job opening service.</param>
+    public HomeController(IJobOpeningService jobOpeningService)
     {
-        private readonly IJobOpeningService _jobOpeningService;
-        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HomeController" /> class.
-        /// </summary>
-        /// <param name="jobOpeningService">The job opening service.</param>
-        public HomeController(IJobOpeningService jobOpeningService)
+        _jobOpeningService = jobOpeningService;
+    }
+
+
+    /// <summary>
+    ///     Retrieves a list of job openings, category jobs and returns a view with the list.
+    /// </summary>
+    /// <returns>
+    ///     A view with a list of job openings and category of job.
+    /// </returns>
+    public async Task<IActionResult> Index()
+    {
+        try
         {
-            _jobOpeningService = jobOpeningService;
+            // Get all jobs currently available.
+            var jobOpenings = _jobOpeningService.GetJobs();
+
+            if (jobOpenings.IsNullOrEmpty())
+            {
+                _logger.Error("No current jobs.");
+                return View(new List<JobOpeningViewModel>());
+            }
+
+            _logger.Trace("Get Jobs Successfully");
+            return View(jobOpenings);
         }
-
-      
-
-        /// <summary>
-        /// Retrieves a list of job openings, category jobs and returns a view with the list.
-        /// </summary>
-        /// <returns>
-        /// A view with a list of job openings and category of job.
-        /// </returns>
-        public async Task<IActionResult> Index()
+        catch (Exception e)
         {
-            try
-            {
-                // Get all jobs currently available.
-                var jobOpenings = _jobOpeningService.GetJobs();
-
-                if (jobOpenings.IsNullOrEmpty())
-                {
-                    _logger.Error("No current jobs.");
-                    return View(new List<JobOpeningViewModel>());
-                }
-
-                _logger.Trace("Get Jobs Successfully");
-                return View(jobOpenings);
-            }
-            catch (Exception e)
-            {
-                _logger.Error(ErrorHandling.DefaultException(e.Message));
-                return StatusCode(500, "Something went wrong.");
-            }
+            _logger.Error(ErrorHandling.DefaultException(e.Message));
+            return StatusCode(500, "Something went wrong.");
         }
     }
 }

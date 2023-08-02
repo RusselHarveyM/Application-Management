@@ -1,23 +1,20 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿namespace Basecode.WebApp;
 
-namespace Basecode.WebApp
+public partial class StartupWebApp
 {
-    public partial class StartupWebApp
+    private void ConfigureRoutes(IApplicationBuilder app)
     {
-        private void ConfigureRoutes(IApplicationBuilder app)
-        {            
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllerRoute(
+                "default",
+                "{controller=Home}/{action=Index}/{id?}");
 
-                endpoints.MapControllerRoute(
-                    name: "token",
-                    pattern: "api/{token}");
+            endpoints.MapControllerRoute(
+                "token",
+                "api/{token}");
 
-                endpoints.MapRazorPages();
-            });
-        }
+            endpoints.MapRazorPages();
+        });
     }
 }

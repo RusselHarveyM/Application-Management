@@ -2,41 +2,40 @@
 using Basecode.Data.Models;
 using Basecode.Services.Interfaces;
 
-namespace Basecode.Services.Services
+namespace Basecode.Services.Services;
+
+public class InterviewService : ErrorHandling, IInterviewService
 {
-    public class InterviewService : ErrorHandling, IInterviewService
+    private readonly IInterviewRepository _repository;
+
+    public InterviewService(IInterviewRepository repository)
     {
-        private readonly IInterviewRepository _repository;
+        _repository = repository;
+    }
 
-        public InterviewService(IInterviewRepository repository)
+    /// <summary>
+    ///     Adds the interview.
+    /// </summary>
+    /// <param name="schedule">The schedule.</param>
+    /// <returns></returns>
+    public LogContent AddInterview(UserSchedule schedule, string teamsLink)
+    {
+        var logContent = CheckUserSchedule(schedule);
+
+        if (logContent.Result == false)
         {
-            _repository = repository;
-        }
-
-        /// <summary>
-        /// Adds the interview.
-        /// </summary>
-        /// <param name="schedule">The schedule.</param>
-        /// <returns></returns>
-        public LogContent AddInterview(UserSchedule schedule, string teamsLink)
-        {
-            LogContent logContent = CheckUserSchedule(schedule);
-
-            if (logContent.Result == false)
+            var interview = new Interview
             {
-                var interview = new Interview
-                {
-                    ApplicationId = schedule.ApplicationId,
-                    UserId = schedule.UserId,
-                    Date = schedule.Schedule,
-                    Type = schedule.Type,
-                    TeamsLink = teamsLink,
-                };
+                ApplicationId = schedule.ApplicationId,
+                UserId = schedule.UserId,
+                Date = schedule.Schedule,
+                Type = schedule.Type,
+                TeamsLink = teamsLink
+            };
 
-                _repository.AddInterview(interview);
-            }
-
-            return logContent;
+            _repository.AddInterview(interview);
         }
+
+        return logContent;
     }
 }

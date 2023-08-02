@@ -142,7 +142,7 @@ $('#scheduleForm').submit(function (event) {
         var applicantId = $(this).find('td:last').data('applicant-id');
         var time = $(this).find('td:eq(1)').find('input[type="time"]').val();
 
-        applicantSchedules.push({ ApplicantId: applicantId, Time: time });
+        applicantSchedules.push({ApplicantId: applicantId, Time: time});
     });
 
     var formData = {

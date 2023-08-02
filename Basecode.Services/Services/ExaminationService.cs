@@ -2,52 +2,51 @@
 using Basecode.Data.Models;
 using Basecode.Services.Interfaces;
 
-namespace Basecode.Services.Services
+namespace Basecode.Services.Services;
+
+public class ExaminationService : ErrorHandling, IExaminationService
 {
-    public class ExaminationService : ErrorHandling, IExaminationService
+    private readonly IApplicationService _applicationService;
+    private readonly IExaminationRepository _repository;
+
+    public ExaminationService(IExaminationRepository repository, IApplicationService applicationService)
     {
-        private readonly IExaminationRepository _repository;
-        private readonly IApplicationService _applicationService;
+        _repository = repository;
+        _applicationService = applicationService;
+    }
 
-        public ExaminationService(IExaminationRepository repository , IApplicationService applicationService)
+    /// <summary>
+    ///     Gets the examinations by the job opening ID
+    /// </summary>
+    /// <param name="jobOpeningId">The job opening ID.</param>
+    /// <returns></returns>
+    public List<Examination> GetExaminationsByJobOpeningId(int jobOpeningId)
+    {
+        return _repository.GetExaminationsByJobOpeningId(jobOpeningId).ToList();
+    }
+
+    /// <summary>
+    ///     Adds the examination.
+    /// </summary>
+    /// <param name="schedule">The schedule.</param>
+    /// <returns></returns>
+    public LogContent AddExamination(UserSchedule schedule, string teamsLink)
+    {
+        var logContent = CheckUserSchedule(schedule);
+
+        if (logContent.Result == false)
         {
-            _repository = repository;
-            _applicationService = applicationService;
-        }
-
-        /// <summary>
-        /// Gets the examinations by the job opening ID
-        /// </summary>
-        /// <param name="jobOpeningId">The job opening ID.</param>
-        /// <returns></returns>
-        public List<Examination> GetExaminationsByJobOpeningId(int jobOpeningId)
-        {
-            return _repository.GetExaminationsByJobOpeningId(jobOpeningId).ToList();
-        }
-
-        /// <summary>
-        /// Adds the examination.
-        /// </summary>
-        /// <param name="schedule">The schedule.</param>
-        /// <returns></returns>
-        public LogContent AddExamination(UserSchedule schedule, string teamsLink)
-        {
-            LogContent logContent = CheckUserSchedule(schedule);
-
-            if (logContent.Result == false)
+            var examination = new Examination
             {
-                var examination = new Examination
-                {
-                    ApplicationId = schedule.ApplicationId,
-                    UserId = schedule.UserId,
-                    Date = schedule.Schedule,
-                    TeamsLink = teamsLink,
-                };
+                ApplicationId = schedule.ApplicationId,
+                UserId = schedule.UserId,
+                Date = schedule.Schedule,
+                TeamsLink = teamsLink
+            };
 
-                _repository.AddExamination(examination);
-            }
-
-            return logContent;
+            _repository.AddExamination(examination);
         }
+
+        return logContent;
     }
 }

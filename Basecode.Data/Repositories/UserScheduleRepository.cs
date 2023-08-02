@@ -1,78 +1,76 @@
 ﻿using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
-using Microsoft.EntityFrameworkCore;
 
-namespace Basecode.Data.Repositories
+namespace Basecode.Data.Repositories;
+
+public class UserScheduleRepository : BaseRepository, IUserScheduleRepository
 {
-    public class UserScheduleRepository : BaseRepository, IUserScheduleRepository
+    private readonly BasecodeContext _context;
+
+    public UserScheduleRepository(IUnitOfWork unitOfWork, BasecodeContext context) : base(unitOfWork)
     {
-        private readonly BasecodeContext _context;
+        _context = context;
+    }
 
-        public UserScheduleRepository(IUnitOfWork unitOfWork, BasecodeContext context) : base(unitOfWork)
-        {
-            _context = context;
-        }
+    /// <summary>
+    ///     Creates a UserSchedule.
+    /// </summary>
+    /// <param name="userSchedule"></param>
+    /// <returns></returns>
+    public int AddUserSchedule(UserSchedule userSchedule)
+    {
+        _context.UserSchedule.Add(userSchedule);
+        _context.SaveChanges();
+        return userSchedule.Id;
+    }
 
-        /// <summary>
-        /// Creates a UserSchedule.
-        /// </summary>
-        /// <param name="userSchedule"></param>
-        /// <returns></returns>
-        public int AddUserSchedule(UserSchedule userSchedule)
-        {
-            _context.UserSchedule.Add(userSchedule);
-            _context.SaveChanges();
-            return userSchedule.Id;
-        }
+    /// <summary>
+    ///     Inserts multiple UserSchedul records into the database.
+    /// </summary>
+    public void AddUserSchedules(List<UserSchedule> userSchedules)
+    {
+        _context.UserSchedule.AddRange(userSchedules);
+        _context.SaveChanges();
+    }
 
-        /// <summary>
-        /// Inserts multiple UserSchedul records into the database.
-        /// </summary>
-        public void AddUserSchedules(List<UserSchedule> userSchedules)
-        {
-            _context.UserSchedule.AddRange(userSchedules);
-            _context.SaveChanges();
-        }
+    /// <summary>
+    ///     Gets the user schedule by identifier.
+    /// </summary>
+    /// <param name="userScheduleId">The user schedule identifier.</param>
+    /// <returns></returns>
+    public UserSchedule GetUserScheduleById(int userScheduleId)
+    {
+        return _context.UserSchedule.Find(userScheduleId);
+    }
 
-        /// <summary>
-        /// Gets the user schedule by identifier.
-        /// </summary>
-        /// <param name="userScheduleId">The user schedule identifier.</param>
-        /// <returns></returns>
-        public UserSchedule GetUserScheduleById(int userScheduleId)
-        {
-            return _context.UserSchedule.Find(userScheduleId);
-        }
+    /// <summary>
+    ///     Updates the specified user schedule.
+    /// </summary>
+    /// <param name="userSchedule">The user schedule.</param>
+    public void UpdateUserSchedule(UserSchedule userSchedule)
+    {
+        _context.UserSchedule.Update(userSchedule);
+        _context.SaveChanges();
+    }
 
-        /// <summary>
-        /// Updates the specified user schedule.
-        /// </summary>
-        /// <param name="userSchedule">The user schedule.</param>
-        public void UpdateUserSchedule(UserSchedule userSchedule)
-        {
-            _context.UserSchedule.Update(userSchedule);
-            _context.SaveChanges();
-        }
+    /// <summary>
+    ///     Gets the identifier if user schedule exists.
+    /// </summary>
+    /// <param name="applicationId">The application identifier.</param>
+    /// <returns></returns>
+    public int GetIdIfUserScheduleExists(Guid applicationId)
+    {
+        var id = _context.UserSchedule.FirstOrDefault(schedule => schedule.ApplicationId == applicationId);
+        return id != null ? id.Id : -1;
+    }
 
-        /// <summary>
-        /// Gets the identifier if user schedule exists.
-        /// </summary>
-        /// <param name="applicationId">The application identifier.</param>
-        /// <returns></returns>
-        public int GetIdIfUserScheduleExists(Guid applicationId)
-        {
-            var id = _context.UserSchedule.FirstOrDefault(schedule => schedule.ApplicationId == applicationId);
-            return id != null ? id.Id : -1;
-        }
-
-        /// <summary>
-        /// Deletes the user schedule.
-        /// </summary>
-        /// <param name="userSchedule">The user schedule.</param>
-        public void DeleteUserSchedule(UserSchedule userSchedule)
-        {
-            _context.UserSchedule.Remove(userSchedule);
-            _context.SaveChanges();
-        }
+    /// <summary>
+    ///     Deletes the user schedule.
+    /// </summary>
+    /// <param name="userSchedule">The user schedule.</param>
+    public void DeleteUserSchedule(UserSchedule userSchedule)
+    {
+        _context.UserSchedule.Remove(userSchedule);
+        _context.SaveChanges();
     }
 }

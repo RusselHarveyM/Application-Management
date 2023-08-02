@@ -1,5 +1,4 @@
-﻿@using Basecode.Data.Models;
-@model List<Application>
+﻿@model List<Basecode.Data.Models.Application>
 
 <script src="~/js/dashboard/index.js"></script>
 
@@ -32,30 +31,30 @@
 <div class="row">
     <div class="col">
         <table class="table table-striped text-center align-middle mt-2 overflow-hidden" style="border-radius: 10px;--bs-table-striped-bg: rgba(0, 0, 0, 0.03);">
-                <!-- Table header -->
+            <!-- Table header -->
+            <tr>
+                <th>ID</th>
+                <th>JOB OPENING</th>
+                <th>NAME</th>
+                <th>EMAIL</th>
+                <th></th>
+            </tr>
+            <!-- Add the table rows -->
+            @foreach (var application in Model)
+            {
                 <tr>
-                    <th>ID</th>
-                    <th>JOB OPENING</th>
-                    <th>NAME</th>
-                    <th>EMAIL</th>
-                    <th></th>
-                </tr>
-                <!-- Add the table rows -->
-                @foreach (var application in Model)
-                {
-                    <tr>
-                        <td>@application.JobOpeningId</td>
-                        <td>@application.JobOpening.Title</td>
-                        <td>@application.Applicant.Firstname</td>
-                        <td>@application.Applicant.Email</td>
-                        <td>
-                            <a class="btn btn-view" role="button" onclick="showShortlistViewModal('@application.ApplicantId')">
-                                <i class="fa-solid fa-people-arrows"></i> View
-                            </a>
-                        </td>
+                    <td>@application.JobOpeningId</td>
+                    <td>@application.JobOpening.Title</td>
+                    <td>@application.Applicant.Firstname</td>
+                    <td>@application.Applicant.Email</td>
+                    <td>
+                        <a class="btn btn-view" role="button" onclick="showShortlistViewModal('@application.ApplicantId')">
+                            <i class="fa-solid fa-people-arrows"></i> View
+                        </a>
+                    </td>
 
-                    </tr>
-                }
+                </tr>
+            }
         </table>
     </div>
 </div>

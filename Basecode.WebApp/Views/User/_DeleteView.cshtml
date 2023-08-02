@@ -1,5 +1,4 @@
-﻿@using Basecode.Data.Models
-@model User
+﻿@model Basecode.Data.Models.User
 
 <!-- Modal -->
 <div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
@@ -8,12 +7,12 @@
             <div class="modal-header mx-4 border-bottom border-2">
                 <h1 class="modal-title fs-3" id="deleteUserModalLabel">Delete User</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>    
+            </div>
             <div class="modal-body p-5 my-3 text-center">
                 <h5 style="font-weight:400;">Are you sure you want to delete this user?</h5>
             </div>
             <form asp-action="Delete">
-                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="Id"/>
                 <div class="modal-footer justify-content-between border-0 mx-3 mb-3">
                     <button type="button" class="btn btn-cancel" style="font-weight:500;" data-bs-dismiss="modal"><i class="fa-regular fa-circle-xmark"></i> CANCEL</button>
                     <button type="submit" class="btn btn-danger" style="font-weight:500;"><i class="fa-solid fa-trash"></i> DELETE</button>

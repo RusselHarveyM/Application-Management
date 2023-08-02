@@ -1,23 +1,22 @@
-﻿namespace Basecode.Data.ViewModels.Common
+﻿namespace Basecode.Data.ViewModels.Common;
+
+public class FileViewModel
 {
-    public class FileViewModel
-	{
-		public string FileAbsolutePath { get; private set; }
-		public string FilePath { get; set; }
-		public string NonRelativePath { get; set; }
-		public string LocalFileName { get; set; }
+    private string _fileName;
+    public string FileAbsolutePath { get; private set; }
+    public string FilePath { get; set; }
+    public string NonRelativePath { get; set; }
+    public string LocalFileName { get; set; }
 
-		private string _fileName;
-		public string FileName {
-			get {
-				return _fileName;
-			}
+    public string FileName
+    {
+        get => _fileName;
 
-			set {
-				_fileName = value;
+        set
+        {
+            _fileName = value;
 
-				FileAbsolutePath = string.Concat(NonRelativePath, _fileName);
-			}
-		}
-	}
+            FileAbsolutePath = string.Concat(NonRelativePath, _fileName);
+        }
+    }
 }
