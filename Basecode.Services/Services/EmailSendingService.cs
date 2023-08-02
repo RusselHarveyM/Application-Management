@@ -494,4 +494,25 @@ public class EmailSendingService : IEmailSendingService
 
         await _emailService.SendEmail(email, "Alliance Software Inc!", body);
     }
+
+    /// <summary>
+    /// Sends notification to HR if a reference has successfully answered a form.
+    /// </summary>
+    /// <param name="reference">The reference.</param>
+    /// <param name="user">The user.</param>
+    /// <param name="applicant">The applicant.</param>
+    /// <returns></returns>
+    public async Task SendBackgroundCheckCompletionToHR(BackgroundCheck reference, User user, Applicant applicant)
+    {
+        var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
+        var templateContent = File.ReadAllText(templatePath);
+        var body = templateContent
+            .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+            .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+            .Replace("{{HEADLINE}}", "Character Reference Form Completion")
+            .Replace("{{BODY}}", $"Dear {user.Username},<br>" +
+                                 $"<br> {reference.Firstname} {reference.Lastname} has successfully answered the Character Reference Form for Applicant [{applicant.Id}] {applicant.Firstname} {applicant.Lastname}.");
+
+        await _emailService.SendEmail(user.Email, "Alliance Software Inc. Background Check", body);
+    }
 }

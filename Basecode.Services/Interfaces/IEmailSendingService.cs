@@ -124,4 +124,13 @@ public interface IEmailSendingService
 
     Task SendRejectedHireNoticeToInterviewer(string email, string fullname, string position, CurrentHire currentHire,
         string applicantFullName);
+
+    /// <summary>
+    /// Sends notification to HR if a reference has successfully answered a form.
+    /// </summary>
+    /// <param name="reference">The reference.</param>s
+    /// <param name="user">The user.</param>
+    /// <param name="applicant">The applicant.</param>
+    /// <returns></returns>
+    Task SendBackgroundCheckCompletionToHR(BackgroundCheck reference, User user, Applicant applicant);
 }
