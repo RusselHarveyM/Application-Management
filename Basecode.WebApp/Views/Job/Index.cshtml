@@ -176,7 +176,7 @@
                 <div class="col-sm-4" data-tag="@jobOpening.Tag">
                     <a href="@Url.Action("JobView", "Job", new { id = jobOpening.Id })" style="text-decoration:none;">
 
-                        <div class="card mb-4">
+                        <div class="card mb-2">
                             <div class="card-body">
                                 <div class="card-header">
                                     <img src="~/images/job-icon-dummy02.png" alt="Card Image" class="card-image">
@@ -188,11 +188,11 @@
                                 </div>
                                 <div class="card-header">
                                     <img src="~/images/location-icon.png" alt="Card Image" class="card-image-small">
-                                    <p class="card-text">Job Type: @jobOpening.EmploymentType</p>
+                                    <p class="card-text">Work Setup: @jobOpening.WorkSetup</p>
                                 </div>
                                 <div class="card-header">
                                     <img src="~/images/bookmark-icon.png" alt="Card Image" class="card-image-small">
-                                    <p class="card-text">Work Setup: @jobOpening.WorkSetup</p>
+                                    <p class="card-text">Job Type: @jobOpening.EmploymentType</p>
                                 </div>
                             </div>
                         </div>
