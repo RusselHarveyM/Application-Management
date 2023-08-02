@@ -511,8 +511,8 @@ public class EmailSendingService : IEmailSendingService
             .Replace("{{HEADLINE}}", $"Reminder: Input Applicant's Exam Score")
             .Replace("{{BODY}}", $"<br> Dear {fullname}," +
                                  $"<br><br> We kindly remind you to input the exam score for {application.ApplicantName} who recently underwent the Technical Exam phase for the position of {application.JobOpeningTitle}." +
-                                 $"<br><br> To set a new schedule, please follow these steps: <br> 1. Log in to the HR Automation System using your credentials. <br> 2. Navigate to the Directory." +
-                                 $"<br> 3. Click the View button of the job opening applied for by the applicant. <br> 4. Click the Exams tab. <br> 5. Click the Change Score button for the applicant." +
+                                 $"<br><br> To input the applicant's score, please follow these steps: <br> 1. Log in to the HR Automation System using your credentials. <br> 2. Navigate to the Directory." +
+                                 $"<br> 3. Click the View button of the job opening applied for by the applicant. <br> 4. Click the Exams tab. <br> 5. Click the Input Score button for the applicant." +
                                  $"<br> 6. Input the applicant's score and the perfect score in the modal." +
                                  $"<br><br> Should you encounter any difficulties or require any support in the process, please do not hesitate to reach out to our support team, and we will be glad to assist you. <br>" +
                                  $"<br><br> Best regards,");
