@@ -25,7 +25,7 @@ public class ShortlistingService : ErrorHandling, IShortlistingService
 
         foreach (var jobOpeningId in jobOpeningIds)
         {
-            var exams = _examinationService.GetExaminationsByJobOpeningId(jobOpeningId);
+            var exams = _examinationService.GetShortlistableExamsByJobOpeningId(jobOpeningId);
             var totalExams = exams.Count;
 
             if (exams == null || totalExams == 0) continue;

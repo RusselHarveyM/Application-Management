@@ -17,10 +17,13 @@ public class ExaminationRepository : BaseRepository, IExaminationRepository
     /// </summary>
     /// <param name="jobOpeningId">The job opening identifier.</param>
     /// <returns></returns>
-    public IQueryable<Examination> GetExaminationsByJobOpeningId(int jobOpeningId)
+    public IQueryable<Examination> GetShortlistableExamsByJobOpeningId(int jobOpeningId)
     {
         return GetDbSet<Examination>()
-            .Where(exam => exam.Application.JobOpeningId == jobOpeningId);
+            .Where(exam => exam.Application.JobOpeningId == jobOpeningId)
+            .Where(exam => exam.Application.Status == "For Technical Interview")
+            .Where(exam => exam.Application.Interviews
+                .Any(interview => interview.Type == "Technical Interview" && interview.Result == "Pass"));
     }
 
     /// <summary>

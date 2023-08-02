@@ -9,7 +9,7 @@ public interface IExaminationRepository
     /// </summary>
     /// <param name="jobOpeningId">The job opening identifier.</param>
     /// <returns></returns>
-    IQueryable<Examination> GetExaminationsByJobOpeningId(int jobOpeningId);
+    IQueryable<Examination> GetShortlistableExamsByJobOpeningId(int jobOpeningId);
 
     /// <summary>
     ///     Adds the examination.
