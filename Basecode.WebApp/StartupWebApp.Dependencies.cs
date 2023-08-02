@@ -17,6 +17,7 @@ public partial class StartupWebApp
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ClaimsProvider, ClaimsProvider>();
         services.AddScoped<ResumeChecker>();
+        services.AddScoped<ReferenceToPdf>();
 
         // Services 
         services.AddScoped<IUserService, UserService>();
