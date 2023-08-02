@@ -274,7 +274,8 @@ namespace Basecode.Data.Migrations
                     ApplicantId = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ApplicationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Result = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -597,9 +598,7 @@ namespace Basecode.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Examination_UserId",
                 table: "Examination",
-                column: "UserId",
-                unique: true,
-                filter: "[UserId] IS NOT NULL");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Interview_ApplicationId",
@@ -609,9 +608,7 @@ namespace Basecode.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Interview_UserId",
                 table: "Interview",
-                column: "UserId",
-                unique: true,
-                filter: "[UserId] IS NOT NULL");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_JobOpeningUser_UsersId",
@@ -642,8 +639,7 @@ namespace Basecode.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_UserSchedule_UserId",
                 table: "UserSchedule",
-                column: "UserId",
-                unique: true);
+                column: "UserId");
         }
 
         /// <inheritdoc />
