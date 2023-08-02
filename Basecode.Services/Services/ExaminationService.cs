@@ -8,17 +8,20 @@ namespace Basecode.Services.Services;
 public class ExaminationService : ErrorHandling, IExaminationService
 {
     private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+    private readonly IUserScheduleService _userScheduleService;
     private readonly IApplicationService _applicationService;
     private readonly IExaminationRepository _repository;
     private readonly ITrackService _trackService;
     private readonly IUserService _userService;
 
-    public ExaminationService(IExaminationRepository repository, IApplicationService applicationService, ITrackService trackService, IUserService userService)
+    public ExaminationService(IExaminationRepository repository, IApplicationService applicationService, ITrackService trackService, 
+        IUserService userService, IUserScheduleService userScheduleService)
     {
         _repository = repository;
         _applicationService = applicationService;
         _trackService = trackService;
         _userService = userService;
+        _userScheduleService = userScheduleService;
     }
 
     /// <summary>
@@ -89,7 +92,12 @@ public class ExaminationService : ErrorHandling, IExaminationService
             if (!logContent.Result)
             {
                 _repository.UpdateExamination(examination);
-                UpdateApplicationStatusByResult(examination, result);
+                UpdateApplicationStatusByExamResult(examination, result);
+                var userSchedule = _userScheduleService.GetUserScheduleByApplicationId(examination.ApplicationId);
+                if (userSchedule != null)
+                {
+                    _userScheduleService.DeleteUserSchedule(userSchedule);
+                }
             }
         }
 
@@ -97,11 +105,11 @@ public class ExaminationService : ErrorHandling, IExaminationService
     }
 
     /// <summary>
-    /// Updates the application status based on the exam result.
+    /// Updates the application status by exam result.
     /// </summary>
     /// <param name="examination">The examination.</param>
     /// <param name="result">The result.</param>
-    public void UpdateApplicationStatusByResult(Examination examination, string result)
+    public void UpdateApplicationStatusByExamResult(Examination examination, string result)
     {
         var application = _applicationService.GetApplicationById(examination.ApplicationId);
         var user = _userService.GetById(examination.UserId);
@@ -109,7 +117,7 @@ public class ExaminationService : ErrorHandling, IExaminationService
         if (result == "Pass")
             application = _trackService.UpdateApplicationStatus(application, user, "For Technical Interview", string.Empty);
         else
-            application = _trackService.UpdateApplicationStatus(application, user, "Rejected", "Regret");
+            application = _trackService.UpdateApplicationStatus(application, user, "Rejected", "Rejected");
            
         if (application != null)
         {
