@@ -13,6 +13,17 @@
         color: black;
     }
     
+    /* Add custom CSS for pagination */
+        .pagination .page-item .page-link {
+           color: #EC2224; /* Text color for the default button */
+        }
+    
+        .pagination .page-item.active .page-link {
+            background-color: #EC2224; /* Red color for the active page button */
+            border-color: #EC2224;
+            color: #fff;
+        }
+    
     tbody, td, tfoot, th, thead, tr {
         border-color: inherit;
         border: none !important;
@@ -52,36 +63,46 @@
         <div class="tab-content" id="directoryTabContent">
             <div class="tab-pane fade show active" id="applicants-tab-pane" role="tabpanel" aria-labelledby="applicants-tab" tabindex="0">
                 <div class="container d-flex flex-row align-content-center justify-content-start">
-                        <div class="col">
-                            <table class="table table-striped align-middle" style="border-radius: 10px;--bs-table-striped-bg: rgba(0, 0, 0, 0.03);">
+                    <div class="col">
+                        <table class="table table-striped align-middle" style="border-radius: 10px;--bs-table-striped-bg: rgba(0, 0, 0, 0.03);">
+                            <tr>
+                                <th>NAME</th>
+                                <th>EMAIL</th>
+                                <th>JOB APPLIED</th>
+                                <th>ACTION</th>
+                            </tr>
+                            @foreach (var applicant in Model.Applicants)
+                            {
                                 <tr>
-                                    <th>NAME</th>
-                                    <th>EMAIL</th>
-                                    <th>JOB APPLIED</th>
-                                    <th>ACTION</th>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(applicant.Middlename))
+                                        {
+                                            @Html.Raw($"{applicant.Firstname} {applicant.Middlename} {applicant.Lastname}")
+                                        }
+                                        else
+                                        {
+                                            @Html.Raw($"{applicant.Firstname} {applicant.Lastname}")
+                                        }
+                                    </td>
+                                    <td>@(applicant.Email)</td>
+                                    <td>@(applicant.Application.JobOpening.Title)</td>
+                                    <td>
+                                        <a asp-controller="Dashboard" asp-action="DirectoryViewDetails" asp-route-applicantId="@applicant.Id" class="btn" style="background-color: #EC2224; color: white;">View Details</a>
+                                    </td>
                                 </tr>
-                                @foreach (var applicant in Model.Applicants)
+                            }
+                        </table>
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                @for (int i = 1; i <= Math.Ceiling((double)Model.Applicants.Count / 10); i++)
                                 {
-                                    <tr>
-                                        <td>
-                                            @if (!string.IsNullOrEmpty(applicant.Middlename))
-                                            {
-                                                @Html.Raw($"{applicant.Firstname} {applicant.Middlename} {applicant.Lastname}")
-                                            }
-                                            else
-                                            {
-                                                @Html.Raw($"{applicant.Firstname} {applicant.Lastname}")
-                                            }
-                                        </td>
-                                        <td>@(applicant.Email)</td>
-                                        <td>@(applicant.Application.JobOpening.Title)</td>
-                                        <td>
-                                            <a asp-controller="Dashboard" asp-action="DirectoryViewDetails" asp-route-applicantId="@applicant.Id" class="btn" style="background-color: #EC2224; color: white;">View Details</a>
-                                        </td>
-                                    </tr>
+                                    <li class="page-item @(i == 1 ? "active" : "")">
+                                        <a class="page-link" href="#applicants-tab-pane" onclick="showPage(@i)">@i</a>
+                                    </li>
                                 }
-                            </table>
-                        </div>
+                            </ul>
+                        </nav>
+                    </div>
                 </div>
             </div>
             <div class="tab-pane fade" id="shortlists-tab-pane" role="tabpanel" aria-labelledby="shortlists-tab" tabindex="0">
@@ -90,3 +111,39 @@
         </div>
     </div>
 </div>
+
+<script>
+    // JavaScript function to show the specific page in the table
+    function showPage(pageNumber) {
+        var rows = document.querySelectorAll("#applicants-tab-pane .table tbody tr");
+        var itemsPerPage = 11;
+        var currentScroll = window.scrollY; // Get the current scroll position
+
+        for (var i = 1; i < rows.length; i++) { // Start from index 1 to skip the header row
+            if (i >= (pageNumber - 1) * itemsPerPage && i < pageNumber * itemsPerPage) {
+                rows[i].style.display = "table-row";
+            } else {
+                rows[i].style.display = "none";
+            }
+        }
+
+        // Remove the 'active' class from all page items
+        var pageItems = document.querySelectorAll(".pagination .page-item");
+        for (var j = 0; j < pageItems.length; j++) {
+            pageItems[j].classList.remove("active");
+        }
+
+        // Add the 'active' class to the selected page item
+        var currentPageItem = document.querySelector(
+            ".pagination .page-item:nth-child(" + pageNumber + ")"
+        );
+        currentPageItem.classList.add("active");
+
+        // Restore the previous scroll position after loading the new page content
+        window.scroll(0, currentScroll);
+    }
+
+    // Show the first page by default
+    showPage(1);
+</script>
+
