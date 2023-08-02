@@ -308,7 +308,7 @@ public class EmailSendingService : IEmailSendingService
             .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
             .Replace("{{HEADLINE}}", "Character Reference")
             .Replace("{{BODY}}", $"Dear {reference.Name},<br>" +
-                                 $"<br> I hope this email finds you well. We appreciate your willingness to provide a character reference for the applicant, {applicant.Firstname} {applicant.Lastname}<br/>" +
+                                 $"<br> I hope this email finds you well. We appreciate your willingness to provide a character reference for applicant, {applicant.Firstname} {applicant.Lastname}.<br/>" +
                                  $"<br> To proceed with the application process, we kindly request you to complete the Character Reference Form by following the link below:<br/>" +
                                  $"<br> <a href=\"{url}\">Character Reference Form</a> ");
 
@@ -493,5 +493,26 @@ public class EmailSendingService : IEmailSendingService
                                  $"<br><br> Best regards,");
 
         await _emailService.SendEmail(email, "Alliance Software Inc!", body);
+    }
+
+    /// <summary>
+    /// Sends notification to HR if a reference has successfully answered a form.
+    /// </summary>
+    /// <param name="reference">The reference.</param>
+    /// <param name="user">The user.</param>
+    /// <param name="applicant">The applicant.</param>
+    /// <returns></returns>
+    public async Task SendBackgroundCheckCompletionToHR(BackgroundCheck reference, User user, Applicant applicant)
+    {
+        var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
+        var templateContent = File.ReadAllText(templatePath);
+        var body = templateContent
+            .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+            .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+            .Replace("{{HEADLINE}}", "Character Reference Form Completion")
+            .Replace("{{BODY}}", $"Dear {user.Fullname},<br>" +
+                                 $"<br> {reference.Firstname} {reference.Lastname} has successfully answered the Character Reference Form for Applicant [{applicant.Id}] {applicant.Firstname} {applicant.Lastname}.");
+
+        await _emailService.SendEmail(user.Email, "Alliance Software Inc. Background Check", body);
     }
 }

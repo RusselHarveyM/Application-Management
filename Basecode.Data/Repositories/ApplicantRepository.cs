@@ -29,6 +29,7 @@ public class ApplicantRepository : BaseRepository, IApplicantRepository
         return _context.Applicant
             .Where(a => a.Id == id)
             .Include(a => a.Application)
+            .Include(a => a.Application.JobOpening)
             .FirstOrDefault();
     }
 

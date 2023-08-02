@@ -100,12 +100,12 @@
                 <div class="inline-group">
                     <div class="input-field">
                         <label for="referee_last_name">Last Name:</label>
-                        <input asp-for="Lastname" type="text" id="referee_last_name" value="@ViewData["bgRefLastname"]" placeholder="Last Name">
+                        <input asp-for="Lastname" type="text" id="referee_last_name" placeholder="Last Name">
                         <span asp-validation-for="Lastname" class="text-danger error-style"></span>
                     </div>
                     <div class="input-field">
                         <label for="referee_first_name">First Name:</label>
-                        <input asp-for="Firstname" type="text" id="referee_first_name" value="@ViewData["bgRefFirstname"]" placeholder="First Name">
+                        <input asp-for="Firstname" type="text" id="referee_first_name" placeholder="First Name">
                         <span asp-validation-for="Firstname" class="text-danger error-style"></span>
                     </div>
                 </div>
@@ -113,7 +113,7 @@
                 <div class="inline-group">
                     <div class="input-field">
                         <label for="email_address">Email Address:</label>
-                        <input asp-for="Email" type="text" id="email_address" value="@ViewData["bgRefEmail"]" placeholder="example@example.com">
+                        <input asp-for="Email" type="text" id="email_address" placeholder="example@example.com">
                         <span asp-validation-for="Email" class="text-danger error-style"></span>
                     </div>
                     <div class="input-field">

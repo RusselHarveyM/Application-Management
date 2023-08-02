@@ -192,7 +192,7 @@ public class TrackService : ITrackService
     /// </summary>
     /// <param name="applicant">The applicant.</param>
     /// <param name="reference">The reference.</param>
-    public void GratitudeNotification(Applicant applicant, BackgroundCheck reference)
+    public void GratitudeNotification(Applicant applicant, BackgroundCheck reference) //TO BE REMOVED
     {
         var referenceTemp = _mapper.Map<BackgroundCheck>(reference);
         //Notify reference for successfully submitting the form
@@ -226,5 +226,18 @@ public class TrackService : ITrackService
         {
             return null;
         }
+    }
+
+    /// <summary>
+    /// Sends gratitude email to reference and notifies HR for successful completion
+    /// </summary>
+    /// <param name="reference"></param>
+    /// <param name="user"></param>
+    /// <param name="applicant"></param>
+    /// <returns></returns>
+    public async Task SendBackgroundCheckNotification(BackgroundCheck reference, User user, Applicant applicant)
+    {
+        await _emailSendingService.SendGratitudeEmail(applicant, reference);
+        await _emailSendingService.SendBackgroundCheckCompletionToHR(reference, user, applicant);
     }
 }

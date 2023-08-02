@@ -28,6 +28,9 @@ public class BackgroundCheckRepository : BaseRepository, IBackgroundCheckReposit
 
     public BackgroundCheck GetById(int id)
     {
-        return _context.BackgroundCheck.Include(bc => bc.CharacterReference).FirstOrDefault(bc => bc.Id == id);
+        return _context.BackgroundCheck
+            .Include(bc => bc.CharacterReference)
+            .Include(bc => bc.User)
+            .FirstOrDefault(bc => bc.Id == id);
     }
 }

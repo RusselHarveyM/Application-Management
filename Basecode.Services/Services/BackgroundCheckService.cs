@@ -25,7 +25,7 @@ public class BackgroundCheckService : ErrorHandling, IBackgroundCheckService
         _applicantService = applicantService;
     }
 
-    public LogContent Create(BackgroundCheckFormViewModel form)
+    public async Task<LogContent> Create(BackgroundCheckFormViewModel form)
     {
         var logContent = new LogContent();
 
@@ -39,8 +39,9 @@ public class BackgroundCheckService : ErrorHandling, IBackgroundCheckService
 
             var result = _repository.GetById(backgroundId);
             var applicant = _applicantService.GetApplicantById(result.CharacterReference.ApplicantId);
+            var user = result.User;
 
-            _trackService.GratitudeNotification(applicant, result);
+            await _trackService.SendBackgroundCheckNotification(result, user, applicant);
         }
 
         return logContent;

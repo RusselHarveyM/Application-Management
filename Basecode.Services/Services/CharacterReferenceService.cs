@@ -59,7 +59,8 @@ public class CharacterReferenceService : ICharacterReferenceService
                 Name = m.Name,
                 Address = m.Address,
                 Email = m.Email,
-                ApplicantId = m.ApplicantId
+                ApplicantId = m.ApplicantId,
+                Applicant = m.Applicant
             }).ToList();
 
         return data;

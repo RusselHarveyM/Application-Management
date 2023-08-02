@@ -69,4 +69,13 @@ public interface ITrackService
     /// <param name="reference">The reference.</param>
     /// <returns></returns>
     void GratitudeNotification(Applicant applicant, BackgroundCheck reference);
+
+    /// <summary>
+    /// Sends the background check notification to HR and reference.
+    /// </summary>
+    /// <param name="reference">The reference.</param>
+    /// <param name="user">The user.</param>
+    /// <param name="applicant">The applicant.</param>
+    /// <returns></returns>
+    Task SendBackgroundCheckNotification(BackgroundCheck reference, User user, Applicant applicant);
 }
