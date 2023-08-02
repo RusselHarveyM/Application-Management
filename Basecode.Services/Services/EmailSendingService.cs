@@ -270,7 +270,7 @@ public class EmailSendingService : IEmailSendingService
     /// <param name="newStatus">The new status.</param>
     public async Task SendRejectedEmail(Applicant applicant, string newStatus)
     {
-        var redirectLink = "https://localhost:50991/Home";
+        var redirectLink = "https://localhost:50341/Home";
         await _emailService.SendEmail(applicant.Email, "Applicant Status Update for Applicant",
             $"<b>Dear {applicant.Firstname},</b> <br><br> Thank you for submitting your application. We have received it successfully and appreciate your interest in joining our team. <br><br> <b>Status:</b> {newStatus}. " +
             $"<br><br> <em>This is an automated messsage. Do not reply</em> <br><br> <a href=\"{redirectLink}\" " +
@@ -369,7 +369,7 @@ public class EmailSendingService : IEmailSendingService
     /// <returns>A task representing the asynchronous operation.</returns>
     public async Task SendRequestReference(CharacterReference reference, Applicant applicant, int userId)
     {
-        var url = $"https://localhost:50100/BackgroundCheck/Form/{reference.Id}/{userId}";
+        var url = $"https://localhost:50341/BackgroundCheck/Form/{reference.Id}/{userId}";
         var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
         var templateContent = File.ReadAllText(templatePath);
         var body = templateContent
@@ -517,7 +517,7 @@ public class EmailSendingService : IEmailSendingService
         tokenClaims["action"] = "RejectOffer";
         string rejectToken = _tokenHelper.GenerateToken(tokenClaims);
 
-        var baseUrl = "https://localhost:61952";
+        var baseUrl = "https://localhost:50341";
         var acceptUrl = $"{baseUrl}/CurrentHire/AcceptOffer/{HttpUtility.UrlEncode(acceptToken)}";
         var rejectUrl = $"{baseUrl}/CurrentHire/RejectOffer/{HttpUtility.UrlEncode(rejectToken)}";
 
