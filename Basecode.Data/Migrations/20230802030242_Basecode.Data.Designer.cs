@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Basecode.Data.Migrations
 {
     [DbContext(typeof(BasecodeContext))]
-    [Migration("20230731070739_Basecode.Data")]
+    [Migration("20230802030242_Basecode.Data")]
     partial class BasecodeData
     {
         /// <inheritdoc />
@@ -105,6 +105,9 @@ namespace Basecode.Data.Migrations
 
                     b.Property<int>("JobOpeningId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Result")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -291,9 +294,7 @@ namespace Basecode.Data.Migrations
 
                     b.HasIndex("ApplicationId");
 
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Examination");
                 });
@@ -328,9 +329,7 @@ namespace Basecode.Data.Migrations
 
                     b.HasIndex("ApplicationId");
 
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Interview");
                 });
@@ -527,8 +526,7 @@ namespace Basecode.Data.Migrations
                     b.HasIndex("ApplicationId")
                         .IsUnique();
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserSchedule");
                 });
@@ -823,8 +821,8 @@ namespace Basecode.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("Basecode.Data.Models.User", "User")
-                        .WithOne("Examination")
-                        .HasForeignKey("Basecode.Data.Models.Examination", "UserId");
+                        .WithMany("Examination")
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Application");
 
@@ -840,8 +838,8 @@ namespace Basecode.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("Basecode.Data.Models.User", "User")
-                        .WithOne("Interview")
-                        .HasForeignKey("Basecode.Data.Models.Interview", "UserId");
+                        .WithMany("Interview")
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Application");
 
@@ -886,8 +884,8 @@ namespace Basecode.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("Basecode.Data.Models.User", "User")
-                        .WithOne("UserSchedule")
-                        .HasForeignKey("Basecode.Data.Models.UserSchedule", "UserId")
+                        .WithMany("UserSchedule")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
