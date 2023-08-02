@@ -13,4 +13,6 @@ public class Application
     public JobOpening JobOpening { get; set; } = null!;
     public Applicant Applicant { get; set; } = null!;
     public UserSchedule? UserSchedule { get; set; }
+    public Examination? Examination { get; set; }
+    public ICollection<Interview> Interviews { get; } = new List<Interview>();
 }
