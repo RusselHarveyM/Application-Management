@@ -510,7 +510,7 @@ public class EmailSendingService : IEmailSendingService
             .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
             .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
             .Replace("{{HEADLINE}}", "Character Reference Form Completion")
-            .Replace("{{BODY}}", $"Dear {user.Username},<br>" +
+            .Replace("{{BODY}}", $"Dear {user.Fullname},<br>" +
                                  $"<br> {reference.Firstname} {reference.Lastname} has successfully answered the Character Reference Form for Applicant [{applicant.Id}] {applicant.Firstname} {applicant.Lastname}.");
 
         await _emailService.SendEmail(user.Email, "Alliance Software Inc. Background Check", body);
