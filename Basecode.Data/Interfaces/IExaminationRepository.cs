@@ -23,4 +23,17 @@ public interface IExaminationRepository
     /// <param name="applicationId">The application identifier.</param>
     /// <returns></returns>
     Examination GetExaminationByApplicationId(Guid applicationId);
+
+    /// <summary>
+    /// Gets the examination by identifier.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <returns></returns>
+    Examination GetExaminationById(int examinationId);
+
+    /// <summary>
+    /// Updates the examination.
+    /// </summary>
+    /// <param name="examination">The examination.</param>
+    void UpdateExamination(Examination examination);
 }

@@ -24,12 +24,12 @@ public class DashboardController : Controller
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IUserService _userService;
     private readonly IToastNotification _toastNotification;
+    private readonly IExaminationService _examinationService;
 
 
-    public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService,
-        IUserService userService, ICharacterReferenceService characterReferenceService,
-        IBackgroundCheckService backgroundCheckService, IEmailSendingService emailSendingService,
-        IDashboardService dashboardService, UserManager<IdentityUser> userManager, IToastNotification toastNotification)
+    public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService, IUserService userService, 
+        ICharacterReferenceService characterReferenceService, IBackgroundCheckService backgroundCheckService, IEmailSendingService emailSendingService, 
+        IDashboardService dashboardService, UserManager<IdentityUser> userManager, IToastNotification toastNotification, IExaminationService examinationService)
     {
         _applicantService = applicantService;
         _jobOpeningService = jobOpeningService;
@@ -40,6 +40,7 @@ public class DashboardController : Controller
         _dashboardService = dashboardService;
         _userManager = userManager;
         _toastNotification = toastNotification;
+        _examinationService = examinationService;
     }
 
     /// <summary>
@@ -255,6 +256,38 @@ public class DashboardController : Controller
             _logger.Error(ErrorHandling.DefaultException(e.Message));
             _toastNotification.AddErrorToastMessage(e.Message);
             return RedirectToAction("DirectoryView");
+        }
+    }
+
+    [HttpPost]
+    public IActionResult UpdateScore(int examinationId, int applicantScore, int perfectScore, int percentage)
+    {
+        try
+        {
+            var scorePercentage = ((float)applicantScore / perfectScore) * 100;
+            scorePercentage = (float)Math.Round(scorePercentage, 2);
+            int scorePercentageAsInt = (int)scorePercentage;
+            if (scorePercentageAsInt != percentage)
+            {
+                return BadRequest();
+            }
+
+            var data = _examinationService.UpdateExaminationScore(examinationId, percentage);
+            if (!data.Result)
+            {
+                _logger.Trace($"Successfully updated the score of Examination [ {examinationId} ].");
+                return Ok();
+            }
+            else
+            {
+                _logger.Error(ErrorHandling.SetLog(data));
+                return BadRequest();
+            }
+        }
+        catch (Exception e)
+        {
+            _logger.Error(ErrorHandling.DefaultException(e.Message));
+            return StatusCode(500, "Something went wrong.");
         }
     }
 

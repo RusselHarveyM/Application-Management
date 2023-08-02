@@ -1,5 +1,6 @@
 ﻿using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
+using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
 
 namespace Basecode.Services.Services;
@@ -58,5 +59,34 @@ public class ExaminationService : ErrorHandling, IExaminationService
     public Examination GetExaminationByApplicationId(Guid applicationId)
     {
         return _repository.GetExaminationByApplicationId(applicationId);
+    }
+
+    /// <summary>
+    /// Updates the examination score.
+    /// </summary>
+    /// <param name="examinationId">The examination identifier.</param>
+    /// <param name="score">The score.</param>
+    /// <returns></returns>
+    public LogContent UpdateExaminationScore(int examinationId, int score)
+    {
+        var logContent = new LogContent();
+        var examination = _repository.GetExaminationById(examinationId);
+
+        if (examination != null)
+        {
+            var result = "Fail";
+            if (score >= 70) result = "Pass";
+
+            examination.Score = score;
+            examination.Result = result;
+
+            logContent = CheckExamination(examination);
+            if (!logContent.Result)
+            {
+                _repository.UpdateExamination(examination);
+            }
+        }
+
+        return logContent;
     }
 }

@@ -1,0 +1,41 @@
+﻿@model Basecode.Data.ViewModels.ApplicantExamViewModel
+
+<div class="modal fade" id="inputScoreModal" tabindex="-1" aria-labelledby="inputScoreModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header mx-4 border-bottom border-2">
+                <h1 class="modal-title fs-3" id="inputScoreModalLabel">Technical Exam Score</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="Update" id="inputScoreForm">
+                <input type="hidden" asp-for="ExamId" />
+                <div class="modal-body px-5 py-4">
+                    <div clas="row">
+                        <div class="col">
+                            <label>Applicant's Score</label>
+                            <input class="form-control" type="number" id="applicantScore" required />
+                            <span class="text-danger" id="applicantScoreError"></span>
+                        </div>
+                        <div class="col">
+                            <label>Perfect Score</label>
+                            <input class="form-control" type="number" id="perfectScore" required />
+                            <span class="text-danger" id="perfectScoreError"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label></label>
+                            <input type="number" class="form-control" id="percentageScore" disabled />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between border-0 mx-3 mb-3">
+                    <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><i class="fa-regular fa-circle-xmark"></i> CANCEL</button>
+                    <button type="submit" class="btn btn-submit"><i class="fa-solid fa-floppy-disk"></i> SAVE USER</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<partial name="~/Views/Shared/_ValidationScriptsPartial.cshtml" />

@@ -200,8 +200,8 @@ public class ApplicantService : IApplicantService
 
     public List<ApplicantExamViewModel> GetApplicantsWithExamsByJobOpeningId(int jobOpeningId)
     {
-        List<Applicant> applicants = _repository.GetApplicantsByStatusAndJobOpeningId(jobOpeningId, "For Technical Exam");
-        List<ApplicantExamViewModel> viewModelList = new List<ApplicantExamViewModel>();
+        var applicants = _repository.GetApplicantsByStatusAndJobOpeningId(jobOpeningId, "For Technical Exam");
+        var viewModelList = new List<ApplicantExamViewModel>();
 
         foreach (var applicant in applicants)
         {

@@ -43,4 +43,20 @@ public class ExaminationRepository : BaseRepository, IExaminationRepository
         return GetDbSet<Examination>()
             .Where(exam => exam.ApplicationId == applicationId).FirstOrDefault();
     }
+
+    /// <summary>
+    /// Gets the examination by identifier.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <returns></returns>
+    public Examination GetExaminationById(int examinationId)
+    {
+        return _context.Examination.Find(examinationId);
+    }
+
+    public void UpdateExamination(Examination examination)
+    {
+        _context.Examination.Update(examination);
+        _context.SaveChanges();
+    }
 }

@@ -25,4 +25,12 @@ public interface IExaminationService
     /// <param name="applicationId">The application identifier.</param>
     /// <returns></returns>
     Examination GetExaminationByApplicationId(Guid applicationId);
+
+    /// <summary>
+    /// Updates the examination score.
+    /// </summary>
+    /// <param name="examinationId">The examination identifier.</param>
+    /// <param name="score">The score.</param>
+    /// <returns></returns>
+    LogContent UpdateExaminationScore(int examinationId, int score);
 }

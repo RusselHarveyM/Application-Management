@@ -177,7 +177,7 @@ public class EmailSendingService : IEmailSendingService
             .Replace("{{APPROVE_TOKEN}}", $"{approveToken}");
 
         newStatus.Replace("For ", "");
-        if (newStatus == "For HR Screening")
+        if (newStatus == "HR Screening")
         {
             body.Replace("{{BODY}}", $"Dear {user.Fullname},<br> Applicant [{applicant.Id}] is ready for {newStatus}. Please provide your feedback to" +
                 $" proceed to the next phase. Thank you.")
