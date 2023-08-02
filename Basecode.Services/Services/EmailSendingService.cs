@@ -145,16 +145,16 @@ public class EmailSendingService : IEmailSendingService
             $"Applicant {applicant.Firstname} (ID: {applicant.Id}) has changed status to {newStatus}.");
     }
 
-        /// <summary>
-        /// Sends the approval email.
-        /// </summary>
-        /// <param name="user">The user.</param>
-        /// <param name="applicant">The applicant.</param>
-        /// <param name="appId">The application identifier.</param>
-        /// <param name="newStatus">The new status.</param>
-        public async Task SendApprovalEmail(User user, Applicant applicant, Guid appId, string newStatus)
-        {
-            Dictionary<string, string> tokenClaims = new Dictionary<string, string>()
+    /// <summary>
+    /// Sends the approval email.
+    /// </summary>
+    /// <param name="user">The user.</param>
+    /// <param name="applicant">The applicant.</param>
+    /// <param name="appId">The application identifier.</param>
+    /// <param name="newStatus">The new status.</param>
+    public async Task SendApprovalEmail(User user, Applicant applicant, Guid appId, string newStatus)
+    {
+        Dictionary<string, string> tokenClaims = new Dictionary<string, string>()
             {
                 { "action", "ChangeStatus" },
                 { "userId", user.Id.ToString() },
@@ -162,39 +162,39 @@ public class EmailSendingService : IEmailSendingService
                 { "newStatus", newStatus },
                 { "choice", "approved" },
             };
-            string approveToken = _tokenHelper.GenerateToken(tokenClaims);
+        string approveToken = _tokenHelper.GenerateToken(tokenClaims);
 
-            tokenClaims["choice"] = "rejected";
-            string rejectToken = _tokenHelper.GenerateToken(tokenClaims);
+        tokenClaims["choice"] = "rejected";
+        string rejectToken = _tokenHelper.GenerateToken(tokenClaims);
 
-            var templatePath = Path.Combine("wwwroot", "template", "ApprovalEmail.html");
-            var templateContent = File.ReadAllText(templatePath);
-            var body = templateContent
-                .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
-                .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
-                .Replace("{{HEADLINE}}", "Approval Email")
-                .Replace("{{REJECT_TOKEN}}", $"{rejectToken}")
-                .Replace("{{APPROVE_TOKEN}}", $"{approveToken}");
+        var templatePath = Path.Combine("wwwroot", "template", "ApprovalEmail.html");
+        var templateContent = File.ReadAllText(templatePath);
+        var body = templateContent
+            .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+            .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+            .Replace("{{HEADLINE}}", "Approval Email")
+            .Replace("{{REJECT_TOKEN}}", $"{rejectToken}")
+            .Replace("{{APPROVE_TOKEN}}", $"{approveToken}");
 
-            newStatus.Replace("For ", "");
-            if (newStatus == "For HR Screening")
-            {
-                body.Replace("{{BODY}}", $"Dear {user.Fullname},<br> Applicant [{applicant.Id}] is ready for {newStatus}. Please provide your feedback to" +
-                    $" proceed to the next phase. Thank you.")
-                    .Replace("{{NEGATIVE_FEEDBACK}}", "Reject")
-                    .Replace("{{POSITIVE_FEEDBACK}}", "Approve");
-            }
-            else
-            {
-                body.Replace("{{BODY}}", $"Dear {user.Fullname}," +
-                    $"<br> We would like to request your input regarding the current status of the applicant, {applicant.Firstname} {applicant.Lastname}, " +
-                    $"in the {newStatus} phase of the hiring process." +
-                    $"<br><br> Applicant ID: {applicant.Id} <br> Applicant Name: {applicant.Firstname} {applicant.Lastname}" +
-                    $"<br><br> Please click the Pass button if the applicant has successfully passed the {newStatus}. Otherwise, click Fail if the applicant" +
-                    $"did not meet the criteria for progressing. Thank you. <br><br>")
-                    .Replace("{{NEGATIVE_FEEDBACK}}", "Fail")
-                    .Replace("{{POSITIVE_FEEDBACK}}", "Pass");
-            }
+        newStatus.Replace("For ", "");
+        if (newStatus == "For HR Screening")
+        {
+            body.Replace("{{BODY}}", $"Dear {user.Fullname},<br> Applicant [{applicant.Id}] is ready for {newStatus}. Please provide your feedback to" +
+                $" proceed to the next phase. Thank you.")
+                .Replace("{{NEGATIVE_FEEDBACK}}", "Reject")
+                .Replace("{{POSITIVE_FEEDBACK}}", "Approve");
+        }
+        else
+        {
+            body.Replace("{{BODY}}", $"Dear {user.Fullname}," +
+                $"<br> We would like to request your input regarding the current status of the applicant, {applicant.Firstname} {applicant.Lastname}, " +
+                $"in the {newStatus} phase of the hiring process." +
+                $"<br><br> Applicant ID: {applicant.Id} <br> Applicant Name: {applicant.Firstname} {applicant.Lastname}" +
+                $"<br><br> Please click the Pass button if the applicant has successfully passed the {newStatus}. Otherwise, click Fail if the applicant" +
+                $"did not meet the criteria for progressing. Thank you. <br><br>")
+                .Replace("{{NEGATIVE_FEEDBACK}}", "Fail")
+                .Replace("{{POSITIVE_FEEDBACK}}", "Pass");
+        }
 
         await _emailService.SendEmail(user.Email, "Alliance Software Inc. Applicant Status Update", body);
     }
@@ -241,20 +241,20 @@ public class EmailSendingService : IEmailSendingService
         await _emailService.SendEmail(applicant.Email, "Alliance Software Inc. Application Status Update", body);
     }
 
-        /// <summary>
-        /// Sends the schedule to applicant.
-        /// </summary>
-        public async Task SendScheduleToApplicant(UserSchedule userSchedule, Applicant applicant, int tokenExpiry)
-        {
-            Dictionary<string, string> tokenClaims = new Dictionary<string, string>()
+    /// <summary>
+    /// Sends the schedule to applicant.
+    /// </summary>
+    public async Task SendScheduleToApplicant(UserSchedule userSchedule, Applicant applicant, int tokenExpiry)
+    {
+        Dictionary<string, string> tokenClaims = new Dictionary<string, string>()
             {
                 { "action", "AcceptSchedule" },
                 { "userScheduleId", userSchedule.Id.ToString() },
             };
-            string acceptToken = _tokenHelper.GenerateToken(tokenClaims, tokenExpiry);
+        string acceptToken = _tokenHelper.GenerateToken(tokenClaims, tokenExpiry);
 
-            tokenClaims["action"] = "RejectSchedule";
-            string rejectToken = _tokenHelper.GenerateToken(tokenClaims, tokenExpiry);
+        tokenClaims["action"] = "RejectSchedule";
+        string rejectToken = _tokenHelper.GenerateToken(tokenClaims, tokenExpiry);
 
         var baseUrl = "https://localhost:53813";
         var acceptUrl = $"{baseUrl}/Scheduler/AcceptSchedule/{HttpUtility.UrlEncode(acceptToken)}";
@@ -440,20 +440,20 @@ public class EmailSendingService : IEmailSendingService
         await _emailService.SendEmail(userEmail, "Alliance Software Inc. Forgot Password", body);
     }
 
-        /// <summary>
-        /// Sends the congratulations to applicant.
-        /// </summary>
-        public async Task SendCongratulation(Applicant applicant, int userId)
-        {
-            Dictionary<string, string> tokenClaims = new Dictionary<string, string>()
+    /// <summary>
+    /// Sends the congratulations to applicant.
+    /// </summary>
+    public async Task SendCongratulation(Applicant applicant, int userId)
+    {
+        Dictionary<string, string> tokenClaims = new Dictionary<string, string>()
             {
                 { "action", "AcceptOffer" },
                 { "userId", userId.ToString() },
             };
-            string acceptToken = _tokenHelper.GenerateToken(tokenClaims);
+        string acceptToken = _tokenHelper.GenerateToken(tokenClaims);
 
-            tokenClaims["action"] = "RejectOffer";
-            string rejectToken = _tokenHelper.GenerateToken(tokenClaims);
+        tokenClaims["action"] = "RejectOffer";
+        string rejectToken = _tokenHelper.GenerateToken(tokenClaims);
 
         var baseUrl = "https://localhost:61952";
         var acceptUrl = $"{baseUrl}/CurrentHire/AcceptOffer/{HttpUtility.UrlEncode(acceptToken)}";
@@ -495,30 +495,29 @@ public class EmailSendingService : IEmailSendingService
                                  $"<br> genuinely appreciate your interest, and we hope our paths cross again in the future. <br>" +
                                  $"<br><br> Best regards,");
 
-            await _emailService.SendEmail(email, $"Alliance Software Inc!", body);
-        }
+        await _emailService.SendEmail(email, $"Alliance Software Inc!", body);
+    }
 
-        /// <summary>
-        /// Sends the exam score reminder.
-        /// </summary>
-        public async Task SendExamScoreReminder(string email, string fullname, ApplicationViewModel application)
-        {
-            var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
-            var templateContent = File.ReadAllText(templatePath);
-            var body = templateContent
-                .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
-                .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
-                .Replace("{{HEADLINE}}", $"Reminder: Input Applicant's Exam Score")
-                .Replace("{{BODY}}", $"<br> Dear {fullname}," +
-                                     $"<br><br> We kindly remind you to input the exam score for {application.ApplicantName} who recently underwent the Technical Exam phase for the position of {application.JobOpeningTitle}." +
-                                     $"<br><br> To set a new schedule, please follow these steps: <br> 1. Log in to the HR Automation System using your credentials. <br> 2. Navigate to the Directory." +
-                                     $"<br> 3. Click the View button of the job opening applied for by the applicant. <br> 4. Click the Exams tab. <br> 5. Click the Change Score button for the applicant." +
-                                     $"<br> 6. Input the applicant's score and the perfect score in the modal." +
-                                     $"<br><br> Should you encounter any difficulties or require any support in the process, please do not hesitate to reach out to our support team, and we will be glad to assist you. <br>" +
-                                     $"<br><br> Best regards,");
+    /// <summary>
+    /// Sends the exam score reminder.
+    /// </summary>
+    public async Task SendExamScoreReminder(string email, string fullname, ApplicationViewModel application)
+    {
+        var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
+        var templateContent = File.ReadAllText(templatePath);
+        var body = templateContent
+            .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+            .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+            .Replace("{{HEADLINE}}", $"Reminder: Input Applicant's Exam Score")
+            .Replace("{{BODY}}", $"<br> Dear {fullname}," +
+                                 $"<br><br> We kindly remind you to input the exam score for {application.ApplicantName} who recently underwent the Technical Exam phase for the position of {application.JobOpeningTitle}." +
+                                 $"<br><br> To set a new schedule, please follow these steps: <br> 1. Log in to the HR Automation System using your credentials. <br> 2. Navigate to the Directory." +
+                                 $"<br> 3. Click the View button of the job opening applied for by the applicant. <br> 4. Click the Exams tab. <br> 5. Click the Change Score button for the applicant." +
+                                 $"<br> 6. Input the applicant's score and the perfect score in the modal." +
+                                 $"<br><br> Should you encounter any difficulties or require any support in the process, please do not hesitate to reach out to our support team, and we will be glad to assist you. <br>" +
+                                 $"<br><br> Best regards,");
 
-            await _emailService.SendEmail(email, $"Alliance Software Inc. Applicant Exam Score Reminder", body);
-        }
+        await _emailService.SendEmail(email, $"Alliance Software Inc. Applicant Exam Score Reminder", body);
     }
 
     /// <summary>
