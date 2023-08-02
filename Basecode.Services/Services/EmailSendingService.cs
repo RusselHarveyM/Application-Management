@@ -308,7 +308,7 @@ public class EmailSendingService : IEmailSendingService
             .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
             .Replace("{{HEADLINE}}", "Character Reference")
             .Replace("{{BODY}}", $"Dear {reference.Name},<br>" +
-                                 $"<br> I hope this email finds you well. We appreciate your willingness to provide a character reference for the applicant, {applicant.Firstname} {applicant.Lastname}<br/>" +
+                                 $"<br> I hope this email finds you well. We appreciate your willingness to provide a character reference for applicant, {applicant.Firstname} {applicant.Lastname}.<br/>" +
                                  $"<br> To proceed with the application process, we kindly request you to complete the Character Reference Form by following the link below:<br/>" +
                                  $"<br> <a href=\"{url}\">Character Reference Form</a> ");
 
