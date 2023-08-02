@@ -145,47 +145,56 @@ public class EmailSendingService : IEmailSendingService
             $"Applicant {applicant.Firstname} (ID: {applicant.Id}) has changed status to {newStatus}.");
     }
 
-    /// <summary>
-    ///     Sends the approval email.
-    /// </summary>
-    /// <param name="user">The user.</param>
-    /// <param name="applicant">The applicant.</param>
-    /// <param name="appId">The application identifier.</param>
-    /// <param name="newStatus">The new status.</param>
-    public async Task SendApprovalEmail(User user, Applicant applicant, Guid appId, string newStatus)
-    {
-        var approveTokenClaims = new Dictionary<string, string>
+        /// <summary>
+        /// Sends the approval email.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <param name="applicant">The applicant.</param>
+        /// <param name="appId">The application identifier.</param>
+        /// <param name="newStatus">The new status.</param>
+        public async Task SendApprovalEmail(User user, Applicant applicant, Guid appId, string newStatus)
         {
-            { "action", "ChangeStatus" },
-            { "userId", user.Id.ToString() },
-            { "appId", appId.ToString() },
-            { "newStatus", newStatus },
-            { "choice", "approved" }
-        };
-        var rejectTokenClaims = new Dictionary<string, string>
-        {
-            { "action", "ChangeStatus" },
-            { "userId", user.Id.ToString() },
-            { "appId", appId.ToString() },
-            { "newStatus", newStatus },
-            { "choice", "rejected" }
-        };
-        var approveToken = _tokenHelper.GenerateToken(approveTokenClaims);
-        var rejectToken = _tokenHelper.GenerateToken(rejectTokenClaims);
+            Dictionary<string, string> tokenClaims = new Dictionary<string, string>()
+            {
+                { "action", "ChangeStatus" },
+                { "userId", user.Id.ToString() },
+                { "appId", appId.ToString() },
+                { "newStatus", newStatus },
+                { "choice", "approved" },
+            };
+            string approveToken = _tokenHelper.GenerateToken(tokenClaims);
 
-        var templatePath = Path.Combine("wwwroot", "template", "ApprovalEmail.html");
-        var templateContent = File.ReadAllText(templatePath);
-        var body = templateContent
-            .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
-            .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
-            .Replace("{{HEADLINE}}", "Approval Email")
-            .Replace("{{BODY}}",
-                $"Dear {user.Fullname},<br> Applicant [{applicant.Id}] is ready for {newStatus}, please provide your feedback to" +
-                $" proceed to the next phase. Thank you.")
-            .Replace("{{REJECT_TOKEN}}", $"{rejectToken}")
-            .Replace("{{NEGATIVE_FEEDBACK}}", "Reject")
-            .Replace("{{APPROVE_TOKEN}}", $"{approveToken}")
-            .Replace("{{POSITIVE_FEEDBACK}}", "Approve");
+            tokenClaims["choice"] = "rejected";
+            string rejectToken = _tokenHelper.GenerateToken(tokenClaims);
+
+            var templatePath = Path.Combine("wwwroot", "template", "ApprovalEmail.html");
+            var templateContent = File.ReadAllText(templatePath);
+            var body = templateContent
+                .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+                .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+                .Replace("{{HEADLINE}}", "Approval Email")
+                .Replace("{{REJECT_TOKEN}}", $"{rejectToken}")
+                .Replace("{{APPROVE_TOKEN}}", $"{approveToken}");
+
+            newStatus.Replace("For ", "");
+            if (newStatus == "For HR Screening")
+            {
+                body.Replace("{{BODY}}", $"Dear {user.Fullname},<br> Applicant [{applicant.Id}] is ready for {newStatus}. Please provide your feedback to" +
+                    $" proceed to the next phase. Thank you.")
+                    .Replace("{{NEGATIVE_FEEDBACK}}", "Reject")
+                    .Replace("{{POSITIVE_FEEDBACK}}", "Approve");
+            }
+            else
+            {
+                body.Replace("{{BODY}}", $"Dear {user.Fullname}," +
+                    $"<br> We would like to request your input regarding the current status of the applicant, {applicant.Firstname} {applicant.Lastname}, " +
+                    $"in the {newStatus} phase of the hiring process." +
+                    $"<br><br> Applicant ID: {applicant.Id} <br> Applicant Name: {applicant.Firstname} {applicant.Lastname}" +
+                    $"<br><br> Please click the Pass button if the applicant has successfully passed the {newStatus}. Otherwise, click Fail if the applicant" +
+                    $"did not meet the criteria for progressing. Thank you. <br><br>")
+                    .Replace("{{NEGATIVE_FEEDBACK}}", "Fail")
+                    .Replace("{{POSITIVE_FEEDBACK}}", "Pass");
+            }
 
         await _emailService.SendEmail(user.Email, "Alliance Software Inc. Applicant Status Update", body);
     }
@@ -232,23 +241,20 @@ public class EmailSendingService : IEmailSendingService
         await _emailService.SendEmail(applicant.Email, "Alliance Software Inc. Application Status Update", body);
     }
 
-    /// <summary>
-    ///     Sends the schedule to applicant.
-    /// </summary>
-    public async Task SendScheduleToApplicant(UserSchedule userSchedule, Applicant applicant, int tokenExpiry)
-    {
-        var acceptTokenClaims = new Dictionary<string, string>
+        /// <summary>
+        /// Sends the schedule to applicant.
+        /// </summary>
+        public async Task SendScheduleToApplicant(UserSchedule userSchedule, Applicant applicant, int tokenExpiry)
         {
-            { "action", "AcceptSchedule" },
-            { "userScheduleId", userSchedule.Id.ToString() }
-        };
-        var rejectTokenClaims = new Dictionary<string, string>
-        {
-            { "action", "RejectSchedule" },
-            { "userScheduleId", userSchedule.Id.ToString() }
-        };
-        var acceptToken = _tokenHelper.GenerateToken(acceptTokenClaims, tokenExpiry);
-        var rejectToken = _tokenHelper.GenerateToken(rejectTokenClaims, tokenExpiry);
+            Dictionary<string, string> tokenClaims = new Dictionary<string, string>()
+            {
+                { "action", "AcceptSchedule" },
+                { "userScheduleId", userSchedule.Id.ToString() },
+            };
+            string acceptToken = _tokenHelper.GenerateToken(tokenClaims, tokenExpiry);
+
+            tokenClaims["action"] = "RejectSchedule";
+            string rejectToken = _tokenHelper.GenerateToken(tokenClaims, tokenExpiry);
 
         var baseUrl = "https://localhost:53813";
         var acceptUrl = $"{baseUrl}/Scheduler/AcceptSchedule/{HttpUtility.UrlEncode(acceptToken)}";
@@ -434,23 +440,20 @@ public class EmailSendingService : IEmailSendingService
         await _emailService.SendEmail(userEmail, "Alliance Software Inc. Forgot Password", body);
     }
 
-    /// <summary>
-    ///     Sends the congratulations to applicant.
-    /// </summary>
-    public async Task SendCongratulation(Applicant applicant, int userId)
-    {
-        var acceptTokenClaims = new Dictionary<string, string>
+        /// <summary>
+        /// Sends the congratulations to applicant.
+        /// </summary>
+        public async Task SendCongratulation(Applicant applicant, int userId)
         {
-            { "action", "AcceptOffer" },
-            { "userId", userId.ToString() }
-        };
-        var rejectTokenClaims = new Dictionary<string, string>
-        {
-            { "action", "RejectOffer" },
-            { "userId", userId.ToString() }
-        };
-        var acceptToken = _tokenHelper.GenerateToken(acceptTokenClaims);
-        var rejectToken = _tokenHelper.GenerateToken(rejectTokenClaims);
+            Dictionary<string, string> tokenClaims = new Dictionary<string, string>()
+            {
+                { "action", "AcceptOffer" },
+                { "userId", userId.ToString() },
+            };
+            string acceptToken = _tokenHelper.GenerateToken(tokenClaims);
+
+            tokenClaims["action"] = "RejectOffer";
+            string rejectToken = _tokenHelper.GenerateToken(tokenClaims);
 
         var baseUrl = "https://localhost:61952";
         var acceptUrl = $"{baseUrl}/CurrentHire/AcceptOffer/{HttpUtility.UrlEncode(acceptToken)}";
