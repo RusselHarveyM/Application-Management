@@ -43,4 +43,11 @@ public interface IUserScheduleService
     /// </summary>
     /// <param name="userSchedule">The user schedule.</param>
     void DeleteUserSchedule(UserSchedule userSchedule);
+
+    /// <summary>
+    /// Gets the user schedule by application identifier.
+    /// </summary>
+    /// <param name="applicationId">The application identifier.</param>
+    /// <returns></returns>
+    UserSchedule? GetUserScheduleByApplicationId(Guid applicationId);
 }

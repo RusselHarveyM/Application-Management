@@ -43,8 +43,15 @@ public interface IScheduleSendingService
     void SendAcceptedScheduleToApplicant(UserSchedule userSchedule, string joinUrl);
 
     /// <summary>
-    ///     Schedules the sending of the approval email.
+    /// Schedules the sending of the approval email.
     /// </summary>
     /// <param name="userSchedule">The user schedule.</param>
-    void ScheduleSendApprovalEmail(UserSchedule userSchedule);
+    void ScheduleApprovalEmail(UserSchedule userSchedule, int hoursLeft);
+
+    /// <summary>
+    /// Schedules the sending of the exam score reminder email.
+    /// </summary>
+    /// <param name="userSchedule">The user schedule.</param>
+    /// <param name="hoursLeft">The hours left until the scheduled time.</param>
+    void ScheduleExamScoreReminderEmail(UserSchedule userSchedule, int hoursLeft);
 }

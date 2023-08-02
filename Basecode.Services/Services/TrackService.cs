@@ -11,13 +11,16 @@ namespace Basecode.Services.Services;
 public class TrackService : ITrackService
 {
     private readonly IEmailSendingService _emailSendingService;
+    private readonly IInterviewService _interviewService;
     private readonly IMapper _mapper;
     private readonly ResumeChecker _resumeChecker;
     private readonly List<string> _statuses;
+    private readonly List<string> _interviewStatuses;
 
-    public TrackService(IEmailSendingService emailSendingService, ResumeChecker resumeChecker, IMapper mapper)
+    public TrackService(IEmailSendingService emailSendingService, ResumeChecker resumeChecker, IMapper mapper, IInterviewService interviewService)
     {
         _emailSendingService = emailSendingService;
+        _interviewService = interviewService;
         _resumeChecker = resumeChecker;
         _mapper = mapper;
         _statuses = new List<string>
@@ -31,6 +34,12 @@ public class TrackService : ITrackService
             "Technical Shortlisted",
             "Undergoing Background Check",
             "For Final Interview"
+        };
+        _interviewStatuses = new List<string>
+        {
+            "For HR Interview",
+            "For Technical Interview",
+            "For Final Interview",
         };
     }
 
@@ -118,9 +127,13 @@ public class TrackService : ITrackService
 
             StatusNotification(application.Applicant, user, newStatus);
 
-            if ((newStatus == "For HR Screening" && mailType == "Approval") || mailType != "Approval")
+            // If newStatus is "For HR Screening" and mailType is "Approval"
+            // or if mailType is not "Approval" and mailType is not null/empty
+            if ((newStatus == "For HR Screening" && mailType == "Approval") || (mailType != "Approval" && !string.IsNullOrEmpty(mailType)))
+            {
                 UpdateTrackStatusEmail(application, user, newStatus, mailType);
-
+            }
+                
             return application;
         }
         catch (Exception e)
@@ -141,6 +154,13 @@ public class TrackService : ITrackService
         string choice, string status)
     {
         var newStatus = "";
+
+        if (_interviewStatuses.Contains(status))
+        {
+            _interviewService.UpdateInterviewResult(application.Id, status, choice);
+            if (status == "For Technical Interview")
+                return application;
+        }
 
         if (choice.Equals("approved"))
         {

@@ -84,4 +84,12 @@ public interface IApplicantService
     ///     CharacterReferences.
     /// </returns>
     List<Applicant> GetApplicantsWithJobAndReferences(string userAspId);
+
+    /// <summary>
+    /// Gets the applicants with exams by job opening identifier.
+    /// </summary>
+    /// <param name="jobOpeningId">The job opening identifier.</param>
+    /// <param name="status">The status.</param>
+    /// <returns></returns>
+    List<ApplicantExamViewModel> GetApplicantsWithExamsByJobOpeningId(int jobOpeningId);
 }

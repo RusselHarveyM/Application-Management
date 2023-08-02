@@ -1,5 +1,6 @@
 ﻿using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
+using System;
 
 namespace Basecode.Data.Repositories;
 
@@ -38,5 +39,11 @@ public class InterviewRepository : BaseRepository, IInterviewRepository
     {
         _context.Interview.Remove(interview);
         _context.SaveChanges();
+    }
+
+    public Interview? GetInterviewByApplicationIdAndStatus(Guid applicationId, string status)
+    {
+        return GetDbSet<Interview>()
+            .FirstOrDefault(interview => interview.ApplicationId == applicationId && interview.Type == status);
     }
 }

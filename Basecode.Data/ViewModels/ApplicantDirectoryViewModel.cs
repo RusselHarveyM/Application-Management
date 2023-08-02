@@ -8,4 +8,5 @@ public class ApplicantDirectoryViewModel
     public ShortListedViewModel? Shortlists { get; set; }
 
     public List<JobOpeningViewModel>? JobOpenings { get; set; }
+    public List<ApplicantExamViewModel>? ApplicantExams { get; set; }
 }

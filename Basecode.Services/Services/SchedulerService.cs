@@ -116,12 +116,10 @@ public class SchedulerService : ErrorHandling, ISchedulerService
 
                 _scheduleSendingService.SendAcceptedScheduleToInterviewer(userSchedule, joinUrl);
                 _scheduleSendingService.SendAcceptedScheduleToApplicant(userSchedule, joinUrl);
-
-                _userScheduleService.DeleteUserSchedule(userSchedule);
             }
 
             var data = new LogContent();
-            var scheduleType = userSchedule.Type.Split(' ').Skip(1).FirstOrDefault(); // Remove first word from string
+            var scheduleType = userSchedule.Type.Split(' ').Skip(1).FirstOrDefault();    // Remove "For " from string
 
             if (scheduleType == "Interview")
                 data = _interviewService.AddInterview(userSchedule, joinUrl);
@@ -131,20 +129,33 @@ public class SchedulerService : ErrorHandling, ISchedulerService
             if (!data.Result)
             {
                 _logger.Trace($"Successfully created a new {userSchedule.Type} record.");
-                _scheduleSendingService
-                    .ScheduleSendApprovalEmail(userSchedule); // Send approval email on the hour of the schedule
+
+                userSchedule.Status = "accepted";
+                _userScheduleService.UpdateUserSchedule(userSchedule);
+
+                ScheduleApprovalOrReminderEmail(userSchedule, scheduleType);
             }
-            else
-            {
-                _logger.Error(SetLog(data));
-            }
+            else _logger.Error(SetLog(data)); 
         }
 
         return logContent;
     }
 
     /// <summary>
-    ///     Rejects the schedule.
+    /// Schedules the approval or reminder email.
+    /// </summary>
+    private void ScheduleApprovalOrReminderEmail(UserSchedule userSchedule, string scheduleType)
+    {
+        var hoursLeft = (int)(userSchedule.Schedule - DateTime.Now).TotalHours;
+        // Send email on the hour of the schedule
+        if (scheduleType == "Interview")
+            _scheduleSendingService.ScheduleApprovalEmail(userSchedule, hoursLeft);
+        else
+            _scheduleSendingService.ScheduleExamScoreReminderEmail(userSchedule, hoursLeft);
+    }
+
+    /// <summary>
+    /// Rejects the schedule.
     /// </summary>
     /// <param name="userScheduleId">The user schedule identifier.</param>
     public LogContent RejectSchedule(int userScheduleId)

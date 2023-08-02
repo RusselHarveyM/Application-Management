@@ -90,10 +90,13 @@ public class TrackerController : Controller
             if (application != null && user != null)
             {
                 var result = _trackService.UpdateApplicationStatusByEmailResponse(application, user, choice, status);
-                _applicationService.Update(result);
+                if (status != "For Technical Interview")    // Need to wait for the shortlisting process after the Technical Interview
+                {
+                    _applicationService.Update(result);
+                    _toastNotification.AddSuccessToastMessage("Status Successfully Changed.");
+                }
             }
 
-            _toastNotification.AddSuccessToastMessage("Status Successfully Changed.");
             return RedirectToAction("Index", "Home");
         }
         catch (Exception e)

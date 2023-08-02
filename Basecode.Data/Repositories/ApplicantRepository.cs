@@ -2,6 +2,7 @@
 using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Graph.Models;
 
 namespace Basecode.Data.Repositories;
 
@@ -88,5 +89,20 @@ public class ApplicantRepository : BaseRepository, IApplicantRepository
             .ToList();
 
         return applicants;
+    }
+
+    public List<Applicant> GetApplicantsByStatusAndJobOpeningId(int jobOpeningId, string status1, string status2 = "")
+    {
+        if (string.IsNullOrEmpty(status2))
+        {
+            return _context.Applicant
+                    .Where(applicant => applicant.Application.JobOpeningId == jobOpeningId && applicant.Application.Status == status1)
+                    .ToList();
+        }
+
+        return _context.Applicant
+            .Where(applicant => applicant.Application.JobOpeningId == jobOpeningId && 
+                (applicant.Application.Status == status1 || applicant.Application.Status == status2))
+            .ToList();
     }
 }

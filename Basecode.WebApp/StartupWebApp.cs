@@ -74,9 +74,7 @@ public partial class StartupWebApp
 
 
         // Shortlisting of Applicants that runs every 2 weeks
-        //RecurringJob.AddOrUpdate<IShortlistingService>("shortlisting", service => service.ShortlistApplications(), "0 8 1,15 * *");
-        // FOR TESTING ONLY: run shortlisting method every minute
-        //RecurringJob.AddOrUpdate<IShortlistingService>("shortlisting", service => service.ShortlistApplications(), Cron.Minutely);
+        RecurringJob.AddOrUpdate<IShortlistingService>("shortlisting", service => service.ShortlistApplications(), "0 8 1,15 * *");
 
         /// <summary>
         /// Sets up a recurring Hangfire job to send automated reminders using the IEmailSendingService.

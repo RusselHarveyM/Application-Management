@@ -57,6 +57,9 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="shortlists-tab" data-bs-toggle="tab" data-bs-target="#shortlists-tab-pane" type="button" role="tab" aria-controls="shortlists-tab-pane" aria-selected="false">SHORTLISTS</button>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="exams-tab" data-bs-toggle="tab" data-bs-target="#exams-tab-pane" type="button" role="tab" aria-controls="exams-tab-pane" aria-selected="false">EXAMS</button>
+                </li>
             </ul>
             <a id="backButton" class="btn" style="background-color: #EC2224; color: white;" onclick="goBack2()">Back</a>
         </div>
@@ -107,6 +110,9 @@
             </div>
             <div class="tab-pane fade" id="shortlists-tab-pane" role="tabpanel" aria-labelledby="shortlists-tab" tabindex="0">
                 @Html.Partial("~/Views/Dashboard/ShortListView.cshtml", Model.Shortlists)
+            </div>
+            <div class="tab-pane fade" id="exams-tab-pane" role="tabpanel" aria-labelledby="exams-tab" tabindex="0">
+                @Html.Partial("~/Views/Dashboard/_ExamsView.cshtml", Model.ApplicantExams)
             </div>
         </div>
     </div>

@@ -468,6 +468,102 @@ public class ErrorHandling
         return logContent;
     }
 
+    public static LogContent CheckExamination(Examination examination)
+    {
+        var logContent = new LogContent();
+        if (examination == null)
+        {
+            logContent.SetError("404", "Schedule is not found.");
+            return logContent;
+        }
+
+        if (Equals(examination.ApplicationId, Guid.Empty))
+        {
+            logContent.SetError("400", "ApplicationId is invalid.");
+            return logContent;
+        }
+
+        if (examination.UserId == 0 || examination.UserId == null)
+        {
+            logContent.SetError("400", "UserId is invalid.");
+            return logContent;
+        }
+
+        if (examination.Date == default || examination.Date == null)
+        {
+            logContent.SetError("400", "Date is invalid.");
+            return logContent;
+        }
+
+        if (string.IsNullOrEmpty(examination.TeamsLink))
+        {
+            logContent.SetError("400", "TeamsLink is invalid.");
+            return logContent;
+        }
+
+        if (examination.Score == 0 || examination.Score == null)
+        {
+            logContent.SetError("400", "Score is invalid.");
+            return logContent;
+        }
+
+        if (string.IsNullOrEmpty(examination.Result))
+        {
+            logContent.SetError("400", "Result is invalid.");
+            return logContent;
+        }
+
+        return logContent;
+    }
+
+    public static LogContent CheckInterview(Interview interview)
+    {
+        var logContent = new LogContent();
+        if (interview == null)
+        {
+            logContent.SetError("404", "Schedule is not found.");
+            return logContent;
+        }
+
+        if (Equals(interview.ApplicationId, Guid.Empty))
+        {
+            logContent.SetError("400", "ApplicationId is invalid.");
+            return logContent;
+        }
+
+        if (interview.UserId == 0 || interview.UserId == null)
+        {
+            logContent.SetError("400", "UserId is invalid.");
+            return logContent;
+        }
+
+        if (interview.Date == default || interview.Date == null)
+        {
+            logContent.SetError("400", "Date is invalid.");
+            return logContent;
+        }
+
+        if (string.IsNullOrEmpty(interview.TeamsLink))
+        {
+            logContent.SetError("400", "TeamsLink is invalid.");
+            return logContent;
+        }
+
+        if (string.IsNullOrEmpty(interview.Type))
+        {
+            logContent.SetError("400", "Type is invalid.");
+            return logContent;
+        }
+
+        if (string.IsNullOrEmpty(interview.Result))
+        {
+            logContent.SetError("400", "Result is invalid.");
+            return logContent;
+        }
+
+        return logContent;
+    }
+
     public class LogContent
     {
         public string ErrorCode { get; set; } = string.Empty;

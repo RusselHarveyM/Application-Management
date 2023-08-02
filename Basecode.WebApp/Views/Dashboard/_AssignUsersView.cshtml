@@ -85,7 +85,7 @@
 
                         </div>
                     </div>
-                    <input type="hidden" id="userData" value="@Html.Raw(Json.Serialize(Model.Users))"/>
+                    <input type="hidden" id="userData" value='@Html.Raw(Json.Serialize(Model.Users))'/>
                     <input type="hidden" id="hiddenJobOpeningId" value="@Model.JobOpening.Id"/>
                 </form>
             </div>

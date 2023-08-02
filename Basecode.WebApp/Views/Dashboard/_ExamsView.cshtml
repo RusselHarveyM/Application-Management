@@ -1,0 +1,83 @@
+﻿@model List<Basecode.Data.ViewModels.ApplicantExamViewModel>
+
+<div class="row">
+    <div class="col">
+        <table class="table table-striped text-center align-middle mt-2 overflow-hidden" style="border-radius: 10px;--bs-table-striped-bg: rgba(0, 0, 0, 0.03);">
+            <tr>
+                <th>ID</th>
+                <th>NAME</th>
+                <th>EXAM DATE</th>
+                <th>SCORE</th>
+                <th>RESULT</th>
+                <th></th>
+            </tr>
+            @if (Model.Count() > 0)
+            {
+                @foreach (var applicant in Model)
+                {
+                    <tr>
+                        <td>@applicant.ApplicantId</td>
+                        <td>@Html.Raw($"{applicant.Firstname} {applicant.Middlename} {applicant.Lastname}")</td>
+                        <td>@applicant.ExaminationDate</td>
+                        <td>@applicant.Score</td>
+                        <td>@applicant.Result</td>
+                        <td>
+                            <a class="btn btn-view" role="button" onclick="showInputScoreModal(@applicant.ExamId, @applicant.Score)">
+                                <i class="fa-solid fa-pencil"></i>&nbsp;&nbsp;Input Score
+                            </a>
+                        </td>
+
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" class="text-center">No Applicants With Exams Found</td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+
+<div id="inputScoreModalContainer">
+    <div class="modal fade" id="inputScoreModal" tabindex="-1" aria-labelledby="inputScoreModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header mx-4 border-bottom border-2">
+                    <h1 class="modal-title fs-3" id="inputScoreModalLabel">Technical Exam Score</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form asp-action="UpdateScore" id="inputScoreForm">
+                    <input type="hidden" name="examinationId" id="examinationId" />
+                    <div class="modal-body px-5 py-4">
+                        <div clas="row">
+                            <div class="col">
+                                <label>Applicant's Score</label>
+                                <input class="form-control" type="number" id="applicantScore" name="applicantScore" required />
+                                <span class="text-danger" id="applicantScoreError"></span>
+                            </div>
+                            <div class="col">
+                                <label>Perfect Score</label>
+                                <input class="form-control" type="number" id="perfectScore" name="perfectScore" required />
+                                <span class="text-danger" id="perfectScoreError"></span>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <label>Score as percentage (rounded off)</label>
+                                    <input id="percentage" name="percentage" disabled />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-between border-0 mx-3 mb-3">
+                        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><i class="fa-regular fa-circle-xmark"></i> CANCEL</button>
+                        <button type="submit" class="btn btn-submit" id="submitScoreButton" disabled><i class="fa-solid fa-floppy-disk"></i> SAVE SCORE</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/dashboard/score.js"></script>
