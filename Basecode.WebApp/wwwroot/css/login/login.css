@@ -16,7 +16,7 @@
 }
 
 .input-group-append {
-    float:right;
+    float: right;
 }
 
 ::-ms-reveal {
@@ -55,7 +55,7 @@
 }
 
 .error-style {
-    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     font-size: 0.8rem;
     height: 0.8em;
     word-wrap: break-word;

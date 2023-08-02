@@ -1,7 +1,7 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.IdentityModel.Tokens;
 
 public class TokenHelper
 {
@@ -13,7 +13,7 @@ public class TokenHelper
     }
 
     /// <summary>
-    /// Generates the token.
+    ///     Generates the token.
     /// </summary>
     /// <param name="claims">The claims.</param>
     /// <param name="expirationHours">Number of hours before the token expires.</param>
@@ -26,7 +26,8 @@ public class TokenHelper
         {
             Subject = new ClaimsIdentity(claims.Select(x => new Claim(x.Key, x.Value))),
             Expires = DateTime.UtcNow.AddHours(expirationHours),
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            SigningCredentials =
+                new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -34,7 +35,7 @@ public class TokenHelper
     }
 
     /// <summary>
-    /// Validates the token.
+    ///     Validates the token.
     /// </summary>
     /// <param name="token">The token.</param>
     /// <param name="expectedAction">The expected action.</param>
@@ -53,7 +54,7 @@ public class TokenHelper
                 ValidateIssuer = false,
                 ValidateAudience = false,
                 ClockSkew = TimeSpan.Zero
-            }, out SecurityToken validatedToken);
+            }, out var validatedToken);
 
             var jwtToken = (JwtSecurityToken)validatedToken;
             var action = jwtToken.Claims.FirstOrDefault(x => x.Type == "action")?.Value;
@@ -68,7 +69,7 @@ public class TokenHelper
     }
 
     /// <summary>
-    /// Gets the token claims.
+    ///     Gets the token claims.
     /// </summary>
     /// <param name="token">The token.</param>
     /// <param name="action">The action.</param>

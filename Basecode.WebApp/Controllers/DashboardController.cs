@@ -1,6 +1,5 @@
 using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
-using Basecode.Data.ViewModels.Common;
 using Basecode.Services.Interfaces;
 using Basecode.Services.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -9,425 +8,374 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using NLog;
 
-namespace Basecode.WebApp.Controllers
+namespace Basecode.WebApp.Controllers;
+
+[Authorize]
+public class DashboardController : Controller
 {
-    [Authorize]
-    public class DashboardController : Controller
+    private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+    private readonly IApplicantService _applicantService;
+    private readonly IBackgroundCheckService _backgroundCheckService;
+    private readonly ICharacterReferenceService _characterReferenceService;
+    private readonly IDashboardService _dashboardService;
+    private readonly IEmailSendingService _emailSendingService;
+    private readonly IJobOpeningService _jobOpeningService;
+    private readonly UserManager<IdentityUser> _userManager;
+    private readonly IUserService _userService;
+
+
+    public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService,
+        IUserService userService, ICharacterReferenceService characterReferenceService,
+        IBackgroundCheckService backgroundCheckService, IEmailSendingService emailSendingService,
+        IDashboardService dashboardService, UserManager<IdentityUser> userManager)
     {
-        private readonly IApplicantService _applicantService;
-        private readonly IJobOpeningService _jobOpeningService;
-        private readonly IUserService _userService;
-        private readonly ICharacterReferenceService _characterReferenceService;
-        private readonly IBackgroundCheckService _backgroundCheckService;
-        private readonly IEmailSendingService _emailSendingService;
-        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
-        private readonly IDashboardService _dashboardService;
-        private readonly UserManager<IdentityUser> _userManager;
-        
+        _applicantService = applicantService;
+        _jobOpeningService = jobOpeningService;
+        _userService = userService;
+        _characterReferenceService = characterReferenceService;
+        _backgroundCheckService = backgroundCheckService;
+        _emailSendingService = emailSendingService;
+        _dashboardService = dashboardService;
+        _userManager = userManager;
+    }
 
-        public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService, IUserService userService, ICharacterReferenceService characterReferenceService, IBackgroundCheckService backgroundCheckService, IEmailSendingService emailSendingService, IDashboardService  dashboardService, UserManager<IdentityUser> userManager)
+    /// <summary>
+    ///     Indexes this instance.
+    /// </summary>
+    /// <returns></returns>
+    public IActionResult Index()
+    {
+        try
         {
-            _applicantService = applicantService;
-            _jobOpeningService = jobOpeningService;
-            _userService = userService;
-            _characterReferenceService = characterReferenceService;
-            _backgroundCheckService = backgroundCheckService;
-            _emailSendingService = emailSendingService;
-            _dashboardService = dashboardService;
-            _userManager = userManager;
+            var jobs = _jobOpeningService.GetJobsWithApplicationsSorted();
+
+            if (jobs.IsNullOrEmpty())
+            {
+                _logger.Info("Job List is null or empty.");
+                return View(new List<JobOpeningViewModel>());
+            }
+            _logger.Trace("Job List is rendered successfully.");
+            return View(jobs);
         }
-
-        /// <summary>
-        /// Indexes this instance.
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult Index()
+        catch (Exception e)
         {
-            try
-            {
-                List<JobOpeningViewModel> jobs = _jobOpeningService.GetJobsWithApplications();
-        
-                if (jobs.IsNullOrEmpty())
-                {
-                    _logger.Info("Job List is null or empty.");
-                    return View(new List<JobOpeningViewModel>());
-                }
-        
-                // Sort the job openings by updatedTime in descending order
-                jobs.Sort((job1, job2) => DateTime.Compare((DateTime)job2.UpdatedTime, (DateTime)job1.UpdatedTime));
-
-                // Take the first 5 job openings from the sorted list
-                List<JobOpeningViewModel> recentJobs = jobs.Take(5).ToList();
-        
-                _logger.Trace("Job List is rendered successfully.");
-                return View(recentJobs);
-            }
-            catch (Exception e)
-            {
-                _logger.Error(ErrorHandling.DefaultException(e.Message));
-                return StatusCode(500, "Something went wrong.");
-            }
+            _logger.Error(ErrorHandling.DefaultException(e.Message));
+            return StatusCode(500, "Something went wrong.");
         }
+    }
 
 
-        /// <summary>
-        /// Assigns the users view.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
-        [HttpGet]
-        public IActionResult AssignUsersView(int id)
+    /// <summary>
+    ///     Assigns the users view.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <returns></returns>
+    [HttpGet]
+    public IActionResult AssignUsersView(int id)
+    {
+        try
         {
-            try
+            var jobOpeningTitle = _jobOpeningService.GetJobOpeningTitleById(id);
+            var jobOpening = new JobOpeningBasicViewModel
             {
-                var jobOpeningTitle = _jobOpeningService.GetJobOpeningTitleById(id);
-                JobOpeningBasicViewModel jobOpening = new JobOpeningBasicViewModel()
-                {
-                    Id = id,
-                    Title = jobOpeningTitle,
-                };
-                List<ApplicantStatusViewModel> applicants = _applicantService.GetApplicantsByJobOpeningId(id);
-                List<HRUserViewModel> users = _userService.GetAllUsersWithLinkStatus(id);
+                Id = id,
+                Title = jobOpeningTitle
+            };
+            var applicants = _applicantService.GetApplicantsByJobOpeningId(id);
+            var users = _userService.GetAllUsersWithLinkStatus(id);
 
-                AssignUsersViewModel viewModel = new AssignUsersViewModel()
-                {
-                    JobOpening = jobOpening,
-                    Applicants = applicants,
-                    Users = users,
-                };
-
-                if (viewModel == null)
-                {
-                    _logger.Error("Failed to create AssignUsersViewModel");
-                    return NotFound();
-                }
-
-                _logger.Trace("Successfully created AssignUsersViewModel for JobOpening [" + id + "].");
-                
-
-                return PartialView("~/Views/Dashboard/_AssignUsersView.cshtml", viewModel);
-            }
-            catch (Exception e)
+            var viewModel = new AssignUsersViewModel
             {
-                _logger.Error(ErrorHandling.DefaultException(e.Message));
-                return StatusCode(500, "Something went wrong.");
+                JobOpening = jobOpening,
+                Applicants = applicants,
+                Users = users
+            };
+
+            if (viewModel == null)
+            {
+                _logger.Error("Failed to create AssignUsersViewModel");
+                return NotFound();
             }
+
+            _logger.Trace("Successfully created AssignUsersViewModel for JobOpening [" + id + "].");
+
+
+            return PartialView("~/Views/Dashboard/_AssignUsersView.cshtml", viewModel);
         }
-
-        /// <summary>
-        /// Updates the job opening assignments.
-        /// </summary>
-        /// <param name="assignedUserIds">The assigned user ids.</param>
-        /// <param name="jobOpeningId">The job opening identifier.</param>
-        /// <returns></returns>
-        [HttpPost]
-        public IActionResult AssignUserViewUpdate(List<string> assignedUserIds, int jobOpeningId)
+        catch (Exception e)
         {
-            try
-            {
-                _jobOpeningService.UpdateJobOpeningUsers(jobOpeningId, assignedUserIds);
-                return Ok();
-            }
-            catch (Exception e)
-            {
-                _logger.Error(ErrorHandling.DefaultException(e.Message));
-                return StatusCode(500, "Something went wrong.");
-            }
+            _logger.Error(ErrorHandling.DefaultException(e.Message));
+            return StatusCode(500, "Something went wrong.");
         }
+    }
 
-        // /// <summary>
-        // /// Shorts the ListView.
-        // /// </summary>
-        // /// <returns></returns>
-        // public IActionResult ShortListView()
-        // {
-        //     try
-        //     {
-        //         var shortlistedModel = new ShortListedViewModel();
-        //         shortlistedModel.HRShortlisted = _dashboardService.GetShorlistedApplicatons("HR Shortlisted");
-        //         shortlistedModel.TechShortlisted = _dashboardService.GetShorlistedApplicatons("Technical Shortlisted");
-        //
-        //         return View(shortlistedModel);
-        //     }
-        //     catch (Exception e)
-        //     {
-        //         _logger.Error(ErrorHandling.DefaultException(e.Message));
-        //         return StatusCode(500, "Something went wrong.");
-        //     }
-        // }
-
-        /// <summary>
-        /// Views the details.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
-        [HttpGet]
-        public IActionResult ViewDetails(int id)
+    /// <summary>
+    ///     Updates the job opening assignments.
+    /// </summary>
+    /// <param name="assignedUserIds">The assigned user ids.</param>
+    /// <param name="jobOpeningId">The job opening identifier.</param>
+    /// <returns></returns>
+    [HttpPost]
+    public IActionResult AssignUserViewUpdate(List<string> assignedUserIds, int jobOpeningId)
+    {
+        try
         {
-            try
-            {
-                // Fetch the application details based on the applicationId
-                var applicant = _applicantService.GetApplicantByIdAll(id);
-                var application = applicant.Application;
-                var jobOpening = _jobOpeningService.GetByIdClean(application.JobOpeningId);
-                application.JobOpening = jobOpening;
-                if (application == null)
-                {
-                    // Handle the case when the application is not found
-                    return NotFound(); // Return a 404 Not Found response
-                }
-
-                // Pass the application object to the view
-                return PartialView("~/Views/Dashboard/_ViewDetails.cshtml", application);
-            }
-            catch (Exception e)
-            {
-                _logger.Error(ErrorHandling.DefaultException(e.Message));
-                return StatusCode(500, "Something went wrong.");
-            }
+            _jobOpeningService.UpdateJobOpeningUsers(jobOpeningId, assignedUserIds);
+            return Ok();
         }
-
-        /// <summary>
-        /// Views the details update.
-        /// </summary>
-        /// <param name="appId">The application identifier.</param>
-        /// <param name="email">The email.</param>
-        /// <param name="status">The status.</param>
-        /// <returns></returns>
-        public IActionResult ViewDetailsUpdate(Guid appId, string email, string status)
+        catch (Exception e)
         {
-            try
-            {
-                var application = _dashboardService.GetApplicationById(appId);
-                var foundUser = _userService.GetByEmail(email);
-                 _dashboardService.UpdateStatus(application, foundUser, status);
-                 return RedirectToAction("DirectoryView");
-            }
-            catch(Exception e)
-            {
-                _logger.Error(ErrorHandling.DefaultException(e.Message));
-                return StatusCode(500, "Something went wrong.");
-            }
+            _logger.Error(ErrorHandling.DefaultException(e.Message));
+            return StatusCode(500, "Something went wrong.");
         }
+    }
 
-        /// <summary>
-        /// Downloads the file.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
-        public IActionResult DownloadFile(int id)
+    /// <summary>
+    ///     Views the details.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <returns></returns>
+    [HttpGet]
+    public IActionResult ViewDetails(int id)
+    {
+        try
         {
+            // Fetch the application details based on the applicationId
             var applicant = _applicantService.GetApplicantByIdAll(id);
+            var application = applicant.Application;
+            var jobOpening = _jobOpeningService.GetByIdClean(application.JobOpeningId);
+            application.JobOpening = jobOpening;
+            if (application == null)
+                // Handle the case when the application is not found
+                return NotFound(); // Return a 404 Not Found response
 
-            if (applicant?.CV != null)
-            {
-                // Assuming the file is stored as a byte array named "FileData"
-                return File(applicant.CV, "application/octet-stream", "resume.pdf");
-            }
-
-            return NotFound();
+            // Pass the application object to the view
+            return PartialView("~/Views/Dashboard/_ViewDetails.cshtml", application);
         }
-
-        /// <summary>
-        /// Retrieves the data needed to display the Applicant Directory view, which includes a list of applicants along with their job titles,
-        /// and information about shortlisted applicants for HR and Technical positions.
-        /// </summary>
-        /// <returns>An IActionResult representing the Applicant Directory view populated with the required data.</returns>
-        public async Task<IActionResult> DirectoryView()
+        catch (Exception e)
         {
-            try
+            _logger.Error(ErrorHandling.DefaultException(e.Message));
+            return StatusCode(500, "Something went wrong.");
+        }
+    }
+
+    /// <summary>
+    ///     Views the details update.
+    /// </summary>
+    /// <param name="appId">The application identifier.</param>
+    /// <param name="email">The email.</param>
+    /// <param name="status">The status.</param>
+    /// <returns></returns>
+    public IActionResult ViewDetailsUpdate(Guid appId, string email, string status)
+    {
+        try
+        {
+            var application = _dashboardService.GetApplicationById(appId);
+            var foundUser = _userService.GetByEmail(email);
+            _dashboardService.UpdateStatus(application, foundUser, status);
+            return RedirectToAction("DirectoryView");
+        }
+        catch (Exception e)
+        {
+            _logger.Error(ErrorHandling.DefaultException(e.Message));
+            return StatusCode(500, "Something went wrong.");
+        }
+    }
+
+    /// <summary>
+    ///     Downloads the file.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <returns></returns>
+    public IActionResult DownloadFile(int id)
+    {
+        var applicant = _applicantService.GetApplicantByIdAll(id);
+
+        if (applicant?.CV != null)
+            // Assuming the file is stored as a byte array named "FileData"
+            return File(applicant.CV, "application/octet-stream", "resume.pdf");
+
+        return NotFound();
+    }
+
+    /// <summary>
+    ///     Retrieves the data needed to display the Applicant Directory view, which includes a list of applicants along with
+    ///     their job titles,
+    ///     and information about shortlisted applicants for HR and Technical positions.
+    /// </summary>
+    /// <returns>An IActionResult representing the Applicant Directory view populated with the required data.</returns>
+    public async Task<IActionResult> DirectoryView()
+    {
+        try
+        {
+            var userAspId = _userManager.GetUserId(User);
+            var applicants = _applicantService.GetApplicantsWithJobAndReferences(userAspId);
+
+
+            var jobs = _jobOpeningService.GetJobsWithApplications();
+
+            // Sort the job openings by updatedTime in descending order
+            jobs.Sort((job1, job2) => DateTime.Compare((DateTime)job2.UpdatedTime, (DateTime)job1.UpdatedTime));
+
+            foreach (var job in jobs) job.usersId = _jobOpeningService.GetLinkedUserIds(job.Id);
+
+            var user = await _userManager.GetUserAsync(User);
+            var applicantDirectoryViewModel = new ApplicantDirectoryViewModel();
+            if (user.Email == "Admin-2-alliance@5183ny.onmicrosoft.com")
             {
-                var userAspId = _userManager.GetUserId(User);
-                var applicants = _applicantService.GetApplicantsWithJobAndReferences(userAspId);
-                
-              
-                List<JobOpeningViewModel> jobs = _jobOpeningService.GetJobsWithApplications();
-
-                // Sort the job openings by updatedTime in descending order
-                jobs.Sort((job1, job2) => DateTime.Compare((DateTime)job2.UpdatedTime, (DateTime)job1.UpdatedTime));
-
+                applicantDirectoryViewModel = new ApplicantDirectoryViewModel
+                {
+                    Applicants = applicants,
+                    JobOpenings = jobs
+                };
+            }
+            else
+            {
+                var newJobs = new List<JobOpeningViewModel>();
                 foreach (var job in jobs)
+                    if (job.usersId.Contains(userAspId))
+                        newJobs.Add(job);
+                applicantDirectoryViewModel = new ApplicantDirectoryViewModel
                 {
-                    job.usersId = _jobOpeningService.GetLinkedUserIds(job.Id);
-                }
-
-                var user = await _userManager.GetUserAsync(User);
-                var applicantDirectoryViewModel = new ApplicantDirectoryViewModel();
-                if (user.Email == "Admin-2-alliance@5183ny.onmicrosoft.com")
-                {
-                    applicantDirectoryViewModel = new ApplicantDirectoryViewModel
-                    {
-                        Applicants = applicants,
-                        JobOpenings = jobs
-                    };
-                }
-                else
-                {
-                    var newJobs = new List<JobOpeningViewModel>();
-                    foreach (var job in jobs)
-                    {
-                        if (job.usersId.Contains(userAspId))
-                        {
-                            newJobs.Add(job);
-                        }
-                    }
-                    applicantDirectoryViewModel = new ApplicantDirectoryViewModel
-                    {
-                        Applicants = applicants,
-                        JobOpenings = newJobs
-                    };
-                }
-                
-
-                return View(applicantDirectoryViewModel);
+                    Applicants = applicants,
+                    JobOpenings = newJobs
+                };
             }
-            catch (Exception e)
-            {
-                _logger.Error(ErrorHandling.DefaultException(e.Message));
-                return StatusCode(500, "Something went wrong.");
-            }
+
+
+            return View(applicantDirectoryViewModel);
         }
-
-        [HttpPost]
-        public async Task<IActionResult> JobOpeningsView(int jobId)
+        catch (Exception e)
         {
-            try
-            {
-                var userAspId = _userManager.GetUserId(User);
-                var applicants = _applicantService.GetApplicantsWithJobAndReferences(userAspId);
-                
-                List<JobOpeningViewModel> jobs = _jobOpeningService.GetJobsWithApplications();
-
-                foreach (var job in jobs)
-                {
-                    job.usersId = _jobOpeningService.GetLinkedUserIds(job.Id);
-                }
-                var shortlistedModel = new ShortListedViewModel();
-                shortlistedModel.HRShortlisted = _dashboardService.GetShorlistedApplicatons("HR Shortlisted", jobId);
-                shortlistedModel.TechShortlisted = _dashboardService.GetShorlistedApplicatons("Technical Shortlisted", jobId);
-                var directoryViewModel = new ApplicantDirectoryViewModel();
-                var user = await _userManager.GetUserAsync(User);
-                if (user.Email == "Admin-2-alliance@5183ny.onmicrosoft.com")
-                {
-                    var newApplicants = _applicantService.GetApplicantsByJobOpeningIdApplicant(jobId);
-                    directoryViewModel = new ApplicantDirectoryViewModel
-                    {
-                        Applicants = newApplicants,
-                        Shortlists = shortlistedModel,
-                        JobOpenings = jobs
-                    };
-                }
-                else
-                {
-                    directoryViewModel = new ApplicantDirectoryViewModel
-                    {
-                        Applicants = applicants,
-                        Shortlists = shortlistedModel,
-                        JobOpenings = jobs
-                    };
-                }
-               
-                return View(directoryViewModel);
-            }
-            catch (Exception e)
-            {
-                _logger.Error(ErrorHandling.DefaultException(e.Message));
-                return StatusCode(500, "Something went wrong.");
-            }
-            
+            _logger.Error(ErrorHandling.DefaultException(e.Message));
+            return StatusCode(500, "Something went wrong.");
         }
+    }
 
-        /// <summary>
-        /// Action method for displaying the details of an applicant and their associated character references.
-        /// </summary>
-        /// <returns>Returns a View containing the applicant details and character references.</returns>
-        public IActionResult DirectoryViewDetails(int applicantId)
+    [HttpPost]
+    public async Task<IActionResult> JobOpeningsView(int jobId)
+    {
+        try
         {
-            try
-            {
-                var applicant = new Applicant();
-                var characterReferences = new List<CharacterReference>();
-                var background = new List<BackgroundCheck>();
-                applicant = _applicantService.GetApplicantByIdAll(applicantId);
-                characterReferences = _characterReferenceService.GetReferencesByApplicantId(applicantId);
-                
+            // var userAspId = _userManager.GetUserId(User);
+            // var applicants = _applicantService.GetApplicantsWithJobAndReferences(userAspId);
+            var applicants = _applicantService.GetApplicantsByJobOpeningIdApplicant(jobId);
 
-
-                foreach (var characterReference in characterReferences)
+            var jobs = _jobOpeningService.GetJobsWithApplications();
+            foreach (var job in jobs) job.usersId = _jobOpeningService.GetLinkedUserIds(job.Id);
+            var shortlistedModel = new ShortListedViewModel();
+            shortlistedModel.HRShortlisted = _dashboardService.GetShorlistedApplicatons("HR Shortlisted", jobId);
+            shortlistedModel.TechShortlisted =
+                _dashboardService.GetShorlistedApplicatons("Technical Shortlisted", jobId);
+            var directoryViewModel = new ApplicantDirectoryViewModel();
+            var user = await _userManager.GetUserAsync(User);
+            if (user.Email == "Admin-2-alliance@5183ny.onmicrosoft.com")
+                directoryViewModel = new ApplicantDirectoryViewModel
                 {
-                    background.Add(_backgroundCheckService.GetBackgroundByCharacterRefId(characterReference.Id));
-                }
-                
-                var model = new ApplicantDetailsViewModel
+                    Applicants = applicants,
+                    Shortlists = shortlistedModel,
+                    JobOpenings = jobs
+                };
+            else
+                directoryViewModel = new ApplicantDirectoryViewModel
                 {
-                    Applicant = applicant,
-                    Status = applicant.Application?.Status,
-                    UpdateDate = applicant.Application?.UpdateTime,
-                    CharacterReferences = characterReferences,
-                    BackgroundCheck = background
+                    Applicants = applicants,
+                    Shortlists = shortlistedModel,
+                    JobOpenings = jobs
                 };
 
-                return View(model);
-            }
-            catch (Exception e)
-            {
-                _logger.Error(ErrorHandling.DefaultException(e.Message));
-                return StatusCode(500, "Something went wrong.");
-            }
+            return View(directoryViewModel);
         }
-
-        /// <summary>
-        /// Action method for downloading the resume of an applicant identified by the given 'applicantId'.
-        /// </summary>
-        /// <param name="applicantId">The unique identifier of the applicant whose resume is to be downloaded.</param>
-        /// <returns>Returns a FileResult containing the applicant's resume in PDF format for download.</returns>
-        public IActionResult DownloadResume(int applicantId)
+        catch (Exception e)
         {
-            try
-            {
-                
-                var applicant = _applicantService.GetApplicantById(applicantId);
-                var fileName = $"{applicant.Firstname}_{applicant.Lastname}_Resume.pdf";
-
-                return File(applicant.CV, "application/pdf", fileName);
-            }
-            catch (Exception e)
-            {
-                _logger.Error(ErrorHandling.DefaultException(e.Message));
-                return StatusCode(500, "Something went wrong.");
-            }
+            _logger.Error(ErrorHandling.DefaultException(e.Message));
+            return StatusCode(500, "Something went wrong.");
         }
+    }
 
-        /// <summary>
-        /// Requests a background check by sending an email to the specified character reference for a particular applicant.
-        /// </summary>
-        /// <param name="characterReferenceId">The unique identifier of the character reference to whom the request is sent.</param>
-        /// <param name="applicantId">The unique identifier of the applicant for whom the background check is requested.</param>
-        /// <returns>An IActionResult representing the result of the request.</returns>
-        public IActionResult RequestBackgroundCheck(int characterReferenceId, int applicantId)
+    /// <summary>
+    ///     Action method for displaying the details of an applicant and their associated character references.
+    /// </summary>
+    /// <returns>Returns a View containing the applicant details and character references.</returns>
+    public IActionResult DirectoryViewDetails(int applicantId)
+    {
+        try
         {
-            try
-            {
-                var userAspId = _userManager.GetUserId(User);
-                var userId = _userService.GetUserIdByAspId(userAspId);
-                var applicant = new Applicant();
-                var characterReferences = new CharacterReference();
-                applicant = _applicantService.GetApplicantById(applicantId);
-                characterReferences = _characterReferenceService.GetCharacterReferenceById(characterReferenceId);
-                _emailSendingService.SendRequestReference(characterReferences, applicant, userId);
+            var applicant = new Applicant();
+            var characterReferences = new List<CharacterReference>();
+            var background = new List<BackgroundCheck>();
+            applicant = _applicantService.GetApplicantByIdAll(applicantId);
+            characterReferences = _characterReferenceService.GetReferencesByApplicantId(applicantId);
 
-                if(applicant == null || characterReferences == null)
-                {
-                    return NotFound();
-                }
 
-                return RedirectToAction("DirectoryView");
-            }
-            catch (Exception e)
+            foreach (var characterReference in characterReferences)
+                background.Add(_backgroundCheckService.GetBackgroundByCharacterRefId(characterReference.Id));
+
+            var model = new ApplicantDetailsViewModel
             {
-                _logger.Error(ErrorHandling.DefaultException(e.Message));
-                return StatusCode(500, "Something went wrong.");
-            }
+                Applicant = applicant,
+                Status = applicant.Application?.Status,
+                UpdateDate = applicant.Application?.UpdateTime,
+                CharacterReferences = characterReferences,
+                BackgroundCheck = background
+            };
+
+            return View(model);
+        }
+        catch (Exception e)
+        {
+            _logger.Error(ErrorHandling.DefaultException(e.Message));
+            return StatusCode(500, "Something went wrong.");
+        }
+    }
+
+    /// <summary>
+    ///     Action method for downloading the resume of an applicant identified by the given 'applicantId'.
+    /// </summary>
+    /// <param name="applicantId">The unique identifier of the applicant whose resume is to be downloaded.</param>
+    /// <returns>Returns a FileResult containing the applicant's resume in PDF format for download.</returns>
+    public IActionResult DownloadResume(int applicantId)
+    {
+        try
+        {
+            var applicant = _applicantService.GetApplicantById(applicantId);
+            var fileName = $"{applicant.Firstname}_{applicant.Lastname}_Resume.pdf";
+
+            return File(applicant.CV, "application/pdf", fileName);
+        }
+        catch (Exception e)
+        {
+            _logger.Error(ErrorHandling.DefaultException(e.Message));
+            return StatusCode(500, "Something went wrong.");
+        }
+    }
+
+    /// <summary>
+    ///     Requests a background check by sending an email to the specified character reference for a particular applicant.
+    /// </summary>
+    /// <param name="characterReferenceId">The unique identifier of the character reference to whom the request is sent.</param>
+    /// <param name="applicantId">The unique identifier of the applicant for whom the background check is requested.</param>
+    /// <returns>An IActionResult representing the result of the request.</returns>
+    public IActionResult RequestBackgroundCheck(int characterReferenceId, int applicantId)
+    {
+        try
+        {
+            var userAspId = _userManager.GetUserId(User);
+            var userId = _userService.GetUserIdByAspId(userAspId);
+            var applicant = new Applicant();
+            var characterReferences = new CharacterReference();
+            applicant = _applicantService.GetApplicantById(applicantId);
+            characterReferences = _characterReferenceService.GetCharacterReferenceById(characterReferenceId);
+            _emailSendingService.SendRequestReference(characterReferences, applicant, userId);
+
+            if (applicant == null || characterReferences == null) return NotFound();
+
+            return RedirectToAction("DirectoryView");
+        }
+        catch (Exception e)
+        {
+            _logger.Error(ErrorHandling.DefaultException(e.Message));
+            return StatusCode(500, "Something went wrong.");
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿@using Basecode.Data.ViewModels;
-@model ShortListedViewModel
+﻿@model Basecode.Data.ViewModels.ShortListedViewModel
 
 <style>
     .button-wrapper {
@@ -33,7 +32,7 @@
 <div class="shortlist-wrapper d-flex flex-column gap-3">
     <nav>
         <div class="button-wrapper">
-            <button class = "highlighted" id="hrButton">FOR HR SCREENING</button>
+            <button class="highlighted" id="hrButton">FOR HR SCREENING</button>
         </div>
         <div class="button-wrapper">
             <button id="backgroundButton">FOR BACKGROUND CHECK</button>
@@ -42,10 +41,10 @@
 
     <div class="table-wrapper d-flex flex-column">
         <div id="hrPartialView">
-            <partial name="_ShortlistPartialView" model="Model.HRShortlisted" />
+            <partial name="_ShortlistPartialView" model="Model.HRShortlisted"/>
         </div>
         <div id="backgroundPartialView" style="display: none;">
-            <partial name="_ShortlistPartialView" model="Model.TechShortlisted" />
+            <partial name="_ShortlistPartialView" model="Model.TechShortlisted"/>
         </div>
     </div>
 </div>

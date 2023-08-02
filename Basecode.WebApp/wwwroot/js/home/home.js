@@ -6,9 +6,9 @@ const multipleItemCarousel = document.querySelector('#carouselExampleControls');
 
 if (window.matchMedia("(min-width:576px)").matches) {
     const carousel = new bootstrap.Carousel(multipleItemCarousel,
-    {
-        interval: false
-    })
+        {
+            interval: false
+        })
 
     var carouselWidth = $('.carousel-inner')[0].scrollWidth;
     var cardWidth = $('.carousel-item').width();
@@ -19,7 +19,7 @@ if (window.matchMedia("(min-width:576px)").matches) {
         if (scrollPosition < (carouselWidth - (cardWidth * 4))) {
             console.log('next');
             scrollPosition = scrollPosition + cardWidth;
-            $('.carousel-inner').animate({ scrollLeft: scrollPosition }, 600);
+            $('.carousel-inner').animate({scrollLeft: scrollPosition}, 600);
         }
     });
 
@@ -27,7 +27,7 @@ if (window.matchMedia("(min-width:576px)").matches) {
         if (scrollPosition > 0) {
             console.log('prev');
             scrollPosition = scrollPosition - cardWidth;
-            $('.carousel-inner').animate({ scrollLeft: scrollPosition }, 600);
+            $('.carousel-inner').animate({scrollLeft: scrollPosition}, 600);
         }
     });
 } else {
@@ -67,7 +67,7 @@ $(document).ready(function () {
 });
 
 function goToTop() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
 window.onscroll = function () {

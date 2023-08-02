@@ -12,10 +12,10 @@
 
                     <div class="row text-center">
                         <div class="col">
-                            <h1>Applicants <br /> @Model.Applicants.Count</h1>
+                            <h1>Applicants <br/> @Model.Applicants.Count</h1>
                         </div>
                         <div class="col">
-                            <h1>Assigned HR <br /> <span id="totalAssignedUsers"></span></h1>
+                            <h1>Assigned HR <br/> <span id="totalAssignedUsers"></span></h1>
                         </div>
                     </div>
 
@@ -23,28 +23,28 @@
                         <div class="col">
                             <table>
                                 <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Status</th>
-                                    </tr>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                    @if (Model.Applicants.Count > 0)
-                                    {
-                                        @foreach (var applicant in Model.Applicants)
-                                        {
-                                            <tr>
-                                                <td>@applicant.Firstname @applicant.Lastname</td>
-                                                <td>@applicant.Status</td>
-                                            </tr>
-                                        }
-                                    }
-                                    else
+                                @if (Model.Applicants.Count > 0)
+                                {
+                                    @foreach (var applicant in Model.Applicants)
                                     {
                                         <tr>
-                                            <td>No Applicants Found</td>
+                                            <td>@applicant.Firstname @applicant.Lastname</td>
+                                            <td>@applicant.Status</td>
                                         </tr>
                                     }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td>No Applicants Found</td>
+                                    </tr>
+                                }
                                 </tbody>
                             </table>
                         </div>
@@ -52,26 +52,28 @@
                         <div class="col">
                             <table>
                                 <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th></th>
-                                    </tr>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th></th>
+                                </tr>
                                 </thead>
                                 <tbody id="usersList">
-                                    @foreach (var user in Model.Users)
+                                @foreach (var user in Model.Users)
+                                {
+                                    if (user.IsLinkedToJobOpening)
                                     {
-                                        if (user.IsLinkedToJobOpening)
-                                        {
-                                            <tr>
-                                                <td>@user.Fullname</td>
-                                                <td>@user.Email</td>
-                                                <td data-user-id="@user.AspId">
-                                                    <button class="remove-button"><i class="fa-solid fa-xmark"></i></button>
-                                                </td>
-                                            </tr>
-                                        }
+                                        <tr>
+                                            <td>@user.Fullname</td>
+                                            <td>@user.Email</td>
+                                            <td data-user-id="@user.AspId">
+                                                <button class="remove-button">
+                                                    <i class="fa-solid fa-xmark"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
                                     }
+                                }
                                 </tbody>
                             </table>
 
@@ -83,8 +85,8 @@
 
                         </div>
                     </div>
-                    <input type="hidden" id="userData" value='@Html.Raw(Json.Serialize(Model.Users))' />
-                    <input type="hidden" id="hiddenJobOpeningId" value="@Model.JobOpening.Id" />
+                    <input type="hidden" id="userData" value="@Html.Raw(Json.Serialize(Model.Users))"/>
+                    <input type="hidden" id="hiddenJobOpeningId" value="@Model.JobOpening.Id"/>
                 </form>
             </div>
             <div class="modal-footer justify-content-between border-0 mx-3 mb-3">

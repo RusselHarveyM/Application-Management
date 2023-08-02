@@ -1,5 +1,4 @@
-﻿@using Basecode.Data.ViewModels;
-@model List<JobOpeningViewModel>
+﻿@model List<Basecode.Data.ViewModels.JobOpeningViewModel>
 
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -138,7 +137,8 @@
 </style>
 
 <div class="jobContainer" id="cardContainer">
-    <h1>Search <span style="color: red;">Jobs</span>
+    <h1>
+        Search <span style="color: red;">Jobs</span>
         @*Admin View*@
         <partial name="_LoginPartialJobIndex"/>
     </h1>
@@ -168,40 +168,40 @@
         </select>
     </div>
 
-     @if (Model.Count > 0)
+    @if (Model.Count > 0)
     {
-    <div class="row mt-4">
-        @foreach (var jobOpening in Model)
-        {
+        <div class="row mt-4">
+            @foreach (var jobOpening in Model)
+            {
                 <div class="col-sm-4" data-tag="@jobOpening.Tag">
-                <a href="@Url.Action("JobView", "Job", new { id = jobOpening.Id })" style="text-decoration:none;">
+                    <a href="@Url.Action("JobView", "Job", new { id = jobOpening.Id })" style="text-decoration:none;">
 
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <div class="card-header">
-                                <img src="~/images/job-icon-dummy02.png" alt="Card Image" class="card-image">
-                                <h5 class="card-title">@jobOpening.Title</h5>
-                            </div>
-                            <div class="card-header">
-                                <img src="~/images/home-icon.png" alt="Card Image" class="card-image-small">
-                                <p class="card-text">Location: @jobOpening.Location</p>
-                            </div>
-                            <div class="card-header">
-                                <img src="~/images/location-icon.png" alt="Card Image" class="card-image-small">
-                                <p class="card-text">Job Type: @jobOpening.EmploymentType</p>
-                            </div>
-                            <div class="card-header">
-                                <img src="~/images/bookmark-icon.png" alt="Card Image" class="card-image-small">
-                                <p class="card-text">Work Setup: @jobOpening.WorkSetup</p>
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="card-header">
+                                    <img src="~/images/job-icon-dummy02.png" alt="Card Image" class="card-image">
+                                    <h5 class="card-title">@jobOpening.Title</h5>
+                                </div>
+                                <div class="card-header">
+                                    <img src="~/images/home-icon.png" alt="Card Image" class="card-image-small">
+                                    <p class="card-text">Location: @jobOpening.Location</p>
+                                </div>
+                                <div class="card-header">
+                                    <img src="~/images/location-icon.png" alt="Card Image" class="card-image-small">
+                                    <p class="card-text">Job Type: @jobOpening.EmploymentType</p>
+                                </div>
+                                <div class="card-header">
+                                    <img src="~/images/bookmark-icon.png" alt="Card Image" class="card-image-small">
+                                    <p class="card-text">Work Setup: @jobOpening.WorkSetup</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </a>
+                    </a>
 
-            </div>
-        }
+                </div>
+            }
 
-    </div>
+        </div>
     }
     else
     {
@@ -239,9 +239,3 @@
     }
 
 </script>
-
-
-
-
-
-

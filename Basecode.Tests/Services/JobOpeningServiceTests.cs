@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Basecode.Tests.Services;
 
-namespace Basecode.Tests.Services
+public class JobOpeningServiceTests
 {
-    public class JobOpeningServiceTests
-    {
-    }
 }

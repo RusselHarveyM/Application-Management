@@ -104,7 +104,7 @@
         $.ajax({
             url: '/Dashboard/AssignUserViewUpdate',
             type: 'POST',
-            data: { assignedUserIds: assignedUserIds, jobOpeningId: jobOpeningId },
+            data: {assignedUserIds: assignedUserIds, jobOpeningId: jobOpeningId},
             success: () => window.location.reload(),
             error: function (response) {
                 console.log(response.status + " Something went wrong.");

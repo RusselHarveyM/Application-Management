@@ -1,12 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿namespace Basecode.WebApp;
 
-namespace Basecode.WebApp
+public partial class StartupWebApp
 {
-    public partial class StartupWebApp
+    private void ConfigureMVC(IServiceCollection services)
     {
-        private void ConfigureMVC(IServiceCollection services)
-        {
-            services.AddMvc();
-        }
+        services.AddMvc();
     }
 }

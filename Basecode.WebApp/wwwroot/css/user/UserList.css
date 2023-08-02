@@ -28,11 +28,11 @@
     border-color: rgba(0, 0, 0, 0);
 }
 
-    .table th {
-        padding: 1.5rem;
-        color: #D02A19;
-        font-size: 1.2rem;
-    }
+.table th {
+    padding: 1.5rem;
+    color: #D02A19;
+    font-size: 1.2rem;
+}
 
 .search-icon {
     position: absolute;

@@ -1,5 +1,4 @@
-﻿@using Basecode.Data.ViewModels;
-@model CreateRoleViewModel;
+﻿@model Basecode.Data.ViewModels.CreateRoleViewModel;
 
 @{
     ViewData["Title"] = "CreateRole";
@@ -8,15 +7,15 @@
 <div class="row">
     <div class="col-md-4">
         <h1 style="color:red;">Create Manual Role</h1>
-        <hr />
+        <hr/>
         <form method="post">
             <div class="form-group">
                 <label asp-for="RoleName" class="control-label text-white"></label>
-                <input asp-for="RoleName" class="form-control" />
+                <input asp-for="RoleName" class="form-control"/>
                 <span asp-validation-for="RoleName" class="text-danger"></span>
             </div>
             <div class="form-group mt-2">
-                <input type="submit" value="Create" class="btn btn-danger" />
+                <input type="submit" value="Create" class="btn btn-danger"/>
             </div>
         </form>
     </div>
@@ -25,4 +24,3 @@
 <div>
     <a asp-action="Index" style="text-decoration:none;color:black"> Go Back to List</a>
 </div>
-

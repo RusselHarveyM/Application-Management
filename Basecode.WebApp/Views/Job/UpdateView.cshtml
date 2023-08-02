@@ -174,7 +174,7 @@
             <div id="qualifications-list">
                 @if (Model.Qualifications != null)
                 {
-                    for (int i = 0; i < Model.Qualifications.Count; i++)
+                    for (var i = 0; i < Model.Qualifications.Count; i++)
                     {
                         <div class="input-container d-flex align-items-center mb-2 ">
                             <input type="text" asp-for="Qualifications[i].Description" class="custom-control qualification-input me-2"/>
@@ -194,7 +194,7 @@
             <div id="responsibilities-list">
                 @if (Model.Responsibilities != null)
                 {
-                    for (int i = 0; i < Model.Responsibilities.Count; i++)
+                    for (var i = 0; i < Model.Responsibilities.Count; i++)
                     {
                         <div class="input-container d-flex align-items-center mb-2 ">
                             <input type="text" asp-for="Responsibilities[i].Description" class="custom-control responsibility-input me-2"/>

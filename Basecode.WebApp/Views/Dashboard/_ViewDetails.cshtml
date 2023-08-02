@@ -1,12 +1,11 @@
-﻿@using Basecode.Data.Models
-@using System.Text.Json
-@model Application
+﻿@using System.Text.Json
+@model Basecode.Data.Models.Application
 
 @{
-    JsonDocument jsonDocument = JsonDocument.Parse(Model.Result);
+    var jsonDocument = JsonDocument.Parse(Model.Result);
     var jsonObject = jsonDocument.RootElement;
-    string score = jsonObject.GetProperty("Score").GetString();
-    string explanation = jsonObject.GetProperty("Explanation").GetString();
+    var score = jsonObject.GetProperty("Score").GetString();
+    var explanation = jsonObject.GetProperty("Explanation").GetString();
 }
 
 <!-- Modal -->
