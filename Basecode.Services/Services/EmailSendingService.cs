@@ -495,7 +495,30 @@ public class EmailSendingService : IEmailSendingService
                                  $"<br> genuinely appreciate your interest, and we hope our paths cross again in the future. <br>" +
                                  $"<br><br> Best regards,");
 
-        await _emailService.SendEmail(email, "Alliance Software Inc!", body);
+            await _emailService.SendEmail(email, $"Alliance Software Inc!", body);
+        }
+
+        /// <summary>
+        /// Sends the exam score reminder.
+        /// </summary>
+        public async Task SendExamScoreReminder(string email, string fullname, ApplicationViewModel application)
+        {
+            var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
+            var templateContent = File.ReadAllText(templatePath);
+            var body = templateContent
+                .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+                .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+                .Replace("{{HEADLINE}}", $"Reminder: Input Applicant's Exam Score")
+                .Replace("{{BODY}}", $"<br> Dear {fullname}," +
+                                     $"<br><br> We kindly remind you to input the exam score for {application.ApplicantName} who recently underwent the Technical Exam phase for the position of {application.JobOpeningTitle}." +
+                                     $"<br><br> To set a new schedule, please follow these steps: <br> 1. Log in to the HR Automation System using your credentials. <br> 2. Navigate to the Directory." +
+                                     $"<br> 3. Click the View button of the job opening applied for by the applicant. <br> 4. Click the Exams tab. <br> 5. Click the Change Score button for the applicant." +
+                                     $"<br> 6. Input the applicant's score and the perfect score in the modal." +
+                                     $"<br><br> Should you encounter any difficulties or require any support in the process, please do not hesitate to reach out to our support team, and we will be glad to assist you. <br>" +
+                                     $"<br><br> Best regards,");
+
+            await _emailService.SendEmail(email, $"Alliance Software Inc. Applicant Exam Score Reminder", body);
+        }
     }
 
     /// <summary>

@@ -116,20 +116,30 @@ public class ScheduleSendingService : IScheduleSendingService
             _emailSendingService.SendAcceptedScheduleToApplicant(email, userScheduleTemp, application, joinUrl));
     }
 
-    /// <summary>
-    ///     Schedules the sending of the approval email.
-    /// </summary>
-    /// <param name="userSchedule">The user schedule.</param>
-    public void ScheduleSendApprovalEmail(UserSchedule userSchedule)
-    {
-        var user = _userService.GetById(userSchedule.UserId);
-        var applicant = _applicantService.GetApplicantByApplicationId(userSchedule.ApplicationId);
-        var userTemp = _mapper.Map<User>(user);
-        var applicantTemp = _mapper.Map<Applicant>(applicant);
-        var newStatus = "For " + userSchedule.Type;
-        var hoursLeft = (int)(userSchedule.Schedule - DateTime.Now).TotalHours;
-        BackgroundJob.Schedule(
-            () => _emailSendingService.SendApprovalEmail(userTemp, applicantTemp, userSchedule.ApplicationId,
-                newStatus), TimeSpan.FromHours(hoursLeft));
+        /// <summary>
+        /// Schedules the sending of the approval email.
+        /// </summary>
+        /// <param name="userSchedule">The user schedule.</param>
+        public void ScheduleApprovalEmail(UserSchedule userSchedule, int hoursLeft)
+        {
+            var user = _userService.GetById(userSchedule.UserId);
+            var applicant = _applicantService.GetApplicantByApplicationId(userSchedule.ApplicationId);
+            var userTemp = _mapper.Map<User>(user);
+            var applicantTemp = _mapper.Map<Applicant>(applicant);
+            string newStatus = "For " + userSchedule.Type;
+            BackgroundJob.Schedule(() => _emailSendingService.SendApprovalEmail(userTemp, applicantTemp, userSchedule.ApplicationId, newStatus), TimeSpan.FromHours(hoursLeft));
+        }
+
+        /// <summary>
+        /// Schedules the sending of the exam score reminder email.
+        /// </summary>
+        /// <param name="userSchedule">The user schedule.</param>
+        /// <param name="hoursLeft">The hours left until the scheduled time.</param>
+        public void ScheduleExamScoreReminderEmail(UserSchedule userSchedule, int hoursLeft)
+        {
+            var application = _applicationService.GetById(userSchedule.ApplicationId);
+            var user = _userService.GetById(userSchedule.UserId);
+            BackgroundJob.Schedule(() => _emailSendingService.SendExamScoreReminder(user.Email, user.Fullname, application), TimeSpan.FromHours(hoursLeft));
+        }
     }
 }

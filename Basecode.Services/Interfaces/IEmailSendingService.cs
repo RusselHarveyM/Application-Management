@@ -122,6 +122,13 @@ public interface IEmailSendingService
 
     Task SendCongratulation(Applicant applicant, int userId);
 
+    Task SendRejectedHireNoticeToInterviewer(string email, string fullname, string position, CurrentHire currentHire, string applicantFullName);
+
+    /// <summary>
+    /// Sends the exam score reminder.
+    /// </summary>
+    Task SendExamScoreReminder(string email, string fullname, ApplicationViewModel application);
+
     Task SendRejectedHireNoticeToInterviewer(string email, string fullname, string position, CurrentHire currentHire,
         string applicantFullName);
 
