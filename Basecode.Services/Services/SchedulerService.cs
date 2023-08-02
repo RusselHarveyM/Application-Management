@@ -116,8 +116,6 @@ public class SchedulerService : ErrorHandling, ISchedulerService
 
                 _scheduleSendingService.SendAcceptedScheduleToInterviewer(userSchedule, joinUrl);
                 _scheduleSendingService.SendAcceptedScheduleToApplicant(userSchedule, joinUrl);
-
-                _userScheduleService.DeleteUserSchedule(userSchedule);
             }
 
             var data = new LogContent();
@@ -131,9 +129,13 @@ public class SchedulerService : ErrorHandling, ISchedulerService
             if (!data.Result)
             {
                 _logger.Trace($"Successfully created a new {userSchedule.Type} record.");
+
+                userSchedule.Status = "accepted";
+                _userScheduleService.UpdateUserSchedule(userSchedule);
+
                 ScheduleApprovalOrReminderEmail(userSchedule, scheduleType);
             }
-            else _logger.Error(SetLog(data));
+            else _logger.Error(SetLog(data)); 
         }
 
         return logContent;
