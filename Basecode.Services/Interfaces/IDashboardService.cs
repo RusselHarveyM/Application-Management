@@ -43,4 +43,10 @@ public interface IDashboardService
     /// <param name="id">The identifier.</param>
     /// <returns></returns>
     Application GetApplicationById(Guid id);
+
+    /// <summary>
+    /// Exports references' answers to pdf
+    /// </summary>
+    /// <param name="references"></param>
+    void ExportReferenceToPdf(List<CharacterReference> references);
 }

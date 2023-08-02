@@ -33,7 +33,8 @@ public class TrackService : ITrackService
             "For Technical Interview",
             "Technical Shortlisted",
             "Undergoing Background Check",
-            "For Final Interview"
+            "For Final Interview",
+            "Undergoing Job Offer"
         };
         _interviewStatuses = new List<string>
         {

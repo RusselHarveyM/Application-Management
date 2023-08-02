@@ -1,6 +1,7 @@
 ﻿using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
+using Basecode.Services.Util;
 
 namespace Basecode.Services.Services;
 
@@ -9,15 +10,22 @@ public class DashboardService : IDashboardService
     private readonly IApplicationService _applicationService;
     private readonly IApplicantService _applicantService;
     private readonly IJobOpeningService _jobOpeningService;
-
+    private readonly IUserService _userService;
+    private readonly ReferenceToPdf _referenceToPdf;
     private readonly ITrackService _trackService;
+    private readonly IBackgroundCheckService _backgroundCheckService;
 
-    public DashboardService(ITrackService trackService, IApplicationService applicationService, IApplicantService applicantService, IJobOpeningService jobOpeningService)
+    public DashboardService(ITrackService trackService, IApplicationService applicationService,
+        IApplicantService applicantService, IJobOpeningService jobOpeningService, ReferenceToPdf referenceToPdf,
+        IBackgroundCheckService backgroundCheckService, IUserService userService)
     {
         _trackService = trackService;
         _applicationService = applicationService;
         _applicantService = applicantService;
         _jobOpeningService = jobOpeningService;
+        _referenceToPdf = referenceToPdf;
+        _backgroundCheckService = backgroundCheckService;
+        _userService = userService;
     }
 
     /// <summary>
@@ -79,8 +87,8 @@ public class DashboardService : IDashboardService
 
         return directoryViewModel;
     }
-    
-    
+
+
     /// <summary>
     /// Gets the directory view model for DirectoryView view.
     /// </summary>
@@ -98,7 +106,7 @@ public class DashboardService : IDashboardService
 
         foreach (var job in jobs) job.usersId = _jobOpeningService.GetLinkedUserIds(job.Id);
 
-        var applicantDirectoryViewModel = new ApplicantDirectoryViewModel();
+        ApplicantDirectoryViewModel applicantDirectoryViewModel;
         if (email == "Admin-2-alliance@5183ny.onmicrosoft.com")
         {
             applicantDirectoryViewModel = new ApplicantDirectoryViewModel
@@ -111,7 +119,7 @@ public class DashboardService : IDashboardService
         {
             var newJobs = new List<JobOpeningViewModel>();
             foreach (var job in jobs)
-                if (job.usersId.Contains(userAspId))
+                if (job.usersId != null && job.usersId.Contains(userAspId))
                     newJobs.Add(job);
             applicantDirectoryViewModel = new ApplicantDirectoryViewModel
             {
@@ -119,6 +127,7 @@ public class DashboardService : IDashboardService
                 JobOpenings = newJobs
             };
         }
+
         return applicantDirectoryViewModel;
     }
 
@@ -135,6 +144,26 @@ public class DashboardService : IDashboardService
         {
             _applicationService.Update(result);
             _trackService.UpdateTrackStatusEmail(application, user, status, "Approval");
+        }
+    }
+
+
+    /// <summary>
+    /// Exports references' answers to pdf
+    /// </summary>
+    /// <param name="references"></param>
+    public void ExportReferenceToPdf(List<CharacterReference> references)
+    {
+        foreach (var reference in references)
+        {
+            var i = 0;
+            var backgroundCheck = _backgroundCheckService.GetBackgroundByCharacterRefId(reference.Id);
+            if(backgroundCheck != null)
+            {
+                var downloadsFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Downloads";
+                var filePath = Path.Combine(downloadsFolder, $"{reference.Name}_Reference#{i++}.pdf");
+                _referenceToPdf.ExportToPdf(backgroundCheck, filePath);
+            }
         }
     }
 }
