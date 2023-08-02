@@ -18,4 +18,11 @@ public interface IExaminationService
     /// <param name="schedule">The schedule.</param>
     /// <returns></returns>
     LogContent AddExamination(UserSchedule schedule, string teamsLink);
+
+    /// <summary>
+    /// Gets the examination by application identifier.
+    /// </summary>
+    /// <param name="applicationId">The application identifier.</param>
+    /// <returns></returns>
+    Examination GetExaminationByApplicationId(Guid applicationId);
 }

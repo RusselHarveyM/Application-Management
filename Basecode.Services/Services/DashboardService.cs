@@ -52,24 +52,31 @@ public class DashboardService : IDashboardService
 
         var jobs = _jobOpeningService.GetJobsWithApplications();
         foreach (var job in jobs) job.usersId = _jobOpeningService.GetLinkedUserIds(job.Id);
+
         var shortlistedModel = new ShortListedViewModel();
         shortlistedModel.HRShortlisted = GetShorlistedApplicatons("HR Shortlisted", jobId);
         shortlistedModel.TechShortlisted = GetShorlistedApplicatons("Technical Shortlisted", jobId);
+
+        var applicantExams = _applicantService.GetApplicantsWithExamsByJobOpeningId(jobId);
+
         var directoryViewModel = new ApplicantDirectoryViewModel();
         if (email == "Admin-2-alliance@5183ny.onmicrosoft.com")
             directoryViewModel = new ApplicantDirectoryViewModel
             {
                 Applicants = applicants,
                 Shortlists = shortlistedModel,
-                JobOpenings = jobs
+                JobOpenings = jobs,
+                ApplicantExams = applicantExams,
             };
         else
             directoryViewModel = new ApplicantDirectoryViewModel
             {
                 Applicants = applicants,
                 Shortlists = shortlistedModel,
-                JobOpenings = jobs
+                JobOpenings = jobs,
+                ApplicantExams = applicantExams,
             };
+
         return directoryViewModel;
     }
     

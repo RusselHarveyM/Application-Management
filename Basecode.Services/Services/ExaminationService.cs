@@ -49,4 +49,14 @@ public class ExaminationService : ErrorHandling, IExaminationService
 
         return logContent;
     }
+
+    /// <summary>
+    /// Gets the examination by application identifier.
+    /// </summary>
+    /// <param name="applicationId">The application identifier.</param>
+    /// <returns></returns>
+    public Examination GetExaminationByApplicationId(Guid applicationId)
+    {
+        return _repository.GetExaminationByApplicationId(applicationId);
+    }
 }

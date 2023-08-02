@@ -32,4 +32,15 @@ public class ExaminationRepository : BaseRepository, IExaminationRepository
         _context.Examination.Add(examination);
         _context.SaveChanges();
     }
+
+    /// <summary>
+    /// Gets the examination by application identifier.
+    /// </summary>
+    /// <param name="applicationId">The application identifier.</param>
+    /// <returns></returns>
+    public Examination GetExaminationByApplicationId(Guid applicationId)
+    {
+        return GetDbSet<Examination>()
+            .Where(exam => exam.ApplicationId == applicationId).FirstOrDefault();
+    }
 }

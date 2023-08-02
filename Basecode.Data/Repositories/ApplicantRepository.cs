@@ -89,4 +89,11 @@ public class ApplicantRepository : BaseRepository, IApplicantRepository
 
         return applicants;
     }
+
+    public List<Applicant> GetApplicantsByStatusAndJobOpeningId(int jobOpeningId, string status)
+    {
+        return _context.Applicant
+            .Where(applicant => applicant.Application.JobOpeningId == jobOpeningId && applicant.Application.Status == status)
+            .ToList();
+    }
 }

@@ -1,0 +1,43 @@
+﻿@model List<Basecode.Data.ViewModels.ApplicantExamViewModel>
+
+<div class="row">
+    <div class="col">
+        <table class="table table-striped text-center align-middle mt-2 overflow-hidden" style="border-radius: 10px;--bs-table-striped-bg: rgba(0, 0, 0, 0.03);">
+            <tr>
+                <th>ID</th>
+                <th>NAME</th>
+                <th>EXAM DATE</th>
+                <th>SCORE</th>
+                <th>RESULT</th>
+                <th></th>
+            </tr>
+            @if (Model.Count() > 0)
+            {
+                @foreach (var applicant in Model)
+                {
+                    <tr>
+                        <td>@applicant.ApplicantId</td>
+                        <td>@Html.Raw($"{applicant.Firstname} {applicant.Middlename} {applicant.Lastname}")</td>
+                        <td>@applicant.ExaminationDate</td>
+                        <td>@applicant.Score</td>
+                        <td>@applicant.Result</td>
+                        <td>
+                            <a class="btn btn-view" role="button" onclick="showInputScoreModal(@applicant.ExamId)">
+                                <i class="fa-solid fa-pencil"></i>&nbsp;&nbsp;Input Score
+                            </a>
+                        </td>
+
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" class="text-center">No Applicants With Exams Found</td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+
+<div id="inputScoreModalContainer"></div>

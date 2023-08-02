@@ -16,4 +16,11 @@ public interface IExaminationRepository
     /// </summary>
     /// <param name="examination">The examination.</param>
     void AddExamination(Examination examination);
+
+    /// <summary>
+    /// Gets the examination by application identifier.
+    /// </summary>
+    /// <param name="applicationId">The application identifier.</param>
+    /// <returns></returns>
+    Examination GetExaminationByApplicationId(Guid applicationId);
 }

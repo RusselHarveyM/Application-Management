@@ -59,4 +59,12 @@ public interface IApplicantRepository
     ///     CharacterReferences.
     /// </returns>
     List<Applicant> GetApplicantsWithJobAndReferences(string userAspId);
+
+    /// <summary>
+    /// Gets the applicants by status and job opening identifier.
+    /// </summary>
+    /// <param name="jobOpeningId">The job opening identifier.</param>
+    /// <param name="status">The status.</param>
+    /// <returns></returns>
+    List<Applicant> GetApplicantsByStatusAndJobOpeningId(int jobOpeningId, string status);
 }

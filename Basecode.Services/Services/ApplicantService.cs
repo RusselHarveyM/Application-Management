@@ -13,18 +13,19 @@ public class ApplicantService : IApplicantService
     private readonly IApplicationService _applicationService;
     private readonly IJobOpeningService _jobOpeningService;
     private readonly IMapper _mapper;
-
+    private readonly IExaminationRepository _examinationService;
     private readonly IApplicantRepository _repository;
     private readonly ITrackService _trackService;
 
-    public ApplicantService(IApplicantRepository repository, IMapper mapper, ITrackService trackService,
-        IJobOpeningService jobOpeningService, IApplicationService applicationService)
+    public ApplicantService(IApplicantRepository repository, IMapper mapper, ITrackService trackService, IJobOpeningService jobOpeningService, 
+        IApplicationService applicationService, IExaminationRepository examinationService)
     {
         _repository = repository;
         _mapper = mapper;
         _trackService = trackService;
         _jobOpeningService = jobOpeningService;
         _applicationService = applicationService;
+        _examinationService = examinationService;
     }
 
     /// <summary>
@@ -195,5 +196,32 @@ public class ApplicantService : IApplicantService
     public List<Applicant> GetApplicantsWithJobAndReferences(string userAspId)
     {
         return _repository.GetApplicantsWithJobAndReferences(userAspId);
+    }
+
+    public List<ApplicantExamViewModel> GetApplicantsWithExamsByJobOpeningId(int jobOpeningId)
+    {
+        List<Applicant> applicants = _repository.GetApplicantsByStatusAndJobOpeningId(jobOpeningId, "For Technical Exam");
+        List<ApplicantExamViewModel> viewModelList = new List<ApplicantExamViewModel>();
+
+        foreach (var applicant in applicants)
+        {
+            var examination = _examinationService.GetExaminationByApplicationId(applicant.Application.Id);
+            if (examination != null)
+            {
+                viewModelList.Add(new ApplicantExamViewModel
+                {
+                    ApplicantId = applicant.Id,
+                    Firstname = applicant.Firstname,
+                    Middlename = applicant.Middlename,
+                    Lastname = applicant.Lastname,
+                    ExamId = examination.Id,
+                    ExaminationDate = examination.Date,
+                    Score = examination.Score,
+                    Result = examination.Result,
+                });
+            }
+        }
+
+        return viewModelList;
     }
 }
