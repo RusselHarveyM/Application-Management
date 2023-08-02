@@ -4,6 +4,7 @@ using Basecode.WebApp.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Moq;
+using NToastNotify;
 
 namespace Basecode.Tests.Controllers
 {
@@ -22,7 +23,8 @@ namespace Basecode.Tests.Controllers
             _fakeUserService = new Mock<IUserService>();
             _fakeConfig = new Mock<IConfiguration>();
             _fakeConfig.Setup(x => x["TokenHelper:SecretKey"]).Returns("fakeSecretKey");
-            _controller = new TrackerController(_fakeApplicationService.Object, _fakeUserService.Object, _fakeTrackService.Object, _fakeConfig.Object);
+            Mock<IToastNotification> fakeToastNotification = new();
+            _controller = new TrackerController(_fakeApplicationService.Object, _fakeUserService.Object, _fakeTrackService.Object, _fakeConfig.Object, fakeToastNotification.Object);
         }
 
         [Fact]
