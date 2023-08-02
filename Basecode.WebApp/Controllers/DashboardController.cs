@@ -260,18 +260,10 @@ public class DashboardController : Controller
     }
 
     [HttpPost]
-    public IActionResult UpdateScore(int examinationId, int applicantScore, int perfectScore, int percentage)
+    public IActionResult UpdateScore(int examinationId, int percentage)
     {
         try
         {
-            var scorePercentage = ((float)applicantScore / perfectScore) * 100;
-            scorePercentage = (float)Math.Round(scorePercentage, 2);
-            int scorePercentageAsInt = (int)scorePercentage;
-            if (scorePercentageAsInt != percentage)
-            {
-                return BadRequest();
-            }
-
             var data = _examinationService.UpdateExaminationScore(examinationId, percentage);
             if (!data.Result)
             {

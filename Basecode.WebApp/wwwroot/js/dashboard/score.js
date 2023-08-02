@@ -67,8 +67,6 @@ inputScoreModal.addEventListener('show.bs.modal', function () {
 
         var formData = {
             examinationId: examinationId,
-            applicantScore: applicantScore,
-            perfectScore: perfectScore,
             percentage: percentage
         };
 
