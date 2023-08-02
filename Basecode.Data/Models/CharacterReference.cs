@@ -9,5 +9,5 @@ public class CharacterReference
 
     public int ApplicantId { get; set; }
     public Applicant Applicant { get; set; } = null!;
-    public BackgroundCheck? BackgroundCheck { get; set; }
+    
 }

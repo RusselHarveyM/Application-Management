@@ -17,41 +17,48 @@ public class ReferenceToPdf
         _backgroundCheckService = backgroundCheckService;
     }
 
-    public void ExportToPdf(BackgroundCheck backgroundCheck, string filePath)
+    public byte[] ExportToPdf(BackgroundCheck backgroundCheck)
     {
         // Create a new PDF document
-        var document = new Document();
-        var writer = PdfWriter.GetInstance(document, new FileStream(filePath, FileMode.Create));
-        document.Open();
-
-        document.Add(new Paragraph("Background Check:"));
-        document.Add(new Paragraph($"Firstname: {backgroundCheck.Firstname}"));
-        document.Add(new Paragraph($"Lastname: {backgroundCheck.Lastname}"));
-        document.Add(new Paragraph($"Email: {backgroundCheck.Email}"));
-        document.Add(new Paragraph($"PhoneNumber: {backgroundCheck.PhoneNumber}"));
-        document.Add(new Paragraph($"Relationship: {backgroundCheck.Relationship}"));
-        document.Add(new Paragraph($"AnsweredDate: {backgroundCheck.AnsweredDate.ToShortDateString()}"));
-        if (!string.IsNullOrEmpty(backgroundCheck.Q1))
+        using (var memoryStream = new MemoryStream())
         {
-            document.Add(new Paragraph($"Q1: {backgroundCheck.Q1}"));
-        }
+            var document = new Document();
+            PdfWriter.GetInstance(document, memoryStream);
+            document.Open();
 
-        if (!string.IsNullOrEmpty(backgroundCheck.Q2))
-        {
-            document.Add(new Paragraph($"Q2: {backgroundCheck.Q2}"));
-        }
+            document.Add(new Paragraph("Background Check:"));
+            document.Add(new Paragraph($"Firstname: {backgroundCheck.Firstname}"));
+            document.Add(new Paragraph($"Lastname: {backgroundCheck.Lastname}"));
+            document.Add(new Paragraph($"Email: {backgroundCheck.Email}"));
+            document.Add(new Paragraph($"PhoneNumber: {backgroundCheck.PhoneNumber}"));
+            document.Add(new Paragraph($"Relationship: {backgroundCheck.Relationship}"));
+            document.Add(new Paragraph($"AnsweredDate: {backgroundCheck.AnsweredDate.ToShortDateString()}"));
+            if (!string.IsNullOrEmpty(backgroundCheck.Q1))
+            {
+                document.Add(new Paragraph($"Q1: {backgroundCheck.Q1}"));
+            }
 
-        if (!string.IsNullOrEmpty(backgroundCheck.Q3))
-        {
-            document.Add(new Paragraph($"Q3: {backgroundCheck.Q3}"));
-        }
+            if (!string.IsNullOrEmpty(backgroundCheck.Q2))
+            {
+                document.Add(new Paragraph($"Q2: {backgroundCheck.Q2}"));
+            }
 
-        if (!string.IsNullOrEmpty(backgroundCheck.Q4))
-        {
-            document.Add(new Paragraph($"Q4: {backgroundCheck.Q4}"));
-        }
+            if (!string.IsNullOrEmpty(backgroundCheck.Q3))
+            {
+                document.Add(new Paragraph($"Q3: {backgroundCheck.Q3}"));
+            }
 
-        // Close the PDF document
-        document.Close();
+            if (!string.IsNullOrEmpty(backgroundCheck.Q4))
+            {
+                document.Add(new Paragraph($"Q4: {backgroundCheck.Q4}"));
+            }
+
+            // Close the PDF document
+            document.Close();
+
+            // Return the PDF as a byte[] array
+            return memoryStream.ToArray();
+        }
     }
+
 }

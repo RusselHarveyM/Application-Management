@@ -1,6 +1,7 @@
 ﻿using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
 using Basecode.Services.Services;
+using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
@@ -15,6 +16,8 @@ public class BackgroundCheckController : Controller
     private readonly IBackgroundCheckService _backgroundCheckService;
     private readonly ICharacterReferenceService _characterReferenceService;
     private readonly IJobOpeningService _jobOpeningService;
+    private readonly IEmailSendingService _emailSendingService;
+    private readonly IUserService _userService;
     private readonly SignInManager<IdentityUser> _signInManager;
     private readonly UserManager<IdentityUser> _userManager;
 
@@ -22,7 +25,8 @@ public class BackgroundCheckController : Controller
         IApplicantService applicantService,
         IApplicationService applicationService, IJobOpeningService jobOpeningService,
         IBackgroundCheckService backgroundCheckService,
-        SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager)
+        SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager,
+        IEmailSendingService emailSendingService, IUserService userService)
     {
         _characterReferenceService = characterReferenceService;
         _applicantService = applicantService;
@@ -31,6 +35,8 @@ public class BackgroundCheckController : Controller
         _backgroundCheckService = backgroundCheckService;
         _signInManager = signInManager;
         _userManager = userManager;
+        _emailSendingService = emailSendingService;
+        _userService = userService;
     }
 
     //[Route("/BackgroundCheck/Form/{characterReferenceId}/{userId}")]
@@ -89,6 +95,8 @@ public class BackgroundCheckController : Controller
         _logger.Trace("Form Submitted Successfully");
         _backgroundCheckService.Create(data);
         ViewBag.IsFormSubmitted = true;
+
+
         return View("Redirection");
     }
 }

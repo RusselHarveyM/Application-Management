@@ -2,6 +2,7 @@ using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
 using Basecode.Services.Services;
+using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -184,7 +185,7 @@ public class DashboardController : Controller
         {
             var application = _dashboardService.GetApplicationById(appId);
             var foundUser = _userService.GetByEmail(email);
-            _dashboardService.UpdateStatus(application, foundUser, status);
+            _dashboardService.UpdateStatus(application, foundUser, status, "Approval");
             return RedirectToAction("DirectoryView");
         }
         catch (Exception e)
@@ -388,8 +389,9 @@ public class DashboardController : Controller
             var aspUser = await _userManager.GetUserAsync(User);
             var user = _userService.GetByEmail(aspUser.Email);
             var application = _applicationService.GetApplicationById(appId);
-            _dashboardService.UpdateStatus(application, user, "Undergoing Background Check");
+            _dashboardService.UpdateStatus(application, user, "Undergoing Background Check", "");
             _toastNotification.AddSuccessToastMessage("Successfully changed the status.");
+            BackgroundJob.Schedule(() => _dashboardService.SendListEmail(application.Applicant.Id, aspUser.Email, user.Fullname), TimeSpan.FromHours(48));
             return RedirectToAction("DirectoryView");
         }
         catch (Exception e)

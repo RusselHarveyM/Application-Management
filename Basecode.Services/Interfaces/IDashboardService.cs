@@ -11,8 +11,9 @@ public interface IDashboardService
     /// <param name="application">The application.</param>
     /// <param name="user">The user.</param>
     /// <param name="status">The status.</param>
+    /// <param name="mailType"></param>
     /// <returns></returns>
-    void UpdateStatus(Application application, User user, string status);
+    void UpdateStatus(Application application, User user, string status, string mailType);
 
     /// <summary>
     ///     Gets the shorlisted applicatons.
@@ -44,9 +45,11 @@ public interface IDashboardService
     /// <returns></returns>
     Application GetApplicationById(Guid id);
 
+    void SendListEmail(int appId, string email, string name);
+
     /// <summary>
     /// Exports references' answers to pdf
     /// </summary>
-    /// <param name="references"></param>
-    void ExportReferenceToPdf(List<CharacterReference> references);
+    /// <param name="appId"></param>
+    void ExportReferenceToPdf(string email, string name, int appId);
 }

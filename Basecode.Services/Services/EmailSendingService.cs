@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using System.Text;
+using System.Web;
 using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
@@ -46,6 +47,79 @@ public class EmailSendingService : IEmailSendingService
 
         await _emailService.SendEmail(interviewerEmail, role, body);
     }
+    
+    public async Task SendReferenceAnswers(User user, Applicant applicant, Guid appId, string newStatus, List<byte[]> pdfs)
+    {
+        var approveTokenClaims = new Dictionary<string, string>
+        {
+            { "action", "ChangeStatus" },
+            { "userId", user.Id.ToString() },
+            { "appId", appId.ToString() },
+            { "newStatus", newStatus },
+            { "choice", "approved" }
+        };
+        var rejectTokenClaims = new Dictionary<string, string>
+        {
+            { "action", "ChangeStatus" },
+            { "userId", user.Id.ToString() },
+            { "appId", appId.ToString() },
+            { "newStatus", newStatus },
+            { "choice", "rejected" }
+        };
+        
+        var approveToken = _tokenHelper.GenerateToken(approveTokenClaims);
+        var rejectToken = _tokenHelper.GenerateToken(rejectTokenClaims);
+        
+        //Notify Interviewer for their Task
+        var templatePath = Path.Combine("wwwroot", "template", "ApprovalEmail.html");
+        var templateContent = File.ReadAllText(templatePath);
+        var body = templateContent
+            .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+            .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+            .Replace("{{HEADLINE}}", "An Applicant's Referee Has Answered.")
+            .Replace("{{BODY}}", $"Dear {user.Fullname},<br>" +
+                                 $"<br> These are all the answers of applicant [{appId}]'s referees who answered the form within the time frame.<br>")
+            .Replace("{{REJECT_TOKEN}}", $"{rejectToken}")
+            .Replace("{{NEGATIVE_FEEDBACK}}", "Reject")
+            .Replace("{{APPROVE_TOKEN}}", $"{approveToken}")
+            .Replace("{{POSITIVE_FEEDBACK}}", "Approve");
+        
+        await _emailService.SendEmailWithAttachments(user.Email, "Alliance Software Inc. Applicant References", body, pdfs);
+    }
+
+    public async Task SendReferenceListReminder(string email, string fullname,
+        List<CharacterReference> noReplyReferences, string role)
+    {
+        var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
+        var templateContent = File.ReadAllText(templatePath);
+
+        var bodyBuilder = new StringBuilder();
+        bodyBuilder.Append($"Dear {fullname},<br>" +
+                           $"<br> It's sad to inform you that some of your references did not answer the form within 48 hours.<br>" +
+                           $"<br> These are the lists: <br>");
+        
+        foreach (var reference in noReplyReferences)
+        {
+            // Append the reference name to the email body
+            bodyBuilder.Append($"- {reference.Name}<br>");
+        }
+
+        // Append closing message
+        bodyBuilder.Append("<br>If you have alternative reference contacts, please provide them within the next 12 hours through email.<br>");
+
+        // Create a StringBuilder to efficiently build the email body
+        var body = templateContent
+            .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+            .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+            .Replace("{{HEADLINE}}", "List of References who did not answer the form")
+            .Replace("{{BODY}}", bodyBuilder.ToString());
+
+        // Loop through the noReplyReferences list and get their names
+       
+        // Complete the email body and send the email
+        await _emailService.SendEmail(email, role, body);
+    }
+
 
     /// <summary>
     ///     Sends automated reminders to users based on their roles and assigned tasks.
@@ -245,7 +319,7 @@ public class EmailSendingService : IEmailSendingService
         tokenClaims["action"] = "RejectSchedule";
         string rejectToken = _tokenHelper.GenerateToken(tokenClaims, tokenExpiry);
 
-        var baseUrl = "https://localhost:53813";
+        var baseUrl = "https://localhost:50341";
         var acceptUrl = $"{baseUrl}/Scheduler/AcceptSchedule/{HttpUtility.UrlEncode(acceptToken)}";
         var rejectUrl = $"{baseUrl}/Scheduler/RejectSchedule/{HttpUtility.UrlEncode(rejectToken)}";
 

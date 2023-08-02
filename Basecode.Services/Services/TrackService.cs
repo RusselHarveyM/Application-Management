@@ -34,7 +34,11 @@ public class TrackService : ITrackService
             "Technical Shortlisted",
             "Undergoing Background Check",
             "For Final Interview",
-            "Undergoing Job Offer"
+            "Undergoing Job Offer",
+            "Confirmed",
+            "Not Confirmed",
+            "Onboarding",
+            "Deployed"
         };
         _interviewStatuses = new List<string>
         {
