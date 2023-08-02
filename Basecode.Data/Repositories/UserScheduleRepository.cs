@@ -73,4 +73,14 @@ public class UserScheduleRepository : BaseRepository, IUserScheduleRepository
         _context.UserSchedule.Remove(userSchedule);
         _context.SaveChanges();
     }
+
+    /// <summary>
+    /// Gets the user schedule by application identifier.
+    /// </summary>
+    /// <param name="applicationId">The application identifier.</param>
+    /// <returns></returns>
+    public UserSchedule? GetUserScheduleByApplicationId(Guid applicationId)
+    {
+        return _context.UserSchedule.Where(schedule => schedule.ApplicationId == applicationId).FirstOrDefault();
+    }
 }

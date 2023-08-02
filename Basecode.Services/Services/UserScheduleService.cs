@@ -87,4 +87,14 @@ public class UserScheduleService : ErrorHandling, IUserScheduleService
         _repository.DeleteUserSchedule(userSchedule);
         _logger.Trace("UserSchedule record has been deleted.");
     }
+
+    /// <summary>
+    /// Gets the user schedule by application identifier.
+    /// </summary>
+    /// <param name="applicationId">The application identifier.</param>
+    /// <returns></returns>
+    public UserSchedule? GetUserScheduleByApplicationId(Guid applicationId)
+    {
+        return _repository.GetUserScheduleByApplicationId(applicationId);
+    }
 }
