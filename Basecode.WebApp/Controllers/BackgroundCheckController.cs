@@ -73,11 +73,6 @@ public class BackgroundCheckController : Controller
             ViewData["bgApplicantDate"] = applicationDetails.ApplicationDate.ToShortDateString();
             ViewData["bgcrId"] = characterReferenceId;
             ViewData["bgUserId"] = userId;
-            //Ready the referees details for view
-            var slicedName = getReference.Name.Split(' ');
-            ViewData["bgRefFirstname"] = slicedName[0] ?? " ";
-            ViewData["bgRefLastname"] = slicedName[1] ?? " ";
-            ViewData["bgRefEmail"] = getReference.Email;
         }
         catch (Exception e)
         {
@@ -91,12 +86,6 @@ public class BackgroundCheckController : Controller
     [Route("/BackgroundCheck/FormOk")]
     public async Task<ActionResult> FormOk(BackgroundCheckFormViewModel data)
     {
-        var whoIsSigned = _signInManager.IsSignedIn(User);
-        if (whoIsSigned)
-        {
-            var userSign = await _userManager.GetUserAsync(User);
-        }
-
         _logger.Trace("Form Submitted Successfully");
         _backgroundCheckService.Create(data);
         ViewBag.IsFormSubmitted = true;
