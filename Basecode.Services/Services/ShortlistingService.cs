@@ -43,7 +43,7 @@ public class ShortlistingService : ErrorHandling, IShortlistingService
 
             foreach (var application in applications)
             {
-                application.Status = "Shortlisted";
+                application.Status = "Technical Shortlisted";
                 _applicationService.Update(application);
             }
         }
