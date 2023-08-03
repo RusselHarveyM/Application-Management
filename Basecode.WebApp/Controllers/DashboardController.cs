@@ -232,12 +232,17 @@ public class DashboardController : Controller
         }
     }
 
-    public async Task<IActionResult> JobOpeningsView(int jobId)
+    public async Task<IActionResult> JobOpeningsView(int? jobId)
     {
         try
         {
+            if (jobId == null || jobId == 0)
+            {
+                return NotFound();
+            }
+
             var user = await _userManager.GetUserAsync(User);
-            var directoryViewModel = _dashboardService.GetApplicantDirectoryViewModel(user.Email, jobId);
+            var directoryViewModel = _dashboardService.GetApplicantDirectoryViewModel(user.Email, (int)jobId);
             if (directoryViewModel == null)
             {
                 directoryViewModel = new ApplicantDirectoryViewModel();
