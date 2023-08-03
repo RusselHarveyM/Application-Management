@@ -125,7 +125,7 @@ public class SchedulerService : ErrorHandling, ISchedulerService
                 }
             }
             var data = new LogContent();
-            var scheduleType = userSchedule.Type.Split(' ').Skip(1).FirstOrDefault();    // Remove "For " from string
+            var scheduleType = userSchedule.Type.Split(' ').Skip(1).FirstOrDefault();   // Leave only last word (Interview/Exam)
 
             if (scheduleType == "Interview")
                 data = _interviewService.AddInterview(userSchedule, joinUrl);
