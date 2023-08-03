@@ -20,11 +20,10 @@ public class DashboardService : IDashboardService
     private readonly ICharacterReferenceService _characterReferenceService;
     private readonly IEmailSendingService _emailSendingService;
 
-    public DashboardService(ITrackService trackService, IApplicationService applicationService,
-        IApplicantService applicantService, IJobOpeningService jobOpeningService, ReferenceToPdf referenceToPdf,
+    public DashboardService(ITrackService trackService, IApplicationService applicationService, IApplicantService applicantService, IJobOpeningService jobOpeningService,
+        ReferenceToPdf referenceToPdf,
         IBackgroundCheckService backgroundCheckService, IUserService userService,
-        ICharacterReferenceService characterReferenceService, IEmailSendingService emailSendingService)
-    public DashboardService(ITrackService trackService, IApplicationService applicationService, IApplicantService applicantService, IJobOpeningService jobOpeningService, ICurrentHireService currentHireService)
+        ICharacterReferenceService characterReferenceService, IEmailSendingService emailSendingService, ICurrentHireService currentHireService)
     {
         _trackService = trackService;
         _applicationService = applicationService;

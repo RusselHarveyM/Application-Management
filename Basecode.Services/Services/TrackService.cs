@@ -19,8 +19,7 @@ public class TrackService : ITrackService
     private readonly IApplicantRepository _applicantsRepository;
     private readonly List<string> _interviewStatuses;
 
-    public TrackService(IEmailSendingService emailSendingService, ResumeChecker resumeChecker, IMapper mapper, IApplicantRepository applicantsRepository)
-    public TrackService(IEmailSendingService emailSendingService, ResumeChecker resumeChecker, IMapper mapper, IInterviewService interviewService)
+    public TrackService(IEmailSendingService emailSendingService, ResumeChecker resumeChecker, IMapper mapper, IInterviewService interviewService, IApplicantRepository applicantsRepository)
     {
         _emailSendingService = emailSendingService;
         _interviewService = interviewService;
@@ -39,7 +38,6 @@ public class TrackService : ITrackService
             "For Final Interview",
             "Undergoing Job Offer",
             "Confirmed",
-            "Not Confirmed",
             "Onboarding",
             "Deployed"
         };

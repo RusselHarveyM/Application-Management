@@ -48,11 +48,6 @@ public interface IScheduleSendingService
     /// <param name="userSchedule">The user schedule.</param>
     void ScheduleApprovalEmail(UserSchedule userSchedule, int hoursLeft);
 
-    /// <summary>
-    /// Schedules the sending of the exam score reminder email.
-    /// </summary>
-    /// <param name="userSchedule">The user schedule.</param>
-    void ScheduleSendApprovalEmail(UserSchedule userSchedule);
 
     void SendDecisionEmailToInterviewer(UserSchedule userSchedule);
 
@@ -65,7 +60,7 @@ public interface IScheduleSendingService
     void SendDeploymentApprovalEmail(UserSchedule userSchedule);
 
     void SendCongratulationEmailToApplicant(UserSchedule userSchedule);
-}
+
     /// <param name="hoursLeft">The hours left until the scheduled time.</param>
     void ScheduleExamScoreReminderEmail(UserSchedule userSchedule, int hoursLeft);
 }
