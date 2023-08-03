@@ -20,7 +20,7 @@
         },
     });
 
-    document.getElementById('date').setAttribute('min', GetDateTomorrow());
+    document.getElementById('date').setAttribute('min', GetCurrentDate());
 });
 
 $('#jobOpeningDropdown').on('change', function () {
@@ -125,10 +125,12 @@ function AddToDropdown(applicant) {
     $('#applicantDropdown').append(optionHtml);
 }
 
-function GetDateTomorrow() {
-    var tomorrow = new Date();
-    tomorrow = new Date(tomorrow.setDate(tomorrow.getDate() + 1)).toISOString().split('T')[0];
-    return tomorrow;
+function getCurrentDate() {
+    var today = new Date();
+    var day = String(today.getDate()).padStart(2, '0');
+    var month = String(today.getMonth() + 1).padStart(2, '0');
+    var year = today.getFullYear();
+    return year + '-' + month + '-' + day;
 }
 
 $('#scheduleForm').submit(function (event) {

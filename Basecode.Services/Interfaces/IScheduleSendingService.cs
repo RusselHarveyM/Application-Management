@@ -13,7 +13,7 @@ public interface IScheduleSendingService
     /// <param name="meetingType">Type of the meeting.</param>
     /// <param name="applicantId">The applicant identifier.</param>
     void SendScheduleToApplicant(UserSchedule userSchedule, int userScheduleId, string meetingType,
-        int applicantId = -1);
+        int tokenExpiry, int applicantId = -1);
 
     /// <summary>
     ///     Sends the schedules to interviewer.
