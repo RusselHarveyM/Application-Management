@@ -9,30 +9,30 @@
         border-color: inherit;
         border: none !important;
     }
-    
+
     /* Add custom CSS for pagination */
-            .pagination .page-item .page-link {
-                color: #EC2224; /* Text color for the default button */
-            }
-        
-            .pagination .page-item.active .page-link {
-                background-color: #EC2224; /* Red color for the active page button */
-                border-color: #EC2224;
-                color: #fff;
-            }
-    
-     th {
-            line-height: 40px;
-            color: #565d6dff;
-            font-size:  14px;
-            font-weight: 500;
-        }
-    
-    .col{
+    .pagination .page-item .page-link {
+        color: #EC2224; /* Text color for the default button */
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #EC2224; /* Red color for the active page button */
+        border-color: #EC2224;
+        color: #fff;
+    }
+
+    th {
+        line-height: 40px;
+        color: #565d6dff;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .col {
         flex: 1 0 0%;
         border: 2px solid rgba(0, 0, 0, 0.03);
         border-radius: 10px;
-        }
+    }
 </style>
 
 <div class="container">
@@ -67,7 +67,9 @@
                                     <td>1</td>
                                 }
                                 <td>
-                                    <a asp-controller="Dashboard" asp-action="JobOpeningsView" asp-route-jobId="@jobOpening.Id" class="btn" style="background-color: #EC2224; color: white;">View</a>
+                                    <a asp-controller="Dashboard" asp-action="JobOpeningsView" asp-route-jobId="@jobOpening.Id" class="btn" style="background-color: #EC2224; color: white;">
+                                        <i class="fa-regular fa-eye"></i>&nbsp;&nbsp;View
+                                    </a>
                                 </td>
 
                             </tr>
