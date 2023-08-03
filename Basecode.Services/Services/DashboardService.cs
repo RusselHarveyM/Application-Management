@@ -80,7 +80,7 @@ public class DashboardService : IDashboardService
     /// <returns></returns>
     public ApplicantDirectoryViewModel GetApplicantDirectoryViewModel(string email, int jobId)
     {
-        var applicants = _applicantService.GetApplicantsByJobOpeningIdApplicant(jobId);
+        var applicants = _applicantService.GetApplicantsByJobOpeningId(jobId);
 
         var jobs = _jobOpeningService.GetJobsWithApplications();
         foreach (var job in jobs) job.usersId = _jobOpeningService.GetLinkedUserIds(job.Id);

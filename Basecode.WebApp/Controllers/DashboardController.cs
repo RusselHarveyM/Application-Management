@@ -79,19 +79,17 @@ public class DashboardController : Controller
     {
         try
         {
+            var users = _userService.GetAllUsersWithLinkStatus(id);
             var jobOpeningTitle = _jobOpeningService.GetJobOpeningTitleById(id);
             var jobOpening = new JobOpeningBasicViewModel
             {
                 Id = id,
                 Title = jobOpeningTitle
             };
-            var applicants = _applicantService.GetApplicantsByJobOpeningId(id);
-            var users = _userService.GetAllUsersWithLinkStatus(id);
 
             var viewModel = new AssignUsersViewModel
             {
                 JobOpening = jobOpening,
-                Applicants = applicants,
                 Users = users
             };
 

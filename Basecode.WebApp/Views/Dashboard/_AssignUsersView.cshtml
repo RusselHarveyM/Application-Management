@@ -12,43 +12,11 @@
 
                     <div class="row text-center">
                         <div class="col">
-                            <h1>Applicants <br/> @Model.Applicants.Count</h1>
-                        </div>
-                        <div class="col">
                             <h1>Assigned HR <br/> <span id="totalAssignedUsers"></span></h1>
                         </div>
                     </div>
 
                     <div class="row">
-                        <div class="col">
-                            <table>
-                                <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Status</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                @if (Model.Applicants.Count > 0)
-                                {
-                                    @foreach (var applicant in Model.Applicants)
-                                    {
-                                        <tr>
-                                            <td>@applicant.Firstname @applicant.Lastname</td>
-                                            <td>@applicant.Status</td>
-                                        </tr>
-                                    }
-                                }
-                                else
-                                {
-                                    <tr>
-                                        <td>No Applicants Found</td>
-                                    </tr>
-                                }
-                                </tbody>
-                            </table>
-                        </div>
-
                         <div class="col">
                             <table>
                                 <thead>
@@ -91,7 +59,7 @@
             </div>
             <div class="modal-footer justify-content-between border-0 mx-3 mb-3">
                 <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><i class="fa-regular fa-circle-xmark"></i> CANCEL</button>
-                <button type="button" class="btn btn-submit" id="saveChangesButton"><i class="fa-solid fa-floppy-disk"></i> SAVE CHANGES</button>
+                <button type="button" class="btn btn-view" id="saveChangesButton"><i class="fa-solid fa-floppy-disk"></i> SAVE CHANGES</button>
             </div>
         </div>
     </div>
