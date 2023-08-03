@@ -59,25 +59,20 @@ public class TrackService : ITrackService
     {
         var result = await _resumeChecker.CheckResume(application.JobOpening.Title,
             application.JobOpening.Qualifications, application.Applicant.CV);
-        //var result = "test";
 
         if (!string.IsNullOrEmpty(result))
         {
             var jsonDocument = JsonDocument.Parse(result);
             var jsonObject = jsonDocument.RootElement;
 
-
-            // Accessing individual properties
-            var jobPosition = jsonObject.GetProperty("JobPosition").GetString();
             var score = jsonObject.GetProperty("Score").GetString();
-            var explanation = jsonObject.GetProperty("Explanation").GetString();
 
             if (int.Parse(score.Replace("%", "")) > 60)
                 return UpdateApplicationStatus(application, application.JobOpening, "HR Shortlisted", "GUID",
                     result);
         }
 
-        return UpdateApplicationStatus(application, application.JobOpening, "Rejected", "Regret", "");
+        return UpdateApplicationStatus(application, application.JobOpening, "Rejected", "Regret", result);
     }
 
     /// <summary>

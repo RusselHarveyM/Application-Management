@@ -1,12 +1,12 @@
-﻿@model List<Basecode.Data.ViewModels.JobOpeningViewModel>
+﻿@model Basecode.Data.ViewModels.DashboardViewModel
 
 @{
     Layout = "/Views/Shared/_Admin.cshtml";
 
     // Variables for dashboard statistics
-    var onboard = 26;
-    var deployed = 73;
-    var totalApplication = 229;
+    var onboard = Model.Onboarded;
+    var deployed = Model.Deployed;
+    var totalApplication = Model.TotalApplications;
 }
 
 <style>
@@ -74,7 +74,7 @@
                     <th></th>
                 </tr>
                 <!-- Add the table rows -->
-                @foreach (var job in Model)
+                @foreach (var job in Model.JobOpenings)
                 {
                     <tr>
                         <td>@job.Title</td>

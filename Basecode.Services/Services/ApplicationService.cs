@@ -77,6 +77,33 @@ public class ApplicationService : ErrorHandling, IApplicationService
     }
 
     /// <summary>
+    /// Get Total Applications
+    /// </summary>
+    /// <returns></returns>
+    public int GetTotalApplications()
+    {
+        return _repository.GetAll().Count();
+    }
+
+    /// <summary>
+    /// Get Total Deployed Applications
+    /// </summary>
+    /// <returns></returns>
+    public int GetDeployed()
+    {
+        return _repository.GetAll().Where(m => m.Status == "Deployed").Count();
+    }
+
+    /// <summary>
+    /// Get Total Onboarded Applications
+    /// </summary>
+    /// <returns></returns>
+    public int GetOnboarded()
+    {
+        return _repository.GetAll().Where(m => m.Status == "Onboarded").Count();
+    }
+
+    /// <summary>
     ///     Gets the application with complete relations by identifier.
     /// </summary>
     /// <param name="applicationId">The application identifier.</param>
