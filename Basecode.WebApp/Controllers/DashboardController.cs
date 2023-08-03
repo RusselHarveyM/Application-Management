@@ -165,15 +165,16 @@ public class DashboardController : Controller
     ///     Views the details update.
     /// </summary>
     /// <param name="appId">The application identifier.</param>
-    /// <param name="email">The email.</param>
     /// <param name="status">The status.</param>
     /// <returns></returns>
-    public IActionResult ViewDetailsUpdate(Guid appId, string email, string status)
+    public IActionResult ViewDetailsUpdate(Guid appId, string status)
     {
         try
         {
             var application = _dashboardService.GetApplicationById(appId);
-            var foundUser = _userService.GetByEmail(email);
+            var user = _userManager.GetUserAsync(User).Result;
+            var foundUser = _userService.GetByEmail(user.Email);
+            
             _dashboardService.UpdateStatus(application, foundUser, status, "Approval");
             return RedirectToAction("DirectoryView");
         }

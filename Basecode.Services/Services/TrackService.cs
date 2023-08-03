@@ -17,7 +17,6 @@ public class TrackService : ITrackService
     private readonly ResumeChecker _resumeChecker;
     private readonly List<string> _statuses;
     private readonly IApplicantRepository _applicantsRepository;
-    private readonly List<string> _interviewStatuses;
 
     public TrackService(IEmailSendingService emailSendingService, ResumeChecker resumeChecker, IMapper mapper, IInterviewService interviewService, IApplicantRepository applicantsRepository)
     {
@@ -41,12 +40,7 @@ public class TrackService : ITrackService
             "Onboarding",
             "Deployed"
         };
-        _interviewStatuses = new List<string>
-        {
-            "For HR Interview",
-            "For Technical Interview",
-            "For Final Interview",
-        };
+       
         _applicantsRepository = applicantsRepository;
     }
 
@@ -161,12 +155,39 @@ public class TrackService : ITrackService
     {
         var newStatus = "";
 
-        if (_interviewStatuses.Contains(status))
+        _interviewService.CheckInterview(application, status, choice);
+
+        if (choice.Equals("approved"))
         {
-            _interviewService.UpdateInterviewResult(application.Id, status, choice);
-            if (status == "For Technical Interview" && choice.Equals("approved"))
-                return application;
+            if (_statuses.Contains(status))
+            {
+                var statusIndex = _statuses.IndexOf(status);
+                newStatus = _statuses[statusIndex + 1];
+            }
+            return UpdateApplicationStatus(application, user, newStatus, "Approval");
         }
+        else if (choice.Equals("rejected"))
+        {
+            newStatus = "Rejected";
+        }
+
+        //send automated email of regrets
+        return UpdateApplicationStatus(application, user, newStatus, "Rejected");
+    }
+    
+    
+    /// <summary>
+    ///     Updates the application status based on the response through email.
+    /// </summary>
+    /// <param name="application">The application.</param>
+    /// <param name="user">The user</param>
+    /// <param name="choice">The choice (e.g., approved or rejected).</param>
+    /// <param name="newStatus">The new status.</param>
+    /// <returns></returns>
+    public Application UpdateApplicationStatusByEmailResponseCurrentHires(Application application, User user,
+        string choice, string status)
+    {
+        var newStatus = "";
 
         if (choice.Equals("approved"))
         {

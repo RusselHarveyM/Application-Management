@@ -21,8 +21,10 @@ public class CurrentHireController : Controller
     private readonly IUserScheduleService _userScheduleService;
     private readonly IApplicantService _applicantService;
 
-    public CurrentHireController(ICurrentHireService currentHireService, IConfiguration config, ITrackService trackService, IApplicationService applicationService, IUserService userService,
-        IToastNotification toastNotification, IScheduleSendingService scheduleSendingService, IUserScheduleService userScheduleService, IApplicantService applicantService)
+    public CurrentHireController(ICurrentHireService currentHireService, IConfiguration config,
+        ITrackService trackService, IApplicationService applicationService, IUserService userService,
+        IToastNotification toastNotification, IScheduleSendingService scheduleSendingService,
+        IUserScheduleService userScheduleService, IApplicantService applicantService)
     {
         _currentHireService = currentHireService;
         _tokenHelper = new TokenHelper(config["TokenHelper:SecretKey"]);
@@ -44,46 +46,16 @@ public class CurrentHireController : Controller
         try
         {
             var tokenClaims = _tokenHelper.GetTokenClaims(token, "AcceptOffer");
-            if (tokenClaims.Count == 0)
+            var result = _currentHireService.CurrentHireAcceptOffer(tokenClaims);
+            if (result == -1)
             {
-                _logger.Warn("Invalid or expired token.");
-                return RedirectToAction("Index", "Home");
+                _toastNotification.AddWarningToastMessage("Token Expired");
+            }
+            else
+            {
+                _toastNotification.AddSuccessToastMessage("Status Successfully Changed.");
             }
 
-            var userId = int.Parse(tokenClaims["userId"]);
-            var appId = Guid.Parse(tokenClaims["appId"]);
-            var status = tokenClaims["newStatus"];
-            var choice = tokenClaims["choice"];
-
-            //Check if applicant and user exists
-            var application = _applicationService.GetApplicationById(appId);
-            var user = _userService.GetById(userId);
-
-            if (application != null && user != null)
-            {
-                var result = _trackService.UpdateApplicationStatusByEmailResponse(application, user, choice, status);
-                _applicationService.Update(result);
-                var userSchedule = _userScheduleService.GetApplicationByGuid(appId);
-                var applicant = _applicantService.GetApplicantByApplicationId(application.Id);
-                if (result.Status == "Undergoing Job Offer")
-                {
-                    _scheduleSendingService.SendJobOfferEmailToApplicant(userSchedule);
-                }
-                else if (result.Status == "Confirmed")
-                {
-                    _currentHireService.AddCurrentHire(applicant, userSchedule.Id);
-                }
-                else if (result.Status == "Onboarding")
-                {
-                    _currentHireService.AddCurrentHire(applicant, userSchedule.Id);
-                }
-                else if (result.Status == "Deployed")
-                {
-                    _scheduleSendingService.SendCongratulationEmailToApplicant(userSchedule);
-                }
-            }
-
-            _toastNotification.AddSuccessToastMessage("Status Successfully Changed.");
             return RedirectToAction("Index", "Home");
         }
         catch (Exception e)

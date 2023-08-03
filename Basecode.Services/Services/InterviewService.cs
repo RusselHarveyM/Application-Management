@@ -8,11 +8,18 @@ public class InterviewService : ErrorHandling, IInterviewService
 {
     private readonly IInterviewRepository _repository;
     private readonly IUserScheduleService _userScheduleService;
+    private readonly List<string> _interviewStatuses;
 
     public InterviewService(IInterviewRepository repository, IUserScheduleService userScheduleService)
     {
         _repository = repository;
         _userScheduleService = userScheduleService;
+        _interviewStatuses = new List<string>
+        {
+            "For HR Interview",
+            "For Technical Interview",
+            "For Final Interview",
+        };
     }
 
     /// <summary>
@@ -74,5 +81,17 @@ public class InterviewService : ErrorHandling, IInterviewService
         }
 
         return logContent;
+    }
+
+    public Application CheckInterview(Application application, string status, string choice)
+    {
+        if (_interviewStatuses.Contains(status))
+        {
+            UpdateInterviewResult(application.Id, status, choice);
+            if (status == "For Technical Interview" && choice.Equals("approved"))
+                return application;
+        }
+
+        return null;
     }
 }

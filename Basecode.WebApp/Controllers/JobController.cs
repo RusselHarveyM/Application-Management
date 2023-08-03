@@ -10,6 +10,7 @@ using NToastNotify;
 
 namespace Basecode.WebApp.Controllers;
 
+
 public class JobController : Controller
 {
     private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
@@ -111,7 +112,7 @@ public class JobController : Controller
     }
 
     /// <summary>
-    ///     Creates the specified job opening.
+    ///  Creates the specified job opening.
     /// </summary>
     /// <param name="jobOpening">The job opening.</param>
     /// <returns></returns>
