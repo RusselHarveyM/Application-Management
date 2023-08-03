@@ -264,6 +264,12 @@ public class DashboardController : Controller
     {
         try
         {
+            if (percentage < 0)
+            {
+                _logger.Warn("Score percentage is invalid.");
+                return BadRequest();
+            }
+
             var data = _examinationService.UpdateExaminationScore(examinationId, percentage);
             if (!data.Result)
             {
