@@ -165,10 +165,9 @@ public class DashboardController : Controller
     ///     Views the details update.
     /// </summary>
     /// <param name="appId">The application identifier.</param>
-    /// <param name="email">The email.</param>
     /// <param name="status">The status.</param>
     /// <returns></returns>
-    public IActionResult ViewDetailsUpdate(Guid appId, string email, string status)
+    public IActionResult ViewDetailsUpdate(Guid appId, string status)
     {
         try
         {
