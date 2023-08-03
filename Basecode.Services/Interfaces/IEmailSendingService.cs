@@ -143,4 +143,15 @@ public interface IEmailSendingService
     /// <param name="applicant">The applicant.</param>
     /// <returns></returns>
     Task SendBackgroundCheckCompletionToHR(BackgroundCheck reference, User user, Applicant applicant);
+
+    Task SendDecisionEmail(User user, Applicant applicant, Guid appId, string newStatus);
+
+    Task SendJobOfferEmail(User user, Applicant applicant, Guid appId, string newStatus);
+
+    Task SendNotifyToDT(Applicant applicant, User user);
+
+    Task SendConfirmationEmailToDT(User user, Applicant applicant, Guid appId, string newStatus);
+    Task SendDeploymentApprovalEmail(User user, Applicant applicant, Guid appId, string newStatus);
+
+    Task SendCongratulationEmailToApplicant(User user, Applicant applicant, Guid appId, string newStatus);
 }

@@ -1,7 +1,10 @@
-﻿using Basecode.Services.Interfaces;
+﻿using Basecode.Data.Models;
+using Basecode.Services.Interfaces;
 using Basecode.Services.Services;
+using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
+using NToastNotify;
 
 namespace Basecode.WebApp.Controllers;
 
@@ -10,11 +13,26 @@ public class CurrentHireController : Controller
     private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
     private readonly ICurrentHireService _currentHireService;
     private readonly TokenHelper _tokenHelper;
+    private readonly ITrackService _trackService;
+    private readonly IApplicationService _applicationService;
+    private readonly IUserService _userService;
+    private readonly IToastNotification _toastNotification;
+    private readonly IScheduleSendingService _scheduleSendingService;
+    private readonly IUserScheduleService _userScheduleService;
+    private readonly IApplicantService _applicantService;
 
-    public CurrentHireController(ICurrentHireService currentHireService, IConfiguration config)
+    public CurrentHireController(ICurrentHireService currentHireService, IConfiguration config, ITrackService trackService, IApplicationService applicationService, IUserService userService,
+        IToastNotification toastNotification, IScheduleSendingService scheduleSendingService, IUserScheduleService userScheduleService, IApplicantService applicantService)
     {
         _currentHireService = currentHireService;
         _tokenHelper = new TokenHelper(config["TokenHelper:SecretKey"]);
+        _trackService = trackService;
+        _applicationService = applicationService;
+        _userService = userService;
+        _toastNotification = toastNotification;
+        _scheduleSendingService = scheduleSendingService;
+        _userScheduleService = userScheduleService;
+        _applicantService = applicantService;
     }
 
     /// <summary>
@@ -25,26 +43,48 @@ public class CurrentHireController : Controller
     {
         try
         {
-            ViewBag.IsHireAccepted = false;
             var tokenClaims = _tokenHelper.GetTokenClaims(token, "AcceptOffer");
             if (tokenClaims.Count == 0)
             {
                 _logger.Warn("Invalid or expired token.");
-                return View();
+                return RedirectToAction("Index", "Home");
             }
 
-            if (tokenClaims.TryGetValue("userId", out var userId))
+            var userId = int.Parse(tokenClaims["userId"]);
+            var appId = Guid.Parse(tokenClaims["appId"]);
+            var status = tokenClaims["newStatus"];
+            var choice = tokenClaims["choice"];
+
+            //Check if applicant and user exists
+            var application = _applicationService.GetApplicationById(appId);
+            var user = _userService.GetById(userId);
+
+            if (application != null && user != null)
             {
-                var currentHireId = int.Parse(userId);
-                var data = _currentHireService.AcceptOffer(currentHireId);
-                if (!data.Result)
+                var result = _trackService.UpdateApplicationStatusByEmailResponse(application, user, choice, status);
+                _applicationService.Update(result);
+                var userSchedule = _userScheduleService.GetApplicationByGuid(appId);
+                var applicant = _applicantService.GetApplicantByApplicationId(application.Id);
+                if (result.Status == "Undergoing Job Offer")
                 {
-                    _logger.Trace("User Offer [" + currentHireId + "] has been successfully accepted.");
-                    ViewBag.IsHireAccepted = true;
+                    _scheduleSendingService.SendJobOfferEmailToApplicant(userSchedule);
+                }
+                else if (result.Status == "Confirmed")
+                {
+                    _currentHireService.AddCurrentHire(applicant, userSchedule.Id);
+                }
+                else if (result.Status == "Onboarding")
+                {
+                    _currentHireService.AddCurrentHire(applicant, userSchedule.Id);
+                }
+                else if (result.Status == "Deployed")
+                {
+                    _scheduleSendingService.SendCongratulationEmailToApplicant(userSchedule);
                 }
             }
 
-            return View();
+            _toastNotification.AddSuccessToastMessage("Status Successfully Changed.");
+            return RedirectToAction("Index", "Home");
         }
         catch (Exception e)
         {
@@ -61,26 +101,30 @@ public class CurrentHireController : Controller
     {
         try
         {
-            ViewBag.IsHireRejected = false;
-            var tokenClaims = _tokenHelper.GetTokenClaims(token, "RejectOffer");
+            var tokenClaims = _tokenHelper.GetTokenClaims(token, "AcceptOffer");
             if (tokenClaims.Count == 0)
             {
                 _logger.Warn("Invalid or expired token.");
-                return View();
+                return RedirectToAction("Index", "Home");
             }
 
-            if (tokenClaims.TryGetValue("userId", out var userId))
+            var userId = int.Parse(tokenClaims["userId"]);
+            var appId = Guid.Parse(tokenClaims["appId"]);
+            var status = tokenClaims["newStatus"];
+            var choice = tokenClaims["choice"];
+
+            //Check if applicant and user exists
+            var application = _applicationService.GetApplicationById(appId);
+            var user = _userService.GetById(userId);
+
+            if (application != null && user != null)
             {
-                var currentHireId = int.Parse(userId);
-                var data = await _currentHireService.RejectOffer(currentHireId);
-                if (!data.Result)
-                {
-                    _logger.Trace("User Offer [" + currentHireId + "] has been successfully rejected.");
-                    ViewBag.IsHireRejected = true;
-                }
+                var result = _trackService.UpdateApplicationStatusByEmailResponse(application, user, choice, status);
+                _applicationService.Update(result);
             }
 
-            return View();
+            _toastNotification.AddSuccessToastMessage("Status Successfully Changed.");
+            return RedirectToAction("Index", "Home");
         }
         catch (Exception e)
         {

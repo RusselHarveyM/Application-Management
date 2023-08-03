@@ -34,6 +34,22 @@ public class TokenHelper
         return tokenHandler.WriteToken(token);
     }
 
+    public string GenerateTokenExpireAfterTwoDays(Dictionary<string, string> claims, int expirationHours = 60)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.ASCII.GetBytes(_key);
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(claims.Select(x => new Claim(x.Key, x.Value))),
+            Expires = DateTime.UtcNow.AddHours(expirationHours),
+            SigningCredentials =
+                new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+        };
+
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        return tokenHandler.WriteToken(token);
+    }
+
     /// <summary>
     ///     Validates the token.
     /// </summary>

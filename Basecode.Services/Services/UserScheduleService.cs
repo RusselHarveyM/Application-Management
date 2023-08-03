@@ -25,6 +25,11 @@ public class UserScheduleService : ErrorHandling, IUserScheduleService
         return _repository.GetIdIfUserScheduleExists(applicationId);
     }
 
+    public UserSchedule GetApplicationByGuid(Guid applicationId)
+    {
+        return _repository.GetApplicationByGuid(applicationId);
+    }
+
     /// <summary>
     ///     Adds a schedule in the UserSchedule table.
     /// </summary>

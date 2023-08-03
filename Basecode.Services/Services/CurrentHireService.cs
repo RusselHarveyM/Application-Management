@@ -1,6 +1,8 @@
 ﻿using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
 using Basecode.Services.Interfaces;
+using Hangfire;
+using Microsoft.EntityFrameworkCore;
 using NLog;
 
 namespace Basecode.Services.Services;
@@ -9,25 +11,19 @@ public class CurrentHireService : ErrorHandling, ICurrentHireService
 {
     private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
     private readonly IApplicantService _applicantService;
-    private readonly IApplicationRepository _applicationRepository;
     private readonly IApplicationService _applicationService;
     private readonly ICurrentHireRepository _currentHireRepository;
-    private readonly IEmailSendingService _emailSendingService;
     private readonly IUserScheduleRepository _userScheduleRepository;
-    private readonly IUserService _userService;
+    private readonly IScheduleSendingService _scheduleSendingService;
 
-    public CurrentHireService(ICurrentHireRepository currentHireRepository,
-        IUserScheduleRepository userScheduleRepository, IApplicationRepository applicationRepository,
-        IApplicantService applicantService, IUserService userService,
-        IEmailSendingService emailSendingService, IApplicationService applicationService)
+    public CurrentHireService(ICurrentHireRepository currentHireRepository, IUserScheduleRepository userScheduleRepository, IApplicantService applicantService, IApplicationService applicationService, 
+        IScheduleSendingService scheduleSendingService)
     {
         _currentHireRepository = currentHireRepository;
         _userScheduleRepository = userScheduleRepository;
-        _applicationRepository = applicationRepository;
         _applicantService = applicantService;
-        _userService = userService;
-        _emailSendingService = emailSendingService;
         _applicationService = applicationService;
+        _scheduleSendingService = scheduleSendingService;
     }
 
     /// <summary>
@@ -70,46 +66,6 @@ public class CurrentHireService : ErrorHandling, ICurrentHireService
     }
 
     /// <summary>
-    ///     Reject offer and return UserOffer Status
-    /// </summary>
-    /// <param name="userOfferId"></param>
-    /// <returns></returns>
-    public async Task<LogContent> RejectOffer(int currentHireId)
-    {
-        var userSchedule = GetUserScheduleById(currentHireId);
-        var application = _applicationRepository.GetById(userSchedule.ApplicationId);
-        var applicant = _applicantService.GetApplicantById(application.ApplicantId);
-        await AddCurrentHire(applicant, currentHireId);
-
-        var hireId = _currentHireRepository.GetCurrentHireIdByUserId(currentHireId);
-        var currentHire = _currentHireRepository.GetCurrentHireById(hireId);
-
-        var logContent = CheckCurrentHireStatus(currentHire);
-        if (logContent.Result == false)
-        {
-            currentHire.Status = "rejected";
-            logContent = UpdateCurrentHire(currentHire);
-            await SendRejectedHireNoticeToInterviewer(currentHire);
-        }
-
-        return logContent;
-    }
-
-    /// <summary>
-    ///     Send reject notice to interviewer
-    /// </summary>
-    /// <param name="userOffer"></param>
-    /// <returns></returns>
-    public async Task SendRejectedHireNoticeToInterviewer(CurrentHire currentHire)
-    {
-        var user = _userService.GetById(currentHire.UserId);
-        var applicant = _applicantService.GetApplicantByApplicationId(currentHire.ApplicationId);
-        var applicantFullName = applicant.Firstname + " " + applicant.Lastname;
-        await _emailSendingService.SendRejectedHireNoticeToInterviewer(user.Email, user.Fullname,
-            applicant.Application.JobOpening.Title, currentHire, applicantFullName);
-    }
-
-    /// <summary>
     ///     update user offer
     /// </summary>
     /// <param name="userOffer"></param>
@@ -118,6 +74,8 @@ public class CurrentHireService : ErrorHandling, ICurrentHireService
     public LogContent UpdateCurrentHire(CurrentHire currentHire, int? idToSetAsPending = null)
     {
         var applicant = _applicantService.GetApplicantByApplicationId(currentHire.ApplicationId);
+        var application = _applicationService.GetApplicationByApplicantId(applicant.Id);
+        var userschedule = _userScheduleRepository.GetApplicationByGuid(application.Id);
         var logContent = CheckCurrentHire(currentHire);
 
         if (logContent.Result == false)
@@ -131,8 +89,14 @@ public class CurrentHireService : ErrorHandling, ICurrentHireService
             hireToBeUpdated.Lastname = applicant.Lastname;
             hireToBeUpdated.Phone = applicant.Phone;
             hireToBeUpdated.Email = applicant.Email;
-            hireToBeUpdated.Status = currentHire.Status;
+            hireToBeUpdated.Status = "Confirmed";
             _currentHireRepository.UpdateCurrentHire(hireToBeUpdated);
+
+            if (hireToBeUpdated.Status == "Confirmed")
+            {
+                _scheduleSendingService.SendDeploymentApprovalEmail(userschedule);
+            }
+            
         }
 
         return logContent;
@@ -170,16 +134,16 @@ public class CurrentHireService : ErrorHandling, ICurrentHireService
             Lastname = applicant.Lastname,
             Phone = applicant.Phone,
             Email = applicant.Email,
-            Status = "pending",
+            Status = "To Be Confirmed",
             User = userSchedule.User,
             Application = userSchedule.Application
         };
 
         var existingId = GetIdIfCurrentHireExists(applicationId);
-        if (existingId != -1) // Update "rejected" schedule to "pending"
+        if (existingId != -1)
             successfullyAddedApplicantIds =
                 await HandleExistingHire(currentHire, existingId, applicant.Id, successfullyAddedApplicantIds);
-        else // Create new schedule
+        else 
             successfullyAddedApplicantIds =
                 await HandleNewHire(currentHire, applicant.Id, successfullyAddedApplicantIds);
     }
@@ -207,19 +171,6 @@ public class CurrentHireService : ErrorHandling, ICurrentHireService
     }
 
     /// <summary>
-    ///     Send offer to applicant
-    /// </summary>
-    /// <param name="userOffer"></param>
-    /// <param name="userOfferId"></param>
-    /// <param name="applicantId"></param>
-    /// <returns></returns>
-    public async Task SendHireToApplicant(CurrentHire currentHire, int currentHireId, int applicantId)
-    {
-        var applicant = _applicantService.GetApplicantById(applicantId);
-        //await _emailSendingService.SendScheduleToApplicant(userOffer, userOfferId, applicant);
-    }
-
-    /// <summary>
     ///     Handle new offer
     /// </summary>
     /// <param name="userOffer"></param>
@@ -230,12 +181,17 @@ public class CurrentHireService : ErrorHandling, ICurrentHireService
         List<int> successfullyAddedApplicantIds)
     {
         (LogContent logContent, int currentHireId) data = AddCurrentHires(currentHire);
+        var application = _applicationService.GetApplicationByApplicantId(applicantId);
+        var userschedule = _userScheduleRepository.GetApplicationByGuid(application.Id);
 
         if (!data.logContent.Result && data.currentHireId != -1)
         {
-            _logger.Trace("Successfully created a new UserSchedule record.");
-            await SendHireToApplicant(currentHire, data.currentHireId, applicantId);
+            _logger.Trace("Successfully added New Hire.");
+            //Send Confirmation to Email to DT
+            //await SendHireToApplicant(currentHire, data.currentHireId, applicantId);
             successfullyAddedApplicantIds.Add(applicantId);
+            _scheduleSendingService.SendNotifyToDT(applicantId);
+            _scheduleSendingService.ScheduleConfirmationEmailToDT(userschedule);
         }
 
         return successfullyAddedApplicantIds;
@@ -254,5 +210,13 @@ public class CurrentHireService : ErrorHandling, ICurrentHireService
         if (logContent.Result == false) currentHireId = _currentHireRepository.AddCurrentHire(currentHire);
 
         return (logContent, currentHireId);
+    }
+
+    public List<CurrentHire> GetShortListedCurrentHire(string stage)
+    {
+        var data = _currentHireRepository.GetAll()
+            .Where(m => m.Status == stage)
+            .ToList();
+        return data;
     }
 }

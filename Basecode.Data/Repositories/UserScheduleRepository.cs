@@ -64,6 +64,11 @@ public class UserScheduleRepository : BaseRepository, IUserScheduleRepository
         return id != null ? id.Id : -1;
     }
 
+    public UserSchedule GetApplicationByGuid(Guid applicationId)
+    {
+        return _context.UserSchedule.FirstOrDefault(schedule => schedule.ApplicationId == applicationId);
+    }
+
     /// <summary>
     ///     Deletes the user schedule.
     /// </summary>

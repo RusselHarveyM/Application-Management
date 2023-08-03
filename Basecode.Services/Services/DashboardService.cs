@@ -11,6 +11,8 @@ public class DashboardService : IDashboardService
     private readonly IApplicationService _applicationService;
     private readonly IApplicantService _applicantService;
     private readonly IJobOpeningService _jobOpeningService;
+    private readonly ICurrentHireService _currentHireService;
+
     private readonly IUserService _userService;
     private readonly ReferenceToPdf _referenceToPdf;
     private readonly ITrackService _trackService;
@@ -18,10 +20,10 @@ public class DashboardService : IDashboardService
     private readonly ICharacterReferenceService _characterReferenceService;
     private readonly IEmailSendingService _emailSendingService;
 
-    public DashboardService(ITrackService trackService, IApplicationService applicationService,
-        IApplicantService applicantService, IJobOpeningService jobOpeningService, ReferenceToPdf referenceToPdf,
+    public DashboardService(ITrackService trackService, IApplicationService applicationService, IApplicantService applicantService, IJobOpeningService jobOpeningService,
+        ReferenceToPdf referenceToPdf,
         IBackgroundCheckService backgroundCheckService, IUserService userService,
-        ICharacterReferenceService characterReferenceService, IEmailSendingService emailSendingService)
+        ICharacterReferenceService characterReferenceService, IEmailSendingService emailSendingService, ICurrentHireService currentHireService)
     {
         _trackService = trackService;
         _applicationService = applicationService;
@@ -32,6 +34,7 @@ public class DashboardService : IDashboardService
         _userService = userService;
         _characterReferenceService = characterReferenceService;
         _emailSendingService = emailSendingService;
+        _currentHireService = currentHireService;
     }
 
     /// <summary>
@@ -44,6 +47,10 @@ public class DashboardService : IDashboardService
         return _applicationService.GetShorlistedApplicatons(type, jobId);
     }
 
+    public List<CurrentHire> GetShortListedCurrentHire(string type)
+    {
+        return _currentHireService.GetShortListedCurrentHire(type);
+    }
 
     /// <summary>
     /// Get Dashboard View Model
@@ -88,6 +95,8 @@ public class DashboardService : IDashboardService
         var shortlistedModel = new ShortListedViewModel();
         shortlistedModel.HRShortlisted = GetShorlistedApplicatons("HR Shortlisted", jobId);
         shortlistedModel.TechShortlisted = GetShorlistedApplicatons("Technical Shortlisted", jobId);
+        shortlistedModel.ConfirmedShortlisted = GetShortListedCurrentHire("Confirmed");
+        shortlistedModel.ToBeConfirmedShortlisted = GetShortListedCurrentHire("To Be Confirmed");
 
         var applicantExams = _applicantService.GetApplicantsWithExamsByJobOpeningId(jobId);
 

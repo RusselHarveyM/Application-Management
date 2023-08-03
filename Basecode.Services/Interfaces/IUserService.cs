@@ -123,4 +123,6 @@ public interface IUserService
     ///     Gets the user email by identifier.
     /// </summary>
     string GetUserEmailById(int userId);
+
+    List<User> GetAll();
 }

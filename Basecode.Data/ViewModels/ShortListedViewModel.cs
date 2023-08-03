@@ -6,4 +6,7 @@ public class ShortListedViewModel
 {
     public List<Application> HRShortlisted { get; set; }
     public List<Application> TechShortlisted { get; set; }
+    public List<CurrentHire> ConfirmedShortlisted { get; set; }
+
+    public List<CurrentHire> ToBeConfirmedShortlisted { get; set; }
 }

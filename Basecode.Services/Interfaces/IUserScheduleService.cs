@@ -38,6 +38,8 @@ public interface IUserScheduleService
     /// <returns></returns>
     int GetIdIfUserScheduleExists(Guid applicationId);
 
+    UserSchedule GetApplicationByGuid(Guid applicationId);
+
     /// <summary>
     ///     Deletes the user schedule.
     /// </summary>
