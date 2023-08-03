@@ -6,7 +6,6 @@ using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using NLog;
 using NToastNotify;
 
@@ -15,7 +14,7 @@ namespace Basecode.WebApp.Controllers;
 [Authorize]
 public class DashboardController : Controller
 {
-    private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+    private readonly Logger _logger = LogManager.GetCurrentClassLogger();
     private readonly IApplicantService _applicantService;
     private readonly IBackgroundCheckService _backgroundCheckService;
     private readonly ICharacterReferenceService _characterReferenceService;
@@ -26,7 +25,6 @@ public class DashboardController : Controller
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IUserService _userService;
     private readonly IToastNotification _toastNotification;
-    private readonly ITrackService _trackService;
     private readonly IExaminationService _examinationService;
 
 
@@ -34,7 +32,7 @@ public class DashboardController : Controller
         IUserService userService, ICharacterReferenceService characterReferenceService,
         IBackgroundCheckService backgroundCheckService, IEmailSendingService emailSendingService,
         IDashboardService dashboardService, UserManager<IdentityUser> userManager, IToastNotification toastNotification,
-        IApplicationService applicationService, ITrackService trackService,
+        IApplicationService applicationService,
         IExaminationService examinationService)
     {
         _applicantService = applicantService;
@@ -47,7 +45,6 @@ public class DashboardController : Controller
         _userManager = userManager;
         _toastNotification = toastNotification;
         _applicationService = applicationService;
-        _trackService = trackService;
         _examinationService = examinationService;
     }
 
@@ -60,13 +57,6 @@ public class DashboardController : Controller
         try
         {
             var dashboardViewModel = _dashboardService.GetDashboardViewModel();
-
-            if (dashboardViewModel.Deployed != null && dashboardViewModel.TotalApplications != null &&
-                dashboardViewModel.JobOpenings != null && dashboardViewModel.Onboarded != null)
-            {
-                _logger.Info("Job List is null or empty.");
-                return View(new DashboardViewModel());
-            }
 
             _logger.Trace("Job List is rendered successfully.");
             return View(dashboardViewModel);
