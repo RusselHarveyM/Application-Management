@@ -334,7 +334,7 @@ public class EmailSendingService : IEmailSendingService
                                  $"<br><br> If you are available on the said schedule, please click the Accept button. Otherwise, click the Reject button." +
                                  $"<br><br> If you reject, the interviewer will be informed, and a new schedule will be set for you." +
                                  $"<br><br> Please click the button below that corresponds to your choice:" +
-                                 $"<br><br> <a href=\"{acceptUrl}\">Accept</a> " +
+                                 $"<br><br> <a style=\"margin-right: 20px;\" href=\"{acceptUrl}\">Accept</a> " +
                                  $"<a href=\"{rejectUrl}\">Reject</a>" +
                                  $"<br><br> Best regards,");
 
