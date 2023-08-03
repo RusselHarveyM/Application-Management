@@ -173,7 +173,7 @@ public class DashboardController : Controller
         try
         {
             var application = _dashboardService.GetApplicationById(appId);
-            var user = _userManager.FindByEmailAsync(email).Result;
+            var user = _userManager.GetUserAsync(User).Result;
             var foundUser = _userService.GetByEmail(user.Email);
             
             _dashboardService.UpdateStatus(application, foundUser, status, "Approval");
