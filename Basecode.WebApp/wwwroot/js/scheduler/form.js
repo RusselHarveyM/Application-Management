@@ -20,7 +20,8 @@
         },
     });
 
-    document.getElementById('date').setAttribute('min', GetCurrentDate());
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById("date").setAttribute("min", today);
 });
 
 $('#jobOpeningDropdown').on('change', function () {
@@ -123,14 +124,6 @@ $('#selectedApplicants').on("click", ".remove-button", function (event) {
 function AddToDropdown(applicant) {
     var optionHtml = '<option value="' + applicant.Id + '">' + applicant.Firstname + " " + applicant.Lastname + '</option>';
     $('#applicantDropdown').append(optionHtml);
-}
-
-function getCurrentDate() {
-    var today = new Date();
-    var day = String(today.getDate()).padStart(2, '0');
-    var month = String(today.getMonth() + 1).padStart(2, '0');
-    var year = today.getFullYear();
-    return year + '-' + month + '-' + day;
 }
 
 $('#scheduleForm').submit(function (event) {
