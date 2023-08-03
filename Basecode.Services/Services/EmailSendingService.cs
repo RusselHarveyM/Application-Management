@@ -373,7 +373,14 @@ public class EmailSendingService : IEmailSendingService
     /// <returns>A task representing the asynchronous operation.</returns>
     public async Task SendRequestReference(CharacterReference reference, Applicant applicant, int userId)
     {
-        var url = $"https://localhost:50341/BackgroundCheck/Form/{reference.Id}/{userId}";
+        var sendRequestReferenceClaims = new Dictionary<string, string>
+        {
+            { "action", "RequestReference"},
+            { "characterReferenceId", reference.Id.ToString() },
+            { "userId", userId.ToString() }
+        };
+        var token = _tokenHelper.GenerateToken(sendRequestReferenceClaims);
+        var url = $"https://localhost:50100/BackgroundCheck/Form/{token}";
         var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
         var templateContent = File.ReadAllText(templatePath);
         var body = templateContent
@@ -499,9 +506,9 @@ public class EmailSendingService : IEmailSendingService
             .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
             .Replace("{{HEADLINE}}", "Forgot Password Link")
             .Replace("{{BODY}}", $"You have requested to change your password click this link below" +
-                                 $"<br><br><div style=\"display:flex; align-items:center; justify-content:center\"><a href=\"{callBackUrl}\" style=\"background-color: #FF0000;" +
+                                 $"<br><br><a href=\"{callBackUrl}\" style=\"background-color: #FF0000;" +
                                  $"border: none; color: white; padding: 10px 24px; text-align: center; text-decoration: underline; border-radius:5px;" +
-                                 $"font-size: 14px; margin: 4px 2px; cursor: pointer;\">CHANGE PASSWORD</a></div>");
+                                 $"font-size: 14px; margin: 4px 2px; cursor: pointer;\">CHANGE PASSWORD</a>");
 
         await _emailService.SendEmail(userEmail, "Alliance Software Inc. Forgot Password", body);
     }
