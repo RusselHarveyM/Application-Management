@@ -19,4 +19,7 @@ public interface IInterviewService
     /// <param name="status">The status.</param>
     /// <returns></returns>
     LogContent UpdateInterviewResult(Guid applicationId, string status, string choice);
+
+
+    Application CheckInterview(Application application, string status, string choice);
 }

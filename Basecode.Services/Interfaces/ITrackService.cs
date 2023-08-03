@@ -78,4 +78,8 @@ public interface ITrackService
     /// <param name="applicant">The applicant.</param>
     /// <returns></returns>
     Task SendBackgroundCheckNotification(BackgroundCheck reference, User user, Applicant applicant);
+
+
+    Application UpdateApplicationStatusByEmailResponseCurrentHires(Application application, User user,
+        string choice, string status);
 }

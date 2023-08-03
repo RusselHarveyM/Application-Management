@@ -77,4 +77,7 @@ public interface ICurrentHireService
     (LogContent, int) AddCurrentHires(CurrentHire currentHire);
 
     List<CurrentHire> GetShortListedCurrentHire(string stage);
+
+
+    int CurrentHireAcceptOffer(Dictionary<string, string> tokenClaims);
 }

@@ -15,15 +15,19 @@ public class CurrentHireService : ErrorHandling, ICurrentHireService
     private readonly ICurrentHireRepository _currentHireRepository;
     private readonly IUserScheduleRepository _userScheduleRepository;
     private readonly IScheduleSendingService _scheduleSendingService;
+    private readonly ITrackService _trackService;
+    private readonly IUserService _userService;
 
     public CurrentHireService(ICurrentHireRepository currentHireRepository, IUserScheduleRepository userScheduleRepository, IApplicantService applicantService, IApplicationService applicationService, 
-        IScheduleSendingService scheduleSendingService)
+        IScheduleSendingService scheduleSendingService, ITrackService trackService, IUserService userService)
     {
         _currentHireRepository = currentHireRepository;
         _userScheduleRepository = userScheduleRepository;
         _applicantService = applicantService;
         _applicationService = applicationService;
         _scheduleSendingService = scheduleSendingService;
+        _trackService = trackService;
+        _userService = userService;
     }
 
     /// <summary>
@@ -218,5 +222,49 @@ public class CurrentHireService : ErrorHandling, ICurrentHireService
             .Where(m => m.Status == stage)
             .ToList();
         return data;
+    }
+
+    public int CurrentHireAcceptOffer(Dictionary<string, string> tokenClaims)
+    {
+        if (tokenClaims.Count == 0)
+        {
+            _logger.Warn("Invalid or expired token.");
+            return -1;
+        }
+
+        var userId = int.Parse(tokenClaims["userId"]);
+        var appId = Guid.Parse(tokenClaims["appId"]);
+        var status = tokenClaims["newStatus"];
+        var choice = tokenClaims["choice"];
+
+        //Check if applicant and user exists
+        var application = _applicationService.GetApplicationById(appId);
+        var user = _userService.GetById(userId);
+
+        if (application != null && user != null)
+        {
+            var result = _trackService.UpdateApplicationStatusByEmailResponseCurrentHires(application, user, choice, status);
+            _applicationService.Update(result);
+            var userSchedule = _userScheduleRepository.GetApplicationByGuid(appId);
+            var applicant = _applicantService.GetApplicantByApplicationId(application.Id);
+            if (result.Status == "Undergoing Job Offer")
+            {
+                _scheduleSendingService.SendJobOfferEmailToApplicant(userSchedule);
+            }
+            else if (result.Status == "Confirmed")
+            {
+                AddCurrentHire(applicant, userSchedule.Id);
+            }
+            else if (result.Status == "Onboarding")
+            {
+                AddCurrentHire(applicant, userSchedule.Id);
+            }
+            else if (result.Status == "Deployed")
+            {
+                _scheduleSendingService.SendCongratulationEmailToApplicant(userSchedule);
+            }
+        }
+
+        return 1;
     }
 }
