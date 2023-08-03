@@ -784,20 +784,20 @@ public class EmailSendingService : IEmailSendingService
     }
     
 
-     public async Task SendCongratulationEmailToApplicant(User user, Applicant applicant, Guid appId, string newStatus)
+     public async Task SendCongratulationEmailToApplicant(string email, string fullName)
     {
         var templatePath = Path.Combine("wwwroot", "template", "DecisionEmail.html");
         var templateContent = File.ReadAllText(templatePath);
         var body = templateContent
             .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
             .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
-            .Replace("{{HEADLINE}}", "Approval Email")
-            .Replace("{{BODY}}", $"Dear Mr/Ms. {applicant.Lastname},<br>" +
-                $"<br> Congratulations. You're officially {newStatus} Mr/Ms. {applicant.Firstname} {applicant.Lastname}. <br>" +
+            .Replace("{{HEADLINE}}", "Deployment Notification")
+            .Replace("{{BODY}}", $"Dear Mr/Ms. {fullName},<br>" +
+                $"<br> Congratulations! You're officially deployed, Mr/Ms. {fullName}. <br>" +
                 $"<br> If you have any questions or need any further information about the company details, please do not hesitate to reach out to us. <br>" +
                 $"<br> Once again, congratulations. We truly appreciate your decision for choosing the alliance software inc." +
                 $"<br> Best regards, <br/>");
 
-        await _emailService.SendEmail(applicant.Email, "Alliance Software Inc. Job Offer", body);
+        await _emailService.SendEmail(email, "Alliance Software Inc. Deployment Notification", body);
     }
 }

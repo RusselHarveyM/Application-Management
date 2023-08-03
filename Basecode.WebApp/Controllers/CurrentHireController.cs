@@ -1,7 +1,5 @@
-﻿using Basecode.Data.Models;
-using Basecode.Services.Interfaces;
+﻿using Basecode.Services.Interfaces;
 using Basecode.Services.Services;
-using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
 using NToastNotify;
@@ -17,14 +15,10 @@ public class CurrentHireController : Controller
     private readonly IApplicationService _applicationService;
     private readonly IUserService _userService;
     private readonly IToastNotification _toastNotification;
-    private readonly IScheduleSendingService _scheduleSendingService;
-    private readonly IUserScheduleService _userScheduleService;
-    private readonly IApplicantService _applicantService;
 
     public CurrentHireController(ICurrentHireService currentHireService, IConfiguration config,
         ITrackService trackService, IApplicationService applicationService, IUserService userService,
-        IToastNotification toastNotification, IScheduleSendingService scheduleSendingService,
-        IUserScheduleService userScheduleService, IApplicantService applicantService)
+        IToastNotification toastNotification)
     {
         _currentHireService = currentHireService;
         _tokenHelper = new TokenHelper(config["TokenHelper:SecretKey"]);
@@ -32,9 +26,6 @@ public class CurrentHireController : Controller
         _applicationService = applicationService;
         _userService = userService;
         _toastNotification = toastNotification;
-        _scheduleSendingService = scheduleSendingService;
-        _userScheduleService = userScheduleService;
-        _applicantService = applicantService;
     }
 
     /// <summary>

@@ -9,4 +9,5 @@ public class ApplicantDirectoryViewModel
 
     public List<JobOpeningViewModel>? JobOpenings { get; set; }
     public List<ApplicantExamViewModel>? ApplicantExams { get; set; }
+    public ConfirmedViewModel? SignedApplicants { get; set; }
 }

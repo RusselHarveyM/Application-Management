@@ -226,13 +226,7 @@ public class ScheduleSendingService : IScheduleSendingService
 
     public void SendCongratulationEmailToApplicant(UserSchedule userSchedule)
     {
-        var user = _userService.GetById(userSchedule.UserId);
         var applicant = _applicantService.GetApplicantByApplicationId(userSchedule.ApplicationId);
-        var userTemp = _mapper.Map<User>(user);
-        var applicantTemp = _mapper.Map<Applicant>(applicant);
-        var newStatus = "Deployed";
-
-        _emailSendingService.SendCongratulationEmailToApplicant(userTemp, applicantTemp, userSchedule.ApplicationId, newStatus);
-
+        _emailSendingService.SendCongratulationEmailToApplicant(applicant.Email, $"{applicant.Firstname} {applicant.Lastname}");
     }
 }

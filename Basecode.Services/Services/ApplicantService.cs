@@ -4,6 +4,7 @@ using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
 using Hangfire;
+using Microsoft.EntityFrameworkCore;
 using static Basecode.Services.Services.ErrorHandling;
 
 namespace Basecode.Services.Services;
@@ -17,7 +18,7 @@ public class ApplicantService : IApplicantService
     private readonly IApplicantRepository _repository;
     private readonly ITrackService _trackService;
 
-    public ApplicantService(IApplicantRepository repository, IMapper mapper, ITrackService trackService, IJobOpeningService jobOpeningService, 
+    public ApplicantService(IApplicantRepository repository, IMapper mapper, ITrackService trackService, IJobOpeningService jobOpeningService,
         IApplicationService applicationService, IExaminationRepository examinationService)
     {
         _repository = repository;
@@ -187,7 +188,7 @@ public class ApplicantService : IApplicantService
 
     public List<ApplicantExamViewModel> GetApplicantsWithExamsByJobOpeningId(int jobOpeningId)
     {
-        var applicants = _repository.GetApplicantsByStatusAndJobOpeningId(jobOpeningId, "For Technical Exam");
+        var applicants = _repository.GetApplicantsByStatusAndJobOpeningId(jobOpeningId, "For Technical Exam").ToList();
         var viewModelList = new List<ApplicantExamViewModel>();
 
         foreach (var applicant in applicants)
@@ -208,5 +209,21 @@ public class ApplicantService : IApplicantService
         }
 
         return viewModelList;
+    }
+
+    public List<ConfirmedApplicantViewModel> GetConfirmedApplicants(int jobOpeningId, string status)
+    {
+        return _repository.GetApplicantsByStatusAndJobOpeningId(jobOpeningId, status)
+            .Include(applicant => applicant.Application)
+            .Include(applicant => applicant.Application.CurrentHire)
+            .Select(applicant => new ConfirmedApplicantViewModel
+            {
+                ApplicantId = applicant.Id,
+                ApplicationId = applicant.Application.Id,
+                CurrentHireId = applicant.Application.CurrentHire != null ? applicant.Application.CurrentHire.Id : (int?)null,
+                FullName = $"{applicant.Firstname} {applicant.Lastname}",
+                Requirements = applicant.Application.CurrentHire != null ? applicant.Application.CurrentHire.Status : null,
+                Status = applicant.Application.Status,
+            }).ToList();
     }
 }

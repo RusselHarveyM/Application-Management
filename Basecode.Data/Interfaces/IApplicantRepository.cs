@@ -66,5 +66,5 @@ public interface IApplicantRepository
     /// <param name="jobOpeningId">The job opening identifier.</param>
     /// <param name="status">The status.</param>
     /// <returns></returns>
-    List<Applicant> GetApplicantsByStatusAndJobOpeningId(int jobOpeningId, string status1, string status2 = "");
+    IQueryable<Applicant> GetApplicantsByStatusAndJobOpeningId(int jobOpeningId, string status);
 }

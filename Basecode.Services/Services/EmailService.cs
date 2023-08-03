@@ -21,11 +21,11 @@ public class EmailService : IEmailService
         {
             smtpClient.EnableSsl = true;
             smtpClient.UseDefaultCredentials = false;
-            smtpClient.Credentials = new NetworkCredential("hrautomatesystem@outlook.com", "alliance2023");
+            smtpClient.Credentials = new NetworkCredential("allianceg2backup@outlook.com", "alliance2023");
 
             using (var mailMessage = new MailMessage())
             {
-                mailMessage.From = new MailAddress("hrautomatesystem@outlook.com");
+                mailMessage.From = new MailAddress("allianceg2backup@outlook.com");
                 mailMessage.To.Add(recipient);
                 mailMessage.Subject = subject;
                 mailMessage.Body = body;
@@ -44,11 +44,11 @@ public class EmailService : IEmailService
         {
             smtpClient.EnableSsl = true;
             smtpClient.UseDefaultCredentials = false;
-            smtpClient.Credentials = new NetworkCredential("hrautomatesystem@outlook.com", "alliance2023");
+            smtpClient.Credentials = new NetworkCredential("allianceg2backup@outlook.com", "alliance2023");
 
             using (var mailMessage = new MailMessage())
             {
-                mailMessage.From = new MailAddress("hrautomatesystem@outlook.com");
+                mailMessage.From = new MailAddress("allianceg2backup@outlook.com");
                 mailMessage.To.Add(recipient);
                 mailMessage.Subject = subject;
                 mailMessage.Body = body;

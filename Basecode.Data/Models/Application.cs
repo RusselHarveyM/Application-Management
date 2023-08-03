@@ -15,4 +15,5 @@ public class Application
     public UserSchedule? UserSchedule { get; set; }
     public Examination? Examination { get; set; }
     public ICollection<Interview> Interviews { get; } = new List<Interview>();
+    public CurrentHire? CurrentHire { get; set; }
 }
