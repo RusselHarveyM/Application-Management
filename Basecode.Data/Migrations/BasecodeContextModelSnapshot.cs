@@ -145,9 +145,6 @@ namespace Basecode.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsSeen")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Lastname")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -177,8 +174,7 @@ namespace Basecode.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CharacterReferenceId")
-                        .IsUnique();
+                    b.HasIndex("CharacterReferenceId");
 
                     b.HasIndex("UserId");
 
@@ -284,12 +280,13 @@ namespace Basecode.Data.Migrations
                     b.Property<string>("TeamsLink")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UserId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationId");
+                    b.HasIndex("ApplicationId")
+                        .IsUnique();
 
                     b.HasIndex("UserId");
 
@@ -319,7 +316,7 @@ namespace Basecode.Data.Migrations
                     b.Property<string>("Type")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UserId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -763,8 +760,8 @@ namespace Basecode.Data.Migrations
             modelBuilder.Entity("Basecode.Data.Models.BackgroundCheck", b =>
                 {
                     b.HasOne("Basecode.Data.Models.CharacterReference", "CharacterReference")
-                        .WithOne("BackgroundCheck")
-                        .HasForeignKey("Basecode.Data.Models.BackgroundCheck", "CharacterReferenceId")
+                        .WithMany()
+                        .HasForeignKey("CharacterReferenceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -812,14 +809,16 @@ namespace Basecode.Data.Migrations
             modelBuilder.Entity("Basecode.Data.Models.Examination", b =>
                 {
                     b.HasOne("Basecode.Data.Models.Application", "Application")
-                        .WithMany()
-                        .HasForeignKey("ApplicationId")
+                        .WithOne("Examination")
+                        .HasForeignKey("Basecode.Data.Models.Examination", "ApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Basecode.Data.Models.User", "User")
                         .WithMany("Examination")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Application");
 
@@ -829,14 +828,16 @@ namespace Basecode.Data.Migrations
             modelBuilder.Entity("Basecode.Data.Models.Interview", b =>
                 {
                     b.HasOne("Basecode.Data.Models.Application", "Application")
-                        .WithMany()
+                        .WithMany("Interviews")
                         .HasForeignKey("ApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Basecode.Data.Models.User", "User")
                         .WithMany("Interview")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Application");
 
@@ -966,12 +967,11 @@ namespace Basecode.Data.Migrations
 
             modelBuilder.Entity("Basecode.Data.Models.Application", b =>
                 {
-                    b.Navigation("UserSchedule");
-                });
+                    b.Navigation("Examination");
 
-            modelBuilder.Entity("Basecode.Data.Models.CharacterReference", b =>
-                {
-                    b.Navigation("BackgroundCheck");
+                    b.Navigation("Interviews");
+
+                    b.Navigation("UserSchedule");
                 });
 
             modelBuilder.Entity("Basecode.Data.Models.JobOpening", b =>

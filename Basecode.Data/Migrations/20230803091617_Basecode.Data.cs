@@ -351,8 +351,7 @@ namespace Basecode.Data.Migrations
                     Q1 = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Q2 = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Q3 = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Q4 = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsSeen = table.Column<bool>(type: "bit", nullable: false)
+                    Q4 = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -434,7 +433,7 @@ namespace Basecode.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ApplicationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: true),
+                    UserId = table.Column<int>(type: "int", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: true),
                     TeamsLink = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Score = table.Column<int>(type: "int", nullable: true),
@@ -453,7 +452,8 @@ namespace Basecode.Data.Migrations
                         name: "FK_Examination_User_UserId",
                         column: x => x.UserId,
                         principalTable: "User",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -463,7 +463,7 @@ namespace Basecode.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ApplicationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: true),
+                    UserId = table.Column<int>(type: "int", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: true),
                     TeamsLink = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Type = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -482,7 +482,8 @@ namespace Basecode.Data.Migrations
                         name: "FK_Interview_User_UserId",
                         column: x => x.UserId,
                         principalTable: "User",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -567,8 +568,7 @@ namespace Basecode.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_BackgroundCheck_CharacterReferenceId",
                 table: "BackgroundCheck",
-                column: "CharacterReferenceId",
-                unique: true);
+                column: "CharacterReferenceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BackgroundCheck_UserId",
@@ -593,7 +593,8 @@ namespace Basecode.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Examination_ApplicationId",
                 table: "Examination",
-                column: "ApplicationId");
+                column: "ApplicationId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Examination_UserId",
