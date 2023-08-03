@@ -7,8 +7,6 @@
                 <th>ID</th>
                 <th>NAME</th>
                 <th>EXAM DATE</th>
-                <th>SCORE</th>
-                <th>RESULT</th>
                 <th></th>
             </tr>
             @if (Model.Count() > 0)
@@ -19,10 +17,8 @@
                         <td>@applicant.ApplicantId</td>
                         <td>@Html.Raw($"{applicant.Firstname} {applicant.Middlename} {applicant.Lastname}")</td>
                         <td>@applicant.ExaminationDate</td>
-                        <td>@applicant.Score</td>
-                        <td>@applicant.Result</td>
                         <td>
-                            <a class="btn btn-view" role="button" onclick="showInputScoreModal(@applicant.ExamId, @applicant.Score)">
+                            <a class="btn btn-view" role="button" onclick="showInputScoreModal(@applicant.ExamId, @applicant.ApplicantId)">
                                 <i class="fa-solid fa-pencil"></i>&nbsp;&nbsp;Input Score
                             </a>
                         </td>
@@ -33,7 +29,7 @@
             else
             {
                 <tr>
-                    <td colspan="6" class="text-center">No Applicants With Exams Found</td>
+                    <td colspan="6" class="text-center">No applicants with pending exam score were found.</td>
                 </tr>
             }
         </table>
@@ -42,37 +38,37 @@
 
 <div id="inputScoreModalContainer">
     <div class="modal fade" id="inputScoreModal" tabindex="-1" aria-labelledby="inputScoreModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-sm">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header mx-4 border-bottom border-2">
-                    <h1 class="modal-title fs-3" id="inputScoreModalLabel">Technical Exam Score</h1>
+                    <h3 class="modal-title fs-3" id="inputScoreModalLabel">Exam Score for Applicant [ <span id="applicantId"></span> ]</h3>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form asp-action="UpdateScore" id="inputScoreForm">
                     <input type="hidden" name="examinationId" id="examinationId" />
                     <div class="modal-body px-5 py-4">
-                        <div clas="row">
-                            <div class="col">
-                                <label>Applicant's Score</label>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <label class="form-label">Applicant's Score</label>
                                 <input class="form-control" type="number" id="applicantScore" name="applicantScore" required />
                                 <span class="text-danger" id="applicantScoreError"></span>
                             </div>
-                            <div class="col">
-                                <label>Perfect Score</label>
+                            <div class="col-md-6">
+                                <label class="form-label">Perfect Score</label>
                                 <input class="form-control" type="number" id="perfectScore" name="perfectScore" required />
                                 <span class="text-danger" id="perfectScoreError"></span>
                             </div>
-                            <div class="row">
-                                <div class="col">
-                                    <label>Score as percentage (rounded off)</label>
-                                    <input id="percentage" name="percentage" disabled />
-                                </div>
+                        </div>
+                        <div class="row justify-content-center mt-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Score in %</label>
+                                <input id="percentage" name="percentage" class="form-control" disabled />
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer justify-content-between border-0 mx-3 mb-3">
-                        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><i class="fa-regular fa-circle-xmark"></i> CANCEL</button>
-                        <button type="submit" class="btn btn-submit" id="submitScoreButton" disabled><i class="fa-solid fa-floppy-disk"></i> SAVE SCORE</button>
+                        <button type="button" class="btn" data-bs-dismiss="modal"><i class="fa-regular fa-circle-xmark"></i> CANCEL</button>
+                        <button type="submit" class="btn btn-view" id="submitScoreButton" disabled><i class="fa-solid fa-floppy-disk"></i> SAVE SCORE</button>
                     </div>
                 </form>
             </div>

@@ -55,13 +55,11 @@ public interface IApplicantService
     Task CheckAndSendApplicationStatus(Guid applicationId);
 
     /// <summary>
-    ///     Gets the applicants by the job opening id.
+    /// Gets the applicants by job opening identifier.
     /// </summary>
-    /// <param name="jobOpeningId">The job opening id.</param>
+    /// <param name="jobOpeningId">The job opening identifier.</param>
     /// <returns></returns>
-    List<ApplicantStatusViewModel> GetApplicantsByJobOpeningId(int jobOpeningId);
-
-    List<Applicant> GetApplicantsByJobOpeningIdApplicant(int jobOpeningId);
+    List<Applicant> GetApplicantsByJobOpeningId(int jobOpeningId);
 
     /// <summary>
     ///     Gets the applicants with rejected or no schedule.

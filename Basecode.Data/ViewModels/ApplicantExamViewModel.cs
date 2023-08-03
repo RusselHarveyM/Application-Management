@@ -8,7 +8,5 @@
         public string Lastname { get; set; }
         public int ExamId { get; set; }
         public DateTime? ExaminationDate { get; set; }
-        public int? Score { get; set; }
-        public string? Result { get; set; }
     }
 }

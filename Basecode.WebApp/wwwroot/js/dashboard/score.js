@@ -1,8 +1,9 @@
-﻿function showInputScoreModal(id, score) {
+﻿function showInputScoreModal(examId, applicantId) {
+    $("#applicantId").text(applicantId);
     $('#applicantScore').val('');
     $('#perfectScore').val('');
     $('#percentage').val('');
-    $('#examinationId').val(id);
+    $('#examinationId').val(examId);
     $("#inputScoreModal").modal("show");
 }
 
@@ -35,8 +36,8 @@ inputScoreModal.addEventListener('show.bs.modal', function () {
         var applicantScore = parseInt($applicantScoreInput.val());
         var perfectScore = parseInt($perfectScoreInput.val());
 
-        var isApplicantScoreValid = !isNaN(applicantScore) && applicantScore <= perfectScore;
-        var isPerfectScoreValid = !isNaN(perfectScore) && perfectScore >= applicantScore;
+        var isApplicantScoreValid = !isNaN(applicantScore) && applicantScore <= perfectScore && applicantScore >= 0;
+        var isPerfectScoreValid = !isNaN(perfectScore) && perfectScore >= applicantScore && perfectScore > 0;
 
         if (!isApplicantScoreValid || !isPerfectScoreValid) {
             // If applicantScore is greater than perfectScore or any input is empty

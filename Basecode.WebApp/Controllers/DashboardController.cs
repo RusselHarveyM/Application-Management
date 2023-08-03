@@ -79,19 +79,17 @@ public class DashboardController : Controller
     {
         try
         {
+            var users = _userService.GetAllUsersWithLinkStatus(id);
             var jobOpeningTitle = _jobOpeningService.GetJobOpeningTitleById(id);
             var jobOpening = new JobOpeningBasicViewModel
             {
                 Id = id,
                 Title = jobOpeningTitle
             };
-            var applicants = _applicantService.GetApplicantsByJobOpeningId(id);
-            var users = _userService.GetAllUsersWithLinkStatus(id);
 
             var viewModel = new AssignUsersViewModel
             {
                 JobOpening = jobOpening,
-                Applicants = applicants,
                 Users = users
             };
 
@@ -259,6 +257,12 @@ public class DashboardController : Controller
     {
         try
         {
+            if (percentage < 0)
+            {
+                _logger.Warn("Score percentage is invalid.");
+                return BadRequest();
+            }
+
             var data = _examinationService.UpdateExaminationScore(examinationId, percentage);
             if (!data.Result)
             {

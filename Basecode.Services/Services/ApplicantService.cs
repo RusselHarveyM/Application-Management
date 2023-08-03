@@ -126,24 +126,11 @@ public class ApplicantService : IApplicantService
     }
 
     /// <summary>
-    ///     Gets the applicants by the job opening id.
+    /// Gets the applicants by job opening identifier.
     /// </summary>
-    /// <param name="jobOpeningId">The job opening id.</param>
+    /// <param name="jobOpeningId">The job opening identifier.</param>
     /// <returns></returns>
-    public List<ApplicantStatusViewModel> GetApplicantsByJobOpeningId(int jobOpeningId)
-    {
-        return _repository.GetApplicantsByJobOpeningId(jobOpeningId)
-            .Select(applicant => new ApplicantStatusViewModel
-            {
-                Id = applicant.Id,
-                Firstname = applicant.Firstname,
-                Lastname = applicant.Lastname,
-                Status = applicant.Application.Status // Retrieve the Status from the related Application
-            })
-            .ToList();
-    }
-
-    public List<Applicant> GetApplicantsByJobOpeningIdApplicant(int jobOpeningId)
+    public List<Applicant> GetApplicantsByJobOpeningId(int jobOpeningId)
     {
         return _repository.GetApplicantsByJobOpeningId(jobOpeningId).ToList();
     }
@@ -216,8 +203,6 @@ public class ApplicantService : IApplicantService
                     Lastname = applicant.Lastname,
                     ExamId = examination.Id,
                     ExaminationDate = examination.Date,
-                    Score = examination.Score,
-                    Result = examination.Result,
                 });
             }
         }

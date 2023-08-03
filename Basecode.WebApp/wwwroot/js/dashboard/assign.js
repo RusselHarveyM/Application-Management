@@ -7,6 +7,7 @@
 
         // Initialize Select2 for the userDropdown
         $('#userDropdown').select2({
+            theme: "bootstrap-5",
             placeholder: "Search for users...",
             maximumInputLength: 50,
             dropdownParent: $("#assignUsersModal"),
@@ -56,7 +57,7 @@
         <td>${selectedUser.fullname}</td>
         <td>${selectedUser.email}</td>
         <td data-user-id="${selectedUser.aspId}">
-        <button class="remove-button"><i class="fa-solid fa-xmark"></i></button>
+        <button class="remove-button btn-close"></button>
         </td>
         `;
         $('#usersList').append(newRow);
