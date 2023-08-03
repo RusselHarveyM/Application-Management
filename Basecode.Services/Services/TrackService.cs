@@ -164,7 +164,7 @@ public class TrackService : ITrackService
         if (_interviewStatuses.Contains(status))
         {
             _interviewService.UpdateInterviewResult(application.Id, status, choice);
-            if (status == "For Technical Interview")
+            if (status == "For Technical Interview" && choice.Equals("approved"))
                 return application;
         }
 
@@ -182,7 +182,6 @@ public class TrackService : ITrackService
             newStatus = "Rejected";
         }
 
-        newStatus = "Rejected";
         //send automated email of regrets
         return UpdateApplicationStatus(application, user, newStatus, "Rejected");
     }
