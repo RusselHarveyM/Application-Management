@@ -232,7 +232,6 @@ public class DashboardController : Controller
         }
     }
 
-    [HttpPost]
     public async Task<IActionResult> JobOpeningsView(int jobId)
     {
         try

@@ -94,9 +94,10 @@ public class TrackerController : Controller
                 {
                     _applicationService.Update(result);
                     _toastNotification.AddSuccessToastMessage("Status Successfully Changed.");
+                    return RedirectToAction("Index", "Home");
                 }
             }
-
+            _toastNotification.AddWarningToastMessage("There seems to be a problem.");
             return RedirectToAction("Index", "Home");
         }
         catch (Exception e)

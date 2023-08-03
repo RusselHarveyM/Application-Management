@@ -67,11 +67,7 @@
                                     <td>1</td>
                                 }
                                 <td>
-                                    <form asp-controller="Dashboard" asp-action="JobOpeningsView" method="post">
-                                        <!-- Include the necessary input fields for your model properties here -->
-                                        <input type="hidden" name="jobId" value="@jobOpening.Id"/>
-                                        <button type="submit" class="btn" style="background-color: #EC2224; color: white;">View</button>
-                                    </form>
+                                    <a asp-controller="Dashboard" asp-action="JobOpeningsView" asp-route-jobId="@jobOpening.Id" class="btn" style="background-color: #EC2224; color: white;">View</a>
                                 </td>
 
                             </tr>
