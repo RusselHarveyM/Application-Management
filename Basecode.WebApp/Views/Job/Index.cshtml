@@ -95,7 +95,7 @@
 
     #searchJob {
         width: fit-content;
-        padding-right: 20px;
+        padding-right: 12px;
         border-right: solid 2px #F3F4F6FF;
     }
 
@@ -143,8 +143,8 @@
         <partial name="_LoginPartialJobIndex"/>
     </h1>
     <div class="searchFilter">
-        <div id="searchJob">
-            <input type="text" id="keywordInput" placeholder="Enter keywords" oninput="filterJobOpenings()">
+        <div class="d-flex flex-row gap-2" id="searchJob">
+            <input style="width: 230px;" type="text" id="keywordInput" placeholder="Enter keywords" oninput="filterJobOpenings()">
             <select name="tag" onchange="filterJobOpenings()">
                 <option value="">All Tags</option>
                 <option value="Technical">Technical</option>
@@ -154,17 +154,17 @@
                 <!-- Add more options for different tags as needed -->
             </select>
         </div>
-        <select name="location">
+        <select name="location" onchange="filterJobOpenings()">
             <option value="">All Locations</option>
-            <option value="location1">Location 1</option>
-            <option value="location2">Location 2</option>
-            <option value="location3">Location 3</option>
+            <option value="Cebu">Cebu</option>
+            <option value="Manila">Manila</option>
+            <option value="Tokyo">Tokyo</option>
         </select>
-        <select name="jobType">
+        <select name="jobType" onchange="filterJobOpenings()">
             <option value="">All Job Types</option>
-            <option value="type1">Type 1</option>
-            <option value="type2">Type 2</option>
-            <option value="type3">Type 3</option>
+            <option value="Full-time">Full-time</option>
+            <option value="Part-time">Part-time</option>
+            <option value="Contract">Contract</option>
         </select>
     </div>
 
@@ -184,7 +184,7 @@
                                 </div>
                                 <div class="card-header">
                                     <img src="~/images/home-icon.png" alt="Card Image" class="card-image-small">
-                                    <p class="card-text">Location: @jobOpening.Location</p>
+                                    <p class="card-text location-text">Location: @jobOpening.Location</p>
                                 </div>
                                 <div class="card-header">
                                     <img src="~/images/location-icon.png" alt="Card Image" class="card-image-small">
@@ -192,7 +192,7 @@
                                 </div>
                                 <div class="card-header">
                                     <img src="~/images/bookmark-icon.png" alt="Card Image" class="card-image-small">
-                                    <p class="card-text">Job Type: @jobOpening.EmploymentType</p>
+                                    <p class="card-text job-type-text">Job Type: @jobOpening.EmploymentType</p>
                                 </div>
                             </div>
                         </div>
@@ -211,30 +211,43 @@
 
 <script>
     function filterJobOpenings() {
-        var input, tagSelect, filter, selectedTag, cardContainer, cards, card, i, txtValue, jobTag;
+        var input, tagSelect, locationSelect, jobTypeSelect, filter, selectedTag, selectedLocation, selectedJobType, 
+            cardContainer, cards, card, i, txtValue, jobTag, jobLocation, jobType;
         input = document.getElementById("keywordInput");
         tagSelect = document.querySelector("select[name='tag']"); // Select the tag dropdown
+        locationSelect = document.querySelector("select[name='location']"); // Select the location dropdown
+        jobTypeSelect = document.querySelector("select[name='jobType']"); // Select the job type dropdown
         filter = input.value.toUpperCase();
         selectedTag = tagSelect.value.toUpperCase();
+        selectedLocation = locationSelect.value.toUpperCase();
+        selectedJobType = jobTypeSelect.value.toUpperCase();
         cardContainer = document.getElementById("cardContainer");
         cards = cardContainer.getElementsByClassName("col-sm-4");
 
         for (i = 0; i < cards.length; i++) {
             card = cards[i];
             txtValue = card.querySelector(".card-title").textContent;
-            jobTag = card.getAttribute("data-tag").toUpperCase(); // Get the tag of the job opening
+            jobTag = card.getAttribute("data-tag").toUpperCase(); // Get job opening tag
+            jobLocation = card.querySelector(".card-text.location-text").textContent.toUpperCase(); // Get job opening location
+            jobType = card.querySelector(".card-text.job-type-text").textContent.toUpperCase(); // Get job opening employment type
 
-            // Check if the tag matches the selected tag and keyword matches the job title
-            if ((selectedTag === "" || jobTag === selectedTag) && txtValue.toUpperCase().indexOf(filter) > -1) {
+            if (
+                (selectedTag === "" || jobTag === selectedTag) && 
+                txtValue.toUpperCase().indexOf(filter) > -1 &&
+                (selectedLocation === "" || jobLocation.indexOf(selectedLocation) > -1) &&
+                (selectedJobType === "" || jobType.indexOf(selectedJobType) > -1)
+            ) {
                 card.style.display = "";
             } else {
                 card.style.display = "none";
             }
         }
 
-        // Update the URL with the selected tag
+        // Update the URL with the selected tag, location, and job type
         var currentURL = new URL(window.location.href);
         currentURL.searchParams.set('tag', selectedTag.toLowerCase());
+        currentURL.searchParams.set('location', selectedLocation.toLowerCase());
+        currentURL.searchParams.set('jobType', selectedJobType.toLowerCase());
         window.history.replaceState({}, document.title, currentURL);
     }
 
