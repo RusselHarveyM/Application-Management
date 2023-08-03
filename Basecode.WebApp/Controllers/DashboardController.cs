@@ -59,16 +59,17 @@ public class DashboardController : Controller
     {
         try
         {
-            var jobs = _jobOpeningService.GetJobsWithApplicationsSorted();
+            var dashboardViewModel = _dashboardService.GetDashboardViewModel();
 
-            if (jobs.IsNullOrEmpty())
+            if (dashboardViewModel.Deployed != null && dashboardViewModel.TotalApplications != null &&
+                dashboardViewModel.JobOpenings != null && dashboardViewModel.Onboarded != null)
             {
                 _logger.Info("Job List is null or empty.");
-                return View(new List<JobOpeningViewModel>());
+                return View(new DashboardViewModel());
             }
 
             _logger.Trace("Job List is rendered successfully.");
-            return View(jobs);
+            return View(dashboardViewModel);
         }
         catch (Exception e)
         {
@@ -385,7 +386,9 @@ public class DashboardController : Controller
             var application = _applicationService.GetApplicationById(appId);
             _dashboardService.UpdateStatus(application, user, "Undergoing Background Check", "");
             _toastNotification.AddSuccessToastMessage("Successfully changed the status.");
-            BackgroundJob.Schedule(() => _dashboardService.SendListEmail(application.Applicant.Id, aspUser.Email, user.Fullname), TimeSpan.FromHours(48));
+            BackgroundJob.Schedule(
+                () => _dashboardService.SendListEmail(application.Applicant.Id, aspUser.Email, user.Fullname),
+                TimeSpan.FromHours(48));
             return RedirectToAction("DirectoryView");
         }
         catch (Exception e)

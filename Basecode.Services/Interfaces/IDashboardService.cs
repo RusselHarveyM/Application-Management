@@ -22,6 +22,13 @@ public interface IDashboardService
     /// <returns></returns>
     List<Application> GetShorlistedApplicatons(string type, int jobId);
 
+
+    /// <summary>
+    /// Get Dashboard View Model
+    /// </summary>
+    /// <returns></returns>
+    DashboardViewModel GetDashboardViewModel();
+
     /// <summary>
     /// Gets the directory view model for JobOpeningView view.
     /// </summary>

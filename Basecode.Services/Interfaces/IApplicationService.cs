@@ -16,6 +16,25 @@ public interface IApplicationService
     ApplicationViewModel GetById(Guid id);
 
     /// <summary>
+    /// Get Total Applications
+    /// </summary>
+    /// <returns></returns>
+    int GetTotalApplications();
+
+    /// <summary>
+    /// Get Total Deployed Applications
+    /// </summary>
+    /// <returns></returns>
+    int GetDeployed();
+
+
+    /// <summary>
+    /// Get Total Onboarded Applications
+    /// </summary>
+    /// <returns></returns>
+    int GetOnboarded();
+
+    /// <summary>
     ///     Gets the application by identifier.
     /// </summary>
     /// <param name="id">The identifier.</param>

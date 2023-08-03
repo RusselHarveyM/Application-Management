@@ -44,6 +44,24 @@ public class DashboardService : IDashboardService
         return _applicationService.GetShorlistedApplicatons(type, jobId);
     }
 
+
+    /// <summary>
+    /// Get Dashboard View Model
+    /// </summary>
+    /// <returns></returns>
+    public DashboardViewModel GetDashboardViewModel()
+    {
+        var dashboardview = new DashboardViewModel
+        {
+            JobOpenings = _jobOpeningService.GetJobsWithApplicationsSorted(),
+            Onboarded = _applicationService.GetOnboarded(),
+            Deployed = _applicationService.GetDeployed(),
+            TotalApplications = _applicationService.GetTotalApplications()
+        };
+
+        return dashboardview;
+    }
+
     /// <summary>
     ///     Gets the application by identifier.
     /// </summary>
