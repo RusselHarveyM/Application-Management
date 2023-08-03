@@ -27,20 +27,6 @@ public interface ICurrentHireService
     UserSchedule GetUserScheduleById(int userScheduleId);
 
     /// <summary>
-    ///     Reject offer and return current hire Status
-    /// </summary>
-    /// <param name="currentHireId"></param>
-    /// <returns></returns>
-    Task<LogContent> RejectOffer(int currentHireId);
-
-    /// <summary>
-    ///     Send reject notice to interviewer
-    /// </summary>
-    /// <param name="currentHire"></param>
-    /// <returns></returns>
-    Task SendRejectedHireNoticeToInterviewer(CurrentHire currentHire);
-
-    /// <summary>
     ///     update current hire
     /// </summary>
     /// <param name="currentHire"></param>
@@ -75,15 +61,6 @@ public interface ICurrentHireService
         List<int> successfullyAddedApplicantIds);
 
     /// <summary>
-    ///     Send offer to applicant
-    /// </summary>
-    /// <param name="currentHire"></param>
-    /// <param name="currentHireId"></param>
-    /// <param name="applicantId"></param>
-    /// <returns></returns>
-    Task SendHireToApplicant(CurrentHire currentHire, int currentHireId, int applicantId);
-
-    /// <summary>
     ///     Handle new hire
     /// </summary>
     /// <param name="currentHire"></param>
@@ -98,4 +75,6 @@ public interface ICurrentHireService
     /// <param name="currentHire"></param>
     /// <returns></returns>
     (LogContent, int) AddCurrentHires(CurrentHire currentHire);
+
+    List<CurrentHire> GetShortListedCurrentHire(string stage);
 }

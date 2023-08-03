@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using AutoMapper;
+using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
 using Basecode.Services.Interfaces;
 using Basecode.Services.Util;
@@ -15,8 +16,10 @@ public class TrackService : ITrackService
     private readonly IMapper _mapper;
     private readonly ResumeChecker _resumeChecker;
     private readonly List<string> _statuses;
+    private readonly IApplicantRepository _applicantsRepository;
     private readonly List<string> _interviewStatuses;
 
+    public TrackService(IEmailSendingService emailSendingService, ResumeChecker resumeChecker, IMapper mapper, IApplicantRepository applicantsRepository)
     public TrackService(IEmailSendingService emailSendingService, ResumeChecker resumeChecker, IMapper mapper, IInterviewService interviewService)
     {
         _emailSendingService = emailSendingService;
@@ -46,6 +49,7 @@ public class TrackService : ITrackService
             "For Technical Interview",
             "For Final Interview",
         };
+        _applicantsRepository = applicantsRepository;
     }
 
     /// <summary>
@@ -173,8 +177,11 @@ public class TrackService : ITrackService
                 var statusIndex = _statuses.IndexOf(status);
                 newStatus = _statuses[statusIndex + 1];
             }
-
             return UpdateApplicationStatus(application, user, newStatus, "Approval");
+        }
+        else if (choice.Equals("rejected"))
+        {
+            newStatus = "Rejected";
         }
 
         newStatus = "Rejected";

@@ -236,4 +236,9 @@ public class UserService : ErrorHandling, IUserService
     {
         return _repository.GetById(userId).Email;
     }
+
+    public List<User> GetAll()
+    {
+        return _repository.GetAll().ToList();
+    }
 }

@@ -239,4 +239,9 @@ public class UserRepository : BaseRepository, IUserRepository
     {
         return _context.User.Where(u => u.AspId == aspId).FirstOrDefault();
     }
+
+    public IQueryable<User> GetAll()
+    {
+        return GetDbSet<User>();
+    }
 }

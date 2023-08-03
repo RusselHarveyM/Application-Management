@@ -138,4 +138,101 @@ public class ScheduleSendingService : IScheduleSendingService
         var user = _userService.GetById(userSchedule.UserId);
         BackgroundJob.Schedule(() => _emailSendingService.SendExamScoreReminder(user.Email, user.Fullname, application), TimeSpan.FromHours(hoursLeft));
     }
+
+    public void SendDecisionEmailToInterviewer(UserSchedule userSchedule)
+    {
+        var user = _userService.GetById(userSchedule.UserId);
+        var applicant = _applicantService.GetApplicantByApplicationId(userSchedule.ApplicationId);
+        var userTemp = _mapper.Map<User>(user);
+        var applicantTemp = _mapper.Map<Applicant>(applicant);
+        var newStatus = "For Final Interview";
+        var hoursLeft = (int)(userSchedule.Schedule - DateTime.Now).TotalHours;
+        BackgroundJob.Schedule(
+            () => _emailSendingService.SendDecisionEmail(userTemp, applicantTemp, userSchedule.ApplicationId,
+                newStatus), TimeSpan.FromHours(hoursLeft));
+    }
+
+    
+
+    public void SendJobOfferEmailToApplicant(UserSchedule userSchedule)
+    {
+        var user = _userService.GetById(userSchedule.UserId);
+        var applicant = _applicantService.GetApplicantByApplicationId(userSchedule.ApplicationId);
+        var userTemp = _mapper.Map<User>(user);
+        var applicantTemp = _mapper.Map<Applicant>(applicant);
+        var newStatus = "Undergoing Job Offer";
+        BackgroundJob.Enqueue(() =>
+                        _emailSendingService.SendJobOfferEmail(userTemp, applicantTemp, userSchedule.ApplicationId, newStatus));
+    }
+    public void SendNotifyToDT(int applicantId)
+    {
+        var user = _userService.GetAll();
+        var applicant = _applicantService.GetApplicantById(applicantId);
+
+       
+
+        foreach (var per in user) 
+        { 
+            if(per.Role == "Deployment Team")
+            {
+                 _emailSendingService.SendNotifyToDT(applicant, per);
+            }
+        }
+    }
+    
+    public void ScheduleConfirmationEmailToDT(UserSchedule userSchedule)
+    {
+        var user = _userService.GetById(userSchedule.UserId);
+        var applicant = _applicantService.GetApplicantByApplicationId(userSchedule.ApplicationId);
+        var userTemp = _mapper.Map<User>(user);
+        var applicantTemp = _mapper.Map<Applicant>(applicant);
+        var newStatus = "Confirmed";
+
+        var getAllUser = _userService.GetAll();
+        // Calculate the confirmation deadline (2 days before onboarding)
+        DateTime onboardingDate = DateTime.UtcNow.AddHours(12);
+        DateTime notifyNextDay = DateTime.UtcNow.AddDays(1);
+
+        // Send the confirmation email to DT
+
+        foreach (var per in getAllUser)
+        {
+            if (per.Role == "Deployment Team")
+            {
+                // Schedule the confirmation email to be sent on the deadline date
+                BackgroundJob.Schedule(() => _emailSendingService.SendConfirmationEmailToDT(per, applicantTemp, userSchedule.ApplicationId, newStatus), onboardingDate);
+                BackgroundJob.Schedule(() => _emailSendingService.SendNotifyToDT(applicant, per), notifyNextDay);
+            }
+        }
+    }
+
+    public void SendDeploymentApprovalEmail(UserSchedule userSchedule)
+    {
+        var user = _userService.GetById(userSchedule.UserId);
+        var applicant = _applicantService.GetApplicantByApplicationId(userSchedule.ApplicationId);
+        var userTemp = _mapper.Map<User>(user);
+        var applicantTemp = _mapper.Map<Applicant>(applicant);
+        var newStatus = "Onboarding";
+        var getAllUser = _userService.GetAll();
+
+        foreach (var per in getAllUser)
+        {
+            if (per.Role == "Human Resources")
+            {
+                _emailSendingService.SendDeploymentApprovalEmail(per, applicantTemp, userSchedule.ApplicationId, newStatus);
+            }
+        }
+    }
+
+    public void SendCongratulationEmailToApplicant(UserSchedule userSchedule)
+    {
+        var user = _userService.GetById(userSchedule.UserId);
+        var applicant = _applicantService.GetApplicantByApplicationId(userSchedule.ApplicationId);
+        var userTemp = _mapper.Map<User>(user);
+        var applicantTemp = _mapper.Map<Applicant>(applicant);
+        var newStatus = "Deployed";
+
+        _emailSendingService.SendCongratulationEmailToApplicant(userTemp, applicantTemp, userSchedule.ApplicationId, newStatus);
+
+    }
 }

@@ -99,4 +99,6 @@ public interface IUserRepository
     /// <param name="aspId">The ASP identifier.</param>
     /// <returns></returns>
     User GetUserByAspId(string aspId);
+
+    IQueryable<User> GetAll();
 }

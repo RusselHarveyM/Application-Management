@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Web;
+using Azure.Core;
 using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
@@ -605,5 +606,191 @@ public class EmailSendingService : IEmailSendingService
                                  $"<br> {reference.Firstname} {reference.Lastname} has successfully answered the Character Reference Form for Applicant [{applicant.Id}] {applicant.Firstname} {applicant.Lastname}.");
 
         await _emailService.SendEmail(user.Email, "Alliance Software Inc. Background Check", body);
+    }
+
+    /// <summary>
+    ///     Sends the approval email.
+    /// </summary>
+    /// <param name="user">The user.</param>
+    /// <param name="applicant">The applicant.</param>
+    /// <param name="appId">The application identifier.</param>
+    /// <param name="newStatus">The new status.</param>
+    public async Task SendDecisionEmail(User user, Applicant applicant, Guid appId, string newStatus)
+    {
+        var approveTokenClaims = new Dictionary<string, string>
+        {
+            { "action", "AcceptOffer" },
+            { "userId", user.Id.ToString() },
+            { "appId", appId.ToString() },
+            { "newStatus", newStatus },
+            { "choice", "approved" }
+        };
+        var rejectTokenClaims = new Dictionary<string, string>
+        {
+            { "action", "RejectOffer" },
+            { "userId", user.Id.ToString() },
+            { "appId", appId.ToString() },
+            { "newStatus", "Failed" },
+            { "choice", "rejected" }
+
+        };
+        var approveToken = _tokenHelper.GenerateToken(approveTokenClaims);
+        var rejectToken = _tokenHelper.GenerateToken(rejectTokenClaims);
+
+        var baseUrl = "https://localhost:61952";
+        var acceptUrl = $"{baseUrl}/CurrentHire/AcceptOffer/{HttpUtility.UrlEncode(approveToken)}";
+        var rejectUrl = $"{baseUrl}/CurrentHire/RejectOffer/{HttpUtility.UrlEncode(rejectToken)}";
+
+        var templatePath = Path.Combine("wwwroot", "template", "DecisionEmail.html");
+        var templateContent = File.ReadAllText(templatePath);
+        var body = templateContent
+            .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+            .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+            .Replace("{{HEADLINE}}", "Approval Email")
+            .Replace("{{BODY}}",
+                $"Dear {user.Fullname},<br> Applicant [{applicant.Id}] is ready for {newStatus}, please provide your feedback to" +
+                $" proceed to the next phase. Thank you." +
+                $"<br> <a href=\"{acceptUrl}\">Hired</a> " +
+                $"<a href=\"{rejectUrl}\">Failed</a>");
+        await _emailService.SendEmail(user.Email, "Alliance Software Inc. Applicant Status Update", body);
+    }
+
+    /// <summary>
+    ///     Sends the approval email.
+    /// </summary>
+    /// <param name="user">The user.</param>
+    /// <param name="applicant">The applicant.</param>
+    /// <param name="appId">The application identifier.</param>
+    /// <param name="newStatus">The new status.</param>
+    public async Task SendJobOfferEmail(User user, Applicant applicant, Guid appId, string newStatus)
+    {
+        var approveTokenClaims = new Dictionary<string, string>
+        {
+            { "action", "AcceptOffer" },
+            { "userId", user.Id.ToString() },
+            { "appId", appId.ToString() },
+            { "newStatus", newStatus },
+            { "choice", "approved" }
+        };
+        var rejectTokenClaims = new Dictionary<string, string>
+        {
+            { "action", "RejectOffer" },
+            { "userId", user.Id.ToString() },
+            { "appId", appId.ToString() },
+            { "newStatus", "Failed" },
+            { "choice", "rejected" }
+
+        };
+        var approveToken = _tokenHelper.GenerateToken(approveTokenClaims);
+        var rejectToken = _tokenHelper.GenerateToken(rejectTokenClaims);
+
+        var baseUrl = "https://localhost:61952";
+        var acceptUrl = $"{baseUrl}/CurrentHire/AcceptOffer/{HttpUtility.UrlEncode(approveToken)}";
+        var rejectUrl = $"{baseUrl}/CurrentHire/RejectOffer/{HttpUtility.UrlEncode(rejectToken)}";
+
+        var templatePath = Path.Combine("wwwroot", "template", "DecisionEmail.html");
+        var templateContent = File.ReadAllText(templatePath);
+        var body = templateContent
+            .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+            .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+            .Replace("{{HEADLINE}}", "Approval Email")
+            .Replace("{{BODY}}", $"Dear Mr/Ms. {applicant.Lastname},<br>" +
+                $"<br> Congratulations. You're hired Mr/Ms. {applicant.Firstname} {applicant.Lastname}. <br>" +
+                $"<br> If you have any questions or need any further information about the company details, please do not hesitate to reach out to us. <br>" +
+                $"<br> Once again, congratulations. We truly appreciate your decision for choosing the alliance software inc." +
+                $"<br> Best regards, <br/>" +
+                $"<br> <a href=\"{acceptUrl}\">Signed</a> " +
+                $"<a href=\"{rejectUrl}\">Declined</a>");
+        await _emailService.SendEmail(applicant.Email, "Alliance Software Inc. Job Offer", body);
+    }
+
+    public async Task SendNotifyToDT(Applicant applicant, User user)
+    {
+        //Notify Interviewer for their Task
+        var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
+        var templateContent = File.ReadAllText(templatePath);
+        var body = templateContent
+            .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+            .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+            .Replace("{{HEADLINE}}", "Deployment Team")
+            .Replace("{{BODY}}", $"Dear {user.Username},<br>" +
+                                 $"<br> Please do check the requirements of the applicant with this unique id {applicant.Id} for onboarding.<br>" +
+                                 $"<br> Best regards<br>");
+
+        await _emailService.SendEmail(user.Email, "Alliance Software Inc. Deployment Team", body);
+    }
+
+    public async Task SendConfirmationEmailToDT(User user, Applicant applicant, Guid appId, string newStatus)
+    {
+        var approveTokenClaims = new Dictionary<string, string>
+        {
+            { "action", "AcceptOffer" },
+            { "userId", user.Id.ToString() },
+            { "appId", appId.ToString() },
+            { "newStatus", newStatus },
+            { "choice", "approved" }
+        };
+        var approveToken = _tokenHelper.GenerateTokenExpireAfterTwoDays(approveTokenClaims);
+
+        var baseUrl = "https://localhost:61952";
+        var acceptUrl = $"{baseUrl}/CurrentHire/AcceptOffer/{HttpUtility.UrlEncode(approveToken)}";
+
+        var templatePath = Path.Combine("wwwroot", "template", "DecisionEmail.html");
+        var templateContent = File.ReadAllText(templatePath);
+        var body = templateContent
+            .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+            .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+            .Replace("{{HEADLINE}}", "Approval Email")
+            .Replace("{{BODY}}", $"Dear Mr/Ms. {user.Username},<br>" +
+                $"<br> Please do comfirm the completion of the requirements of this applicant with this unique application ID {appId} together with the applicant id {applicant.Id} in order to {newStatus}. <br>" +
+                $"<br> Best regards, <br/>" +
+                $"<br> <a href=\"{acceptUrl}\">Confirm</a> ");
+        await _emailService.SendEmail(user.Email, "Alliance Software Inc. Job Offer", body);
+    }
+    public async Task SendDeploymentApprovalEmail(User user, Applicant applicant, Guid appId, string newStatus)
+    {
+        var approveTokenClaims = new Dictionary<string, string>
+        {
+            { "action", "AcceptOffer" },
+            { "userId", user.Id.ToString() },
+            { "appId", appId.ToString() },
+            { "newStatus", newStatus },
+            { "choice", "approved" }
+        };
+        var approveToken = _tokenHelper.GenerateToken(approveTokenClaims);
+
+        var baseUrl = "https://localhost:61952";
+        var acceptUrl = $"{baseUrl}/CurrentHire/AcceptOffer/{HttpUtility.UrlEncode(approveToken)}";
+
+        var templatePath = Path.Combine("wwwroot", "template", "DecisionEmail.html");
+        var templateContent = File.ReadAllText(templatePath);
+        var body = templateContent
+            .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+            .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+            .Replace("{{HEADLINE}}", "Approval Email")
+            .Replace("{{BODY}}", $"Dear Mr/Ms. {user.Username},<br>" +
+                $"<br> Please do confirm the deployment of the applicant with applicant Id {applicant.Id}<br>" +
+                $"<br> Best regards, <br/>" +
+                $"<br> <a href=\"{acceptUrl}\">Confirm</a> ");
+
+        await _emailService.SendEmail(user.Email, "Alliance Software Inc. Deployment", body);
+    }
+    
+
+     public async Task SendCongratulationEmailToApplicant(User user, Applicant applicant, Guid appId, string newStatus)
+    {
+        var templatePath = Path.Combine("wwwroot", "template", "DecisionEmail.html");
+        var templateContent = File.ReadAllText(templatePath);
+        var body = templateContent
+            .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+            .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+            .Replace("{{HEADLINE}}", "Approval Email")
+            .Replace("{{BODY}}", $"Dear Mr/Ms. {applicant.Lastname},<br>" +
+                $"<br> Congratulations. You're officially {newStatus} Mr/Ms. {applicant.Firstname} {applicant.Lastname}. <br>" +
+                $"<br> If you have any questions or need any further information about the company details, please do not hesitate to reach out to us. <br>" +
+                $"<br> Once again, congratulations. We truly appreciate your decision for choosing the alliance software inc." +
+                $"<br> Best regards, <br/>");
+
+        await _emailService.SendEmail(applicant.Email, "Alliance Software Inc. Job Offer", body);
     }
 }
