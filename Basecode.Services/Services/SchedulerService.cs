@@ -72,8 +72,9 @@ public class SchedulerService : ErrorHandling, ISchedulerService
 
             foreach (var userSchedule in newSchedules)
             {
-                _scheduleSendingService.SendScheduleToApplicant(userSchedule, userSchedule.Id, userSchedule.Type);
-                CheckScheduleStatusAfterTokenExpiry(userSchedule.Id, userSchedule.Schedule);
+                var tokenExpiry = CalculateTokenExpiry(userSchedule.Schedule);
+                _scheduleSendingService.SendScheduleToApplicant(userSchedule, userSchedule.Id, userSchedule.Type, tokenExpiry);
+                CheckScheduleStatusAfterTokenExpiry(userSchedule.Id, userSchedule.Schedule, tokenExpiry);
             }
 
             _scheduleSendingService.SendSchedulesToInterviewer(formData, userId);
@@ -210,8 +211,9 @@ public class SchedulerService : ErrorHandling, ISchedulerService
         {
             _logger.Trace("Successfully updated User Schedule [ " + existingId + " ]");
             userSchedule.Id = existingId;
-            _scheduleSendingService.SendScheduleToApplicant(userSchedule, existingId, userSchedule.Type, applicantId);
-            CheckScheduleStatusAfterTokenExpiry(userSchedule.Id, userSchedule.Schedule);
+            var tokenExpiry = CalculateTokenExpiry(userSchedule.Schedule);
+            _scheduleSendingService.SendScheduleToApplicant(userSchedule, existingId, userSchedule.Type, tokenExpiry, applicantId);
+            CheckScheduleStatusAfterTokenExpiry(userSchedule.Id, userSchedule.Schedule, tokenExpiry);
         }
     }
 
@@ -225,13 +227,36 @@ public class SchedulerService : ErrorHandling, ISchedulerService
         return newSchedules;
     }
 
-    private void CheckScheduleStatusAfterTokenExpiry(int userScheduleId, DateTime schedule)
+    /// <summary>
+    /// Checks the schedule status after token expiry.
+    /// </summary>
+    /// <param name="userScheduleId">The user schedule identifier.</param>
+    /// <param name="schedule">The schedule.</param>
+    private void CheckScheduleStatusAfterTokenExpiry(int userScheduleId, DateTime schedule, int tokenExpiry)
     {
-        // time difference between now and 12hrs before the schedule
-        var timeDifference = schedule.AddHours(-12) - DateTime.Now;
-        // number of hours left until token expires
-        var hoursLeft = (int)timeDifference.TotalHours;
+        BackgroundJob.Schedule(() => CheckScheduleStatus(userScheduleId), TimeSpan.FromHours(tokenExpiry));
+    }
 
-        BackgroundJob.Schedule(() => CheckScheduleStatus(userScheduleId), TimeSpan.FromHours(hoursLeft));
+    /// <summary>
+    /// Calculates the token expiry.
+    /// </summary>
+    /// <param name="schedule">The schedule.</param>
+    /// <returns></returns>
+    private int CalculateTokenExpiry(DateTime schedule)
+    {
+        var timeDifference = schedule - DateTime.Now;
+
+        // If the schedule is within 2 days (rush meeting), don't expire too quickly.
+        if (timeDifference.TotalDays <= 2)
+        {
+            return Math.Max(2, (int)timeDifference.TotalHours);
+        }
+        else
+        {
+            // For non-rush meetings, expire at most 12 hours before the schedule.
+            var expiryTime = schedule.AddHours(-12);
+            var hoursLeft = (int)(expiryTime - DateTime.Now).TotalHours;
+            return hoursLeft > 0 ? hoursLeft : 0;
+        }
     }
 }

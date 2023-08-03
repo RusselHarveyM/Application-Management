@@ -4,6 +4,7 @@ using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
+using Hangfire.Common;
 using Microsoft.Extensions.Configuration;
 
 namespace Basecode.Services.Services;
@@ -50,7 +51,7 @@ public class EmailSendingService : IEmailSendingService
     
     public async Task SendReferenceAnswers(User user, Applicant applicant, Guid appId, string newStatus, List<byte[]> pdfs)
     {
-        var approveTokenClaims = new Dictionary<string, string>
+        var tokenClaims = new Dictionary<string, string>
         {
             { "action", "ChangeStatus" },
             { "userId", user.Id.ToString() },
@@ -58,17 +59,10 @@ public class EmailSendingService : IEmailSendingService
             { "newStatus", newStatus },
             { "choice", "approved" }
         };
-        var rejectTokenClaims = new Dictionary<string, string>
-        {
-            { "action", "ChangeStatus" },
-            { "userId", user.Id.ToString() },
-            { "appId", appId.ToString() },
-            { "newStatus", newStatus },
-            { "choice", "rejected" }
-        };
-        
-        var approveToken = _tokenHelper.GenerateToken(approveTokenClaims);
-        var rejectToken = _tokenHelper.GenerateToken(rejectTokenClaims);
+        var approveToken = _tokenHelper.GenerateToken(tokenClaims);
+
+        tokenClaims["choice"] = "rejected";
+        var rejectToken = _tokenHelper.GenerateToken(tokenClaims);
         
         //Notify Interviewer for their Task
         var templatePath = Path.Combine("wwwroot", "template", "ApprovalEmail.html");
@@ -268,14 +262,24 @@ public class EmailSendingService : IEmailSendingService
     /// </summary>
     /// <param name="applicant">The applicant.</param>
     /// <param name="newStatus">The new status.</param>
-    public async Task SendRejectedEmail(Applicant applicant, string newStatus)
+    public async Task SendRejectedEmail(Applicant applicant, string oldStatus)
     {
-        var redirectLink = "https://localhost:50341/Home";
-        await _emailService.SendEmail(applicant.Email, "Applicant Status Update for Applicant",
-            $"<b>Dear {applicant.Firstname},</b> <br><br> Thank you for submitting your application. We have received it successfully and appreciate your interest in joining our team. <br><br> <b>Status:</b> {newStatus}. " +
-            $"<br><br> <em>This is an automated messsage. Do not reply</em> <br><br> <a href=\"{redirectLink}\" " +
-            $"style=\"background-color: #FF0000; border: none; color: white; padding: 10px 24px; text-align: center; text-decoration: underline; " +
-            $"display: inline-block; font-size: 14px; margin: 4px 2px; cursor: pointer;\">Visit Alliance</a>");
+        var status = string.Join(" ", oldStatus.Split(' ').Skip(1));    // Remove first word 
+
+        var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
+        var templateContent = File.ReadAllText(templatePath);
+        var body = templateContent
+            .Replace("{{HEADER_LINK}}", "https://zimmergren.net")
+            .Replace("{{HEADER_LINK_TEXT}}", "HR Automation System")
+            .Replace("{{HEADLINE}}", "Application Rejected")
+            .Replace("{{BODY}}", $"<br> Dear {applicant.Firstname} {applicant.Lastname}," +
+                                 $"<br><br> Thank you for your interest in joining Alliance Software Inc. After careful consideration, we regret to inform you that you have not progressed to the " +
+                                 $"next phase of the hiring process following the {status}." +
+                                 $"<br><br> We appreciate your effort and time invested in the application. While this phase didn't result in advancement, we encourage you to keep pursuing your career goals." +
+                                 $"<br><br> Feel free to explore future opportunities with us and reach out if you have questions or seek feedback." +
+                                 $"<br><br> Best regards,");
+
+        await _emailService.SendEmail(applicant.Email, "Alliance Software Inc. Application Status Update", body);
     }
 
     /// <summary>

@@ -51,13 +51,13 @@
                         @if (application.Status.Equals("Technical Shortlisted"))
                         {
                             <a class="btn btn-view" role="button" asp-action="CheckBackground" asp-route-appId="@application.Id">
-                                <i class="fa-solid fa-people-arrows"></i> Check
+                                <i class="fa-solid fa-magnifying-glass"></i>&nbsp;&nbsp;Check
                             </a>
                         }
                         else
                         {
                             <a class="btn btn-view" role="button" onclick="showShortlistViewModal('@application.ApplicantId')">
-                                <i class="fa-solid fa-people-arrows"></i> View
+                                <i class="fa-regular fa-eye"></i>&nbsp;&nbsp;View
                             </a>
                         }
                     </td>

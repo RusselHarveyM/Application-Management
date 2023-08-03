@@ -21,7 +21,7 @@ public interface ITrackService
     /// <param name="newStatus">The new status.</param>
     /// <param name="mailType">Type of the mail.</param>
     /// <returns></returns>
-    void UpdateTrackStatusEmail(Application application, User user, string newStatus, string mailType);
+    void UpdateTrackStatusEmail(Application application, User user, string newStatus, string mailType, string oldStatus = "");
 
     /// <summary>
     ///     Updates the application status.

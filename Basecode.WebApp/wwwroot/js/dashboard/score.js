@@ -90,6 +90,8 @@ inputScoreModal.addEventListener('show.bs.modal', function () {
 
     // When the modal is hidden
     inputScoreModal.addEventListener('hidden.bs.modal', function () {
+        $("#applicantScoreError").text("");
+        $("#perfectScoreError").text("");
         // Remove the input change listeners
         $applicantScoreInput.off('change', validatePerfectScore);
         $perfectScoreInput.off('change', validatePerfectScore);

@@ -35,11 +35,8 @@ public class ScheduleSendingService : IScheduleSendingService
     /// <param name="applicantId">The applicant identifier.</param>
     /// <param name="meetingType">Type of the meeting.</param>
     public void SendScheduleToApplicant(UserSchedule userSchedule, int userScheduleId, string meetingType,
-        int applicantId = -1)
+         int tokenExpiry, int applicantId = -1)
     {
-        var timeDifference = userSchedule.Schedule.AddHours(-12) - DateTime.Now;
-        var tokenExpiry = (int)timeDifference.TotalHours;
-
         var applicant = new Applicant();
         if (applicantId == -1) // existing schedule
             applicant = _applicantService.GetApplicantByApplicationId(userSchedule.ApplicationId);

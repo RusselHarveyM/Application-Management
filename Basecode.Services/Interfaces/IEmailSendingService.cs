@@ -61,7 +61,7 @@ public interface IEmailSendingService
     /// <param name="applicant">The applicant.</param>
     /// <param name="newStatus">The new status.</param>
     /// <returns></returns>
-    Task SendRejectedEmail(Applicant applicant, string newStatus);
+    Task SendRejectedEmail(Applicant applicant, string oldStatus);
 
     /// <summary>
     ///     Sends the regret email.
