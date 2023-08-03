@@ -117,13 +117,8 @@ public class SchedulerService : ErrorHandling, ISchedulerService
 
                 _scheduleSendingService.SendAcceptedScheduleToInterviewer(userSchedule, joinUrl);
                 _scheduleSendingService.SendAcceptedScheduleToApplicant(userSchedule, joinUrl);
-
-                _userScheduleService.DeleteUserSchedule(userSchedule);
-                if (userSchedule.Type == "For Final Interview")
-                {
-                    _scheduleSendingService.SendDecisionEmailToInterviewer(userSchedule);
-                }
             }
+
             var data = new LogContent();
             var scheduleType = userSchedule.Type.Split(' ').Skip(1).FirstOrDefault();   // Leave only last word (Interview/Exam)
 
@@ -154,7 +149,9 @@ public class SchedulerService : ErrorHandling, ISchedulerService
     {
         var hoursLeft = (int)(userSchedule.Schedule - DateTime.Now).TotalHours;
         // Send email on the hour of the schedule
-        if (scheduleType == "Interview")
+        if (scheduleType == "Interview" && userSchedule.Type == "Final Interview")
+            _scheduleSendingService.SendDecisionEmailToInterviewer(userSchedule);
+        else if (scheduleType == "Interview" && userSchedule.Type != "Final Interview")
             _scheduleSendingService.ScheduleApprovalEmail(userSchedule, hoursLeft);
         else
             _scheduleSendingService.ScheduleExamScoreReminderEmail(userSchedule, hoursLeft);
