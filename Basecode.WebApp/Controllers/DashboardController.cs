@@ -412,6 +412,13 @@ public class DashboardController : Controller
                     _logger.Trace($"Successfully updated application [ {application.Id} ].");
                 else
                     _logger.Error(ErrorHandling.SetLog(logContent));
+
+                if (status.Equals("Deployed"))
+                {
+                    var applicant = _applicantService.GetApplicantByApplicationId(applicationId);
+                    BackgroundJob.Enqueue(() => 
+                        _emailSendingService.SendCongratulationEmailToApplicant(applicant.Email, $"{applicant.Firstname} {applicant.Lastname}"));
+                }
             }
 
             _toastNotification.AddSuccessToastMessage("Successfully changed the status.");

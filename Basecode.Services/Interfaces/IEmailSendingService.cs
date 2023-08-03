@@ -153,5 +153,5 @@ public interface IEmailSendingService
     Task SendConfirmationEmailToDT(User user, Applicant applicant, Guid appId, string newStatus);
     Task SendDeploymentApprovalEmail(User user, Applicant applicant, Guid appId, string newStatus);
 
-    Task SendCongratulationEmailToApplicant(User user, Applicant applicant, Guid appId, string newStatus);
+    Task SendCongratulationEmailToApplicant(string email, string fullName);
 }
