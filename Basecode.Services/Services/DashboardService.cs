@@ -95,8 +95,10 @@ public class DashboardService : IDashboardService
         var shortlistedModel = new ShortListedViewModel();
         shortlistedModel.HRShortlisted = GetShorlistedApplicatons("HR Shortlisted", jobId);
         shortlistedModel.TechShortlisted = GetShorlistedApplicatons("Technical Shortlisted", jobId);
-        shortlistedModel.ConfirmedShortlisted = GetShortListedCurrentHire("Confirmed");
-        shortlistedModel.ToBeConfirmedShortlisted = GetShortListedCurrentHire("To Be Confirmed");
+
+        var confirmedViewModel = new ConfirmedViewModel();
+        confirmedViewModel.ConfirmedApplicants = _applicantService.GetConfirmedApplicants(jobId, "Confirmed");
+        confirmedViewModel.OnboardingApplicants = _applicantService.GetConfirmedApplicants(jobId, "Onboarding");
 
         var applicantExams = _applicantService.GetApplicantsWithExamsByJobOpeningId(jobId);
 
@@ -108,6 +110,7 @@ public class DashboardService : IDashboardService
                 Shortlists = shortlistedModel,
                 JobOpenings = jobs,
                 ApplicantExams = applicantExams,
+                SignedApplicants = confirmedViewModel,
             };
         else
             directoryViewModel = new ApplicantDirectoryViewModel
@@ -116,6 +119,7 @@ public class DashboardService : IDashboardService
                 Shortlists = shortlistedModel,
                 JobOpenings = jobs,
                 ApplicantExams = applicantExams,
+                SignedApplicants = confirmedViewModel,
             };
 
         return directoryViewModel;

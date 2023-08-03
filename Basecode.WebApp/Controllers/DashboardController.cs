@@ -26,6 +26,7 @@ public class DashboardController : Controller
     private readonly IUserService _userService;
     private readonly IToastNotification _toastNotification;
     private readonly IExaminationService _examinationService;
+    private readonly ITrackService _trackService;
 
 
     public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService,
@@ -33,7 +34,7 @@ public class DashboardController : Controller
         IBackgroundCheckService backgroundCheckService, IEmailSendingService emailSendingService,
         IDashboardService dashboardService, UserManager<IdentityUser> userManager, IToastNotification toastNotification,
         IApplicationService applicationService,
-        IExaminationService examinationService)
+        IExaminationService examinationService, ITrackService trackService)
     {
         _applicantService = applicantService;
         _jobOpeningService = jobOpeningService;
@@ -46,6 +47,7 @@ public class DashboardController : Controller
         _toastNotification = toastNotification;
         _applicationService = applicationService;
         _examinationService = examinationService;
+        _trackService = trackService;
     }
 
     /// <summary>
@@ -393,6 +395,33 @@ public class DashboardController : Controller
         }
     }
 
-    [HttpPost]
-    public IActionResult Update()
+    public IActionResult UpdateApplicationStatus(Guid applicationId, string status)
+    {
+        try
+        {
+            var user = _userManager.GetUserAsync(User).Result;
+            var foundUser = _userService.GetByEmail(user.Email);
+
+            var application = _applicationService.GetApplicationById(applicationId);
+            application = _trackService.UpdateApplicationStatus(application, foundUser, status, string.Empty);
+
+            if (application != null)
+            {
+                var logContent = _applicationService.Update(application);
+                if (!logContent.Result)
+                    _logger.Trace($"Successfully updated application [ {application.Id} ].");
+                else
+                    _logger.Error(ErrorHandling.SetLog(logContent));
+            }
+
+            _toastNotification.AddSuccessToastMessage("Successfully changed the status.");
+            return RedirectToAction("DirectoryView");
+        }
+        catch (Exception e)
+        {
+            _logger.Error(ErrorHandling.DefaultException(e.Message));
+            _toastNotification.AddErrorToastMessage(e.Message);
+            return RedirectToAction("DirectoryView");
+        }  
+    }
 }

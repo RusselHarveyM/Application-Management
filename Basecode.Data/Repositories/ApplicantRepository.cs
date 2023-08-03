@@ -91,18 +91,15 @@ public class ApplicantRepository : BaseRepository, IApplicantRepository
         return applicants;
     }
 
-    public List<Applicant> GetApplicantsByStatusAndJobOpeningId(int jobOpeningId, string status1, string status2 = "")
+    /// <summary>
+    /// Gets the applicants by status and job opening identifier.
+    /// </summary>
+    /// <param name="jobOpeningId">The job opening identifier.</param>
+    /// <param name="status">The status.</param>
+    /// <returns></returns>
+    public IQueryable<Applicant> GetApplicantsByStatusAndJobOpeningId(int jobOpeningId, string status)
     {
-        if (string.IsNullOrEmpty(status2))
-        {
-            return _context.Applicant
-                    .Where(applicant => applicant.Application.JobOpeningId == jobOpeningId && applicant.Application.Status == status1)
-                    .ToList();
-        }
-
         return _context.Applicant
-            .Where(applicant => applicant.Application.JobOpeningId == jobOpeningId && 
-                (applicant.Application.Status == status1 || applicant.Application.Status == status2))
-            .ToList();
+                .Where(applicant => applicant.Application.JobOpeningId == jobOpeningId && applicant.Application.Status == status);
     }
 }

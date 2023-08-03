@@ -90,4 +90,12 @@ public interface IApplicantService
     /// <param name="status">The status.</param>
     /// <returns></returns>
     List<ApplicantExamViewModel> GetApplicantsWithExamsByJobOpeningId(int jobOpeningId);
+
+    /// <summary>
+    /// Gets the confirmed applicants.
+    /// </summary>
+    /// <param name="jobOpeningId">The job opening identifier.</param>
+    /// <param name="status">The status.</param>
+    /// <returns></returns>
+    List<ConfirmedApplicantViewModel> GetConfirmedApplicants(int jobOpeningId, string status);
 }
