@@ -58,7 +58,7 @@ public class UserScheduleService : ErrorHandling, IUserScheduleService
     /// </summary>
     /// <param name="userScheduleId">The user schedule identifier.</param>
     /// <returns></returns>
-    public UserSchedule GetUserScheduleById(int userScheduleId)
+    public UserSchedule? GetUserScheduleById(int userScheduleId)
     {
         return _repository.GetUserScheduleById(userScheduleId);
     }

@@ -90,14 +90,17 @@ public class TrackerController : Controller
             if (application != null && user != null)
             {
                 var result = _trackService.UpdateApplicationStatusByEmailResponse(application, user, choice, status);
-                if (status != "For Technical Interview")    // Need to wait for the shortlisting process after the Technical Interview
+
+                // Wait for the shortlisting process if applicant passed the Technical Interview
+                if (!status.Equals("For Technical Interview") || (status.Equals("For Technical Interview") && choice.Equals("rejected")))    
                 {
                     _applicationService.Update(result);
                     _toastNotification.AddSuccessToastMessage("Status Successfully Changed.");
                     return RedirectToAction("Index", "Home");
                 }
             }
-            _toastNotification.AddWarningToastMessage("There seems to be a problem.");
+            else _toastNotification.AddWarningToastMessage("There seems to be a problem.");
+            
             return RedirectToAction("Index", "Home");
         }
         catch (Exception e)

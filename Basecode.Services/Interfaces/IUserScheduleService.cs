@@ -22,7 +22,7 @@ public interface IUserScheduleService
     /// </summary>
     /// <param name="userScheduleId">The user schedule identifier.</param>
     /// <returns></returns>
-    UserSchedule GetUserScheduleById(int userScheduleId);
+    UserSchedule? GetUserScheduleById(int userScheduleId);
 
     /// <summary>
     ///     Updates the schedule.
