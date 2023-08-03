@@ -1,0 +1,79 @@
+﻿@model List<Basecode.Data.ViewModels.ConfirmedApplicantViewModel>
+
+<style>
+    tbody, td, tfoot, th, thead, tr {
+        border-color: inherit;
+        border: none !important;
+    }
+
+    th {
+        line-height: 40px;
+        color: #565d6dff;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    tbody {
+        text-align: center;
+    }
+
+    .col {
+        flex: 1 0 0%;
+        border: 2px solid rgba(0, 0, 0, 0.03);
+        border-radius: 10px;
+    }
+</style>
+
+
+<div class="row">
+    <div class="col">
+        <table class="table table-striped text-center align-middle mt-2 overflow-hidden" style="border-radius: 10px;--bs-table-striped-bg: rgba(0, 0, 0, 0.03);">
+            <tr>
+                <th>APPLICANT ID</th>
+                <th>FULL NAME</th>
+                <th>REQUIREMENTS</th>
+                <th></th>
+            </tr>
+            @if (Model.Count() > 0)
+            {
+                @foreach (var applicant in Model)
+                {
+                    <tr>
+                        <td>@applicant.ApplicantId</td>
+                        <td>@applicant.FullName</td>
+                        <td>@applicant.Requirements</td>
+                        <td>
+                            @if (applicant.Status.Equals("Confirmed"))
+                            {
+                                <a class="btn btn-view" role="button" asp-action="UpdateApplicationStatus" asp-route-applicationId="@applicant.ApplicationId" asp-route-status="Onboarding">
+                                   <i class="fa-solid fa-person-walking-luggage"></i>&nbsp;&nbsp;Set as Onboarding
+                                </a>
+                            }
+                            else
+                            {
+                                @if (applicant.Requirements.Equals("To Be Confirmed"))
+                                {
+                                    <button class="btn btn-view" disabled>
+                                        <i class="fa-solid fa-handshake"></i>&nbsp;&nbsp;Deploy
+                                    </button>
+                                }
+                                else
+                                {
+                                    <a class="btn btn-view" role="button" asp-action="UpdateApplicationStatus" asp-route-applicationId="@applicant.ApplicationId" asp-route-status="Deployed">
+                                        <i class="fa-solid fa-handshake"></i>&nbsp;&nbsp;Deploy
+                                    </a>
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4" class="text-center">No applicants found.</td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
