@@ -16,5 +16,5 @@ public class CurrentHire
     public string Status { get; set; } = "hired";
 
     public User User { get; set; } = null!;
-    public Application Application { get; set; } = null!;
+    public Application? Application { get; set; }
 }
