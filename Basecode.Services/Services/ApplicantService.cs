@@ -216,8 +216,6 @@ public class ApplicantService : IApplicantService
                     Lastname = applicant.Lastname,
                     ExamId = examination.Id,
                     ExaminationDate = examination.Date,
-                    Score = examination.Score,
-                    Result = examination.Result,
                 });
             }
         }

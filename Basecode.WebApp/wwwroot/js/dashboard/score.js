@@ -1,4 +1,4 @@
-﻿function showInputScoreModal(id, score) {
+﻿function showInputScoreModal(id) {
     $('#applicantScore').val('');
     $('#perfectScore').val('');
     $('#percentage').val('');
