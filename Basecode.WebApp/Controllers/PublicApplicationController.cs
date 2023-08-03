@@ -10,7 +10,6 @@ public class PublicApplicationController : Controller
 {
     private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
     private readonly IApplicantService _applicantService;
-    private readonly IApplicationService _applicationService;
     private readonly IJobOpeningService _jobOpeningService;
 
     /// <summary>
@@ -18,14 +17,10 @@ public class PublicApplicationController : Controller
     /// </summary>
     /// <param name="applicantService">An instance of the applicant service.</param>
     /// <param name="jobOpeningService">An instance of the job opening service.</param>
-    /// <param name="characterReferenceService">An instance of the character reference service.</param>
-    /// <param name="applicationService">An instance of the application serice </param>
-    public PublicApplicationController(IApplicantService applicantService, IJobOpeningService jobOpeningService,
-        IApplicationService applicationService)
+    public PublicApplicationController(IApplicantService applicantService, IJobOpeningService jobOpeningService)
     {
         _applicantService = applicantService;
         _jobOpeningService = jobOpeningService;
-        _applicationService = applicationService;
     }
 
     /// <summary>
