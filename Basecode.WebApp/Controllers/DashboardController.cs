@@ -186,22 +186,6 @@ public class DashboardController : Controller
     }
 
     /// <summary>
-    ///     Downloads the file.
-    /// </summary>
-    /// <param name="id">The identifier.</param>
-    /// <returns></returns>
-    public IActionResult DownloadFile(int id)
-    {
-        var applicant = _applicantService.GetApplicantByIdAll(id);
-
-        if (applicant?.CV != null)
-            // Assuming the file is stored as a byte array named "FileData"
-            return File(applicant.CV, "application/octet-stream", "resume.pdf");
-
-        return NotFound();
-    }
-
-    /// <summary>
     ///     Retrieves the data needed to display the Applicant Directory view, which includes a list of applicants along with
     ///     their job titles,
     ///     and information about shortlisted applicants for HR and Technical positions.
