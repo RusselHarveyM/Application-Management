@@ -119,14 +119,11 @@ public class SchedulerService : ErrorHandling, ISchedulerService
                 _scheduleSendingService.SendAcceptedScheduleToApplicant(userSchedule, joinUrl);
 
                 _userScheduleService.DeleteUserSchedule(userSchedule);
-
-                
+                if (userSchedule.Type == "For Final Interview")
+                {
+                    _scheduleSendingService.SendDecisionEmailToInterviewer(userSchedule);
+                }
             }
-            if (userSchedule.Type == "HR Interview")
-            {
-                _scheduleSendingService.SendDecisionEmailToInterviewer(userSchedule);
-            }
-
             var data = new LogContent();
             var scheduleType = userSchedule.Type.Split(' ').Skip(1).FirstOrDefault();    // Remove "For " from string
 
