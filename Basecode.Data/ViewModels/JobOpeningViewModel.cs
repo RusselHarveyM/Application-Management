@@ -47,7 +47,7 @@ public class JobOpeningViewModel
     /// <summary>
     ///     Gets or sets the tag.
     /// </summary>
-    [Required(ErrorMessage = "The Tag us required.")]
+    [Required(ErrorMessage = "The tag is required.")]
     public string Tag { get; set; }
 
     /// <summary>

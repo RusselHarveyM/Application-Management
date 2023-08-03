@@ -20,4 +20,5 @@ public class BackgroundCheck
     public string? Q4 { get; set; }
     public CharacterReference CharacterReference { get; set; } = null!;
     public User User { get; set; }
+    
 }

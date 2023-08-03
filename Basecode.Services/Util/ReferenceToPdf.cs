@@ -1,4 +1,5 @@
-﻿using Basecode.Services.Interfaces;
+﻿using Basecode.Data.Models;
+using Basecode.Services.Interfaces;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 
@@ -7,30 +8,24 @@ namespace Basecode.Services.Util;
 public class ReferenceToPdf
 {
     private readonly ICharacterReferenceService _characterReferenceService;
-    
-    public ReferenceToPdf(ICharacterReferenceService characterReferenceService)
+    private readonly IBackgroundCheckService _backgroundCheckService;
+
+    public ReferenceToPdf(ICharacterReferenceService characterReferenceService,
+        IBackgroundCheckService backgroundCheckService)
     {
         _characterReferenceService = characterReferenceService;
+        _backgroundCheckService = backgroundCheckService;
     }
-    
-    public void ExportToPdf(int id, string filePath)
+
+    public byte[] ExportToPdf(BackgroundCheck backgroundCheck)
     {
-        // Get the data from the model
-        var characterReference = _characterReferenceService.GetCharacterReferenceById(id);
-
         // Create a new PDF document
-        var document = new Document();
-        var writer = PdfWriter.GetInstance(document, new FileStream(filePath, FileMode.Create));
-        document.Open();
-
-        // Add the character reference data to the PDF
-        document.Add(new Paragraph($"Name: {characterReference.Name}"));
-        document.Add(new Paragraph($"Address: {characterReference.Address}"));
-        document.Add(new Paragraph($"Email: {characterReference.Email}"));
-        document.Add(new Paragraph($"Applicant: {characterReference.Applicant.Firstname + " " + characterReference.Applicant.Middlename + " " + characterReference.Applicant.Lastname}"));
-        if (characterReference.BackgroundCheck != null)
+        using (var memoryStream = new MemoryStream())
         {
-            var backgroundCheck = characterReference.BackgroundCheck;
+            var document = new Document();
+            PdfWriter.GetInstance(document, memoryStream);
+            document.Open();
+
             document.Add(new Paragraph("Background Check:"));
             document.Add(new Paragraph($"Firstname: {backgroundCheck.Firstname}"));
             document.Add(new Paragraph($"Lastname: {backgroundCheck.Lastname}"));
@@ -42,24 +37,28 @@ public class ReferenceToPdf
             {
                 document.Add(new Paragraph($"Q1: {backgroundCheck.Q1}"));
             }
+
             if (!string.IsNullOrEmpty(backgroundCheck.Q2))
             {
                 document.Add(new Paragraph($"Q2: {backgroundCheck.Q2}"));
             }
+
             if (!string.IsNullOrEmpty(backgroundCheck.Q3))
             {
                 document.Add(new Paragraph($"Q3: {backgroundCheck.Q3}"));
             }
+
             if (!string.IsNullOrEmpty(backgroundCheck.Q4))
             {
                 document.Add(new Paragraph($"Q4: {backgroundCheck.Q4}"));
             }
+
+            // Close the PDF document
+            document.Close();
+
+            // Return the PDF as a byte[] array
+            return memoryStream.ToArray();
         }
-
-
-        // Close the PDF document
-        document.Close();
     }
 
-    
 }

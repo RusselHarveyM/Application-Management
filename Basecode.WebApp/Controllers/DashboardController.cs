@@ -2,6 +2,7 @@ using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
 using Basecode.Services.Services;
+using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -21,15 +22,20 @@ public class DashboardController : Controller
     private readonly IDashboardService _dashboardService;
     private readonly IEmailSendingService _emailSendingService;
     private readonly IJobOpeningService _jobOpeningService;
+    private readonly IApplicationService _applicationService;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IUserService _userService;
     private readonly IToastNotification _toastNotification;
+    private readonly ITrackService _trackService;
     private readonly IExaminationService _examinationService;
 
 
-    public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService, IUserService userService, 
-        ICharacterReferenceService characterReferenceService, IBackgroundCheckService backgroundCheckService, IEmailSendingService emailSendingService, 
-        IDashboardService dashboardService, UserManager<IdentityUser> userManager, IToastNotification toastNotification, IExaminationService examinationService)
+    public DashboardController(IApplicantService applicantService, IJobOpeningService jobOpeningService,
+        IUserService userService, ICharacterReferenceService characterReferenceService,
+        IBackgroundCheckService backgroundCheckService, IEmailSendingService emailSendingService,
+        IDashboardService dashboardService, UserManager<IdentityUser> userManager, IToastNotification toastNotification,
+        IApplicationService applicationService, ITrackService trackService,
+        IExaminationService examinationService)
     {
         _applicantService = applicantService;
         _jobOpeningService = jobOpeningService;
@@ -40,6 +46,8 @@ public class DashboardController : Controller
         _dashboardService = dashboardService;
         _userManager = userManager;
         _toastNotification = toastNotification;
+        _applicationService = applicationService;
+        _trackService = trackService;
         _examinationService = examinationService;
     }
 
@@ -58,6 +66,7 @@ public class DashboardController : Controller
                 _logger.Info("Job List is null or empty.");
                 return View(new List<JobOpeningViewModel>());
             }
+
             _logger.Trace("Job List is rendered successfully.");
             return View(jobs);
         }
@@ -176,7 +185,7 @@ public class DashboardController : Controller
         {
             var application = _dashboardService.GetApplicationById(appId);
             var foundUser = _userService.GetByEmail(email);
-            _dashboardService.UpdateStatus(application, foundUser, status);
+            _dashboardService.UpdateStatus(application, foundUser, status, "Approval");
             return RedirectToAction("DirectoryView");
         }
         catch (Exception e)
@@ -232,16 +241,11 @@ public class DashboardController : Controller
         }
     }
 
-    public async Task<IActionResult> JobOpeningsView(int? id)
+    [HttpPost]
+    public async Task<IActionResult> JobOpeningsView(int jobId)
     {
         try
         {
-            if (id == null || id == 0)
-            {
-                return NotFound();
-            }
-
-            int jobId = (int)id;
             var user = await _userManager.GetUserAsync(User);
             var directoryViewModel = _dashboardService.GetApplicantDirectoryViewModel(user.Email, jobId);
             if (directoryViewModel == null)
@@ -249,6 +253,7 @@ public class DashboardController : Controller
                 directoryViewModel = new ApplicantDirectoryViewModel();
                 _toastNotification.AddWarningToastMessage("Directory View Model is not found.");
             }
+
             return View(directoryViewModel);
         }
         catch (Exception e)
@@ -299,7 +304,9 @@ public class DashboardController : Controller
 
 
             foreach (var characterReference in characterReferences)
+            {
                 background.Add(_backgroundCheckService.GetBackgroundByCharacterRefId(characterReference.Id));
+            }
 
             var model = new ApplicantDetailsViewModel
             {
@@ -366,6 +373,26 @@ public class DashboardController : Controller
         {
             _logger.Error(ErrorHandling.DefaultException(e.Message));
             return StatusCode(500, "Something went wrong.");
+        }
+    }
+
+    public async Task<IActionResult> CheckBackground(Guid appId)
+    {
+        try
+        {
+            var aspUser = await _userManager.GetUserAsync(User);
+            var user = _userService.GetByEmail(aspUser.Email);
+            var application = _applicationService.GetApplicationById(appId);
+            _dashboardService.UpdateStatus(application, user, "Undergoing Background Check", "");
+            _toastNotification.AddSuccessToastMessage("Successfully changed the status.");
+            BackgroundJob.Schedule(() => _dashboardService.SendListEmail(application.Applicant.Id, aspUser.Email, user.Fullname), TimeSpan.FromHours(48));
+            return RedirectToAction("DirectoryView");
+        }
+        catch (Exception e)
+        {
+            _logger.Error(ErrorHandling.DefaultException(e.Message));
+            _toastNotification.AddErrorToastMessage(e.Message);
+            return RedirectToAction("DirectoryView");
         }
     }
 }

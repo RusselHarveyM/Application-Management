@@ -18,6 +18,12 @@ public interface IEmailSendingService
     Task SendInterviewNotification(string interviewerEmail, string intervierwerFullName, string interviewerUsername,
         string interviewerPassword, string jobPosition, string role);
 
+
+    Task SendReferenceListReminder(string email, string fullname,
+        List<CharacterReference> noReplyReferences, string role);
+    
+    Task SendReferenceAnswers(User user, Applicant applicant, Guid appId, string newStatus, List<byte[]> pdfs);
+
     /// <summary>
     ///     Sends automated reminders to users based on their roles and assigned tasks.
     ///     This asynchronous method will be executed periodically to remind users of their pending tasks.

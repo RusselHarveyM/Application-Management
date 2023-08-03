@@ -20,7 +20,7 @@
         }
     
     .col{
-        flex: 1 0 0%;
+        flex: 1 0 0;
         border: 2px solid rgba(0, 0, 0, 0.03);
         border-radius: 10px;
         }
@@ -48,9 +48,18 @@
                     <td>@application.Applicant.Firstname</td>
                     <td>@application.Applicant.Email</td>
                     <td>
-                        <a class="btn btn-view" role="button" onclick="showShortlistViewModal('@application.ApplicantId')">
-                            <i class="fa-solid fa-people-arrows"></i> View
-                        </a>
+                        @if (application.Status.Equals("Technical Shortlisted"))
+                        {
+                            <a class="btn btn-view" role="button" asp-action="CheckBackground" asp-route-appId="@application.Id">
+                                <i class="fa-solid fa-people-arrows"></i> Check
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-view" role="button" onclick="showShortlistViewModal('@application.ApplicantId')">
+                                <i class="fa-solid fa-people-arrows"></i> View
+                            </a>
+                        }
                     </td>
 
                 </tr>

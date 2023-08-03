@@ -1,6 +1,8 @@
 ﻿using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
+using Basecode.Services.Util;
+using Hangfire;
 
 namespace Basecode.Services.Services;
 
@@ -9,15 +11,27 @@ public class DashboardService : IDashboardService
     private readonly IApplicationService _applicationService;
     private readonly IApplicantService _applicantService;
     private readonly IJobOpeningService _jobOpeningService;
-
+    private readonly IUserService _userService;
+    private readonly ReferenceToPdf _referenceToPdf;
     private readonly ITrackService _trackService;
+    private readonly IBackgroundCheckService _backgroundCheckService;
+    private readonly ICharacterReferenceService _characterReferenceService;
+    private readonly IEmailSendingService _emailSendingService;
 
-    public DashboardService(ITrackService trackService, IApplicationService applicationService, IApplicantService applicantService, IJobOpeningService jobOpeningService)
+    public DashboardService(ITrackService trackService, IApplicationService applicationService,
+        IApplicantService applicantService, IJobOpeningService jobOpeningService, ReferenceToPdf referenceToPdf,
+        IBackgroundCheckService backgroundCheckService, IUserService userService,
+        ICharacterReferenceService characterReferenceService, IEmailSendingService emailSendingService)
     {
         _trackService = trackService;
         _applicationService = applicationService;
         _applicantService = applicantService;
         _jobOpeningService = jobOpeningService;
+        _referenceToPdf = referenceToPdf;
+        _backgroundCheckService = backgroundCheckService;
+        _userService = userService;
+        _characterReferenceService = characterReferenceService;
+        _emailSendingService = emailSendingService;
     }
 
     /// <summary>
@@ -79,8 +93,8 @@ public class DashboardService : IDashboardService
 
         return directoryViewModel;
     }
-    
-    
+
+
     /// <summary>
     /// Gets the directory view model for DirectoryView view.
     /// </summary>
@@ -98,7 +112,7 @@ public class DashboardService : IDashboardService
 
         foreach (var job in jobs) job.usersId = _jobOpeningService.GetLinkedUserIds(job.Id);
 
-        var applicantDirectoryViewModel = new ApplicantDirectoryViewModel();
+        ApplicantDirectoryViewModel applicantDirectoryViewModel;
         if (email == "Admin-2-alliance@5183ny.onmicrosoft.com")
         {
             applicantDirectoryViewModel = new ApplicantDirectoryViewModel
@@ -111,7 +125,7 @@ public class DashboardService : IDashboardService
         {
             var newJobs = new List<JobOpeningViewModel>();
             foreach (var job in jobs)
-                if (job.usersId.Contains(userAspId))
+                if (job.usersId != null && job.usersId.Contains(userAspId))
                     newJobs.Add(job);
             applicantDirectoryViewModel = new ApplicantDirectoryViewModel
             {
@@ -119,6 +133,7 @@ public class DashboardService : IDashboardService
                 JobOpenings = newJobs
             };
         }
+
         return applicantDirectoryViewModel;
     }
 
@@ -128,13 +143,65 @@ public class DashboardService : IDashboardService
     /// <param name="application">The application.</param>
     /// <param name="user">The user.</param>
     /// <param name="status">The status.</param>
-    public void UpdateStatus(Application application, User user, string status)
+    public void UpdateStatus(Application application, User user, string status, string mailType)
     {
         var result = _trackService.UpdateApplicationStatus(application, user, status, null);
         if (result != null)
         {
             _applicationService.Update(result);
-            _trackService.UpdateTrackStatusEmail(application, user, status, "Approval");
+            _trackService.UpdateTrackStatusEmail(application, user, status, mailType);
         }
+    }
+
+    public void SendListEmail(int appId, string email, string name)
+    {
+        var references = _characterReferenceService.GetReferencesByApplicantId(appId);
+        var noReplyReferences = new List<CharacterReference>();
+        foreach (var reference in references)
+        {
+            var backgroundCheck = _backgroundCheckService.GetBackgroundByCharacterRefId(reference.Id);
+            if (backgroundCheck == null)
+            {
+                noReplyReferences.Add(reference);
+            }
+        }
+
+        if (noReplyReferences.Count > 0)
+        {
+            BackgroundJob.Enqueue(() =>
+                _emailSendingService.SendReferenceListReminder(email, name, noReplyReferences,
+                    "A list of References who did not answer."));
+            BackgroundJob.Schedule(() => ExportReferenceToPdf(email, name, appId), TimeSpan.FromHours(12));
+        }
+        else
+        {
+            BackgroundJob.Enqueue(() => ExportReferenceToPdf(email, name, appId));
+        }
+    }
+
+    /// <summary>
+    /// Exports references' answers to pdf
+    /// </summary>
+    /// <param name="appId"></param>
+    public void ExportReferenceToPdf(string email, string name, int appId)
+    {
+        var pdfs = new List<byte[]>();
+        var references = _characterReferenceService.GetReferencesByApplicantId(appId);
+        foreach (var reference in references)
+        {
+            var backgroundCheck = _backgroundCheckService.GetBackgroundByCharacterRefId(reference.Id);
+            if (backgroundCheck != null)
+            {
+                byte[] pdf = _referenceToPdf.ExportToPdf(backgroundCheck);
+                pdfs.Add(pdf);
+            }
+        }
+
+        var user = _userService.GetByEmail(email);
+        var applicant = _applicantService.GetApplicantById(appId);
+        var application = _applicationService.GetApplicationByApplicantId(applicant.Id);
+
+        _emailSendingService.SendReferenceAnswers(user, applicant, application.Id,
+            "Undergoing Background Check", pdfs);
     }
 }

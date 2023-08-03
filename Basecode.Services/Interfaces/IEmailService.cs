@@ -10,4 +10,6 @@ public interface IEmailService
     /// <param name="body">The body.</param>
     /// <returns></returns>
     Task SendEmail(string recipient, string subject, string body);
+
+    Task SendEmailWithAttachments(string recipient, string subject, string body, List<byte[]> pdfs);
 }
