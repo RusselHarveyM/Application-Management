@@ -246,14 +246,8 @@ public class DashboardController : Controller
     {
         try
         {
-            if (jobId == null || jobId == 0)
-            {
-                return NotFound();
-            }
-
-            int newJobId = (int)jobId;
             var user = await _userManager.GetUserAsync(User);
-            var directoryViewModel = _dashboardService.GetApplicantDirectoryViewModel(user.Email, newJobId);
+            var directoryViewModel = _dashboardService.GetApplicantDirectoryViewModel(user.Email, jobId);
             if (directoryViewModel == null)
             {
                 directoryViewModel = new ApplicantDirectoryViewModel();
