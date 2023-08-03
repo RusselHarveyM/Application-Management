@@ -50,7 +50,7 @@ public class EmailSendingService : IEmailSendingService
     
     public async Task SendReferenceAnswers(User user, Applicant applicant, Guid appId, string newStatus, List<byte[]> pdfs)
     {
-        var approveTokenClaims = new Dictionary<string, string>
+        var tokenClaims = new Dictionary<string, string>
         {
             { "action", "ChangeStatus" },
             { "userId", user.Id.ToString() },
@@ -58,17 +58,10 @@ public class EmailSendingService : IEmailSendingService
             { "newStatus", newStatus },
             { "choice", "approved" }
         };
-        var rejectTokenClaims = new Dictionary<string, string>
-        {
-            { "action", "ChangeStatus" },
-            { "userId", user.Id.ToString() },
-            { "appId", appId.ToString() },
-            { "newStatus", newStatus },
-            { "choice", "rejected" }
-        };
-        
-        var approveToken = _tokenHelper.GenerateToken(approveTokenClaims);
-        var rejectToken = _tokenHelper.GenerateToken(rejectTokenClaims);
+        var approveToken = _tokenHelper.GenerateToken(tokenClaims);
+
+        tokenClaims["choice"] = "rejected";
+        var rejectToken = _tokenHelper.GenerateToken(tokenClaims);
         
         //Notify Interviewer for their Task
         var templatePath = Path.Combine("wwwroot", "template", "ApprovalEmail.html");
