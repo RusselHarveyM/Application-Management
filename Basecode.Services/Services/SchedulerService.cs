@@ -90,7 +90,7 @@ public class SchedulerService : ErrorHandling, ISchedulerService
     public void CheckScheduleStatus(int userScheduleId)
     {
         var userSchedule = _userScheduleService.GetUserScheduleById(userScheduleId);
-        if (userSchedule.Status == "pending")
+        if (userSchedule != null && userSchedule.Status == "pending")
         {
             var logContent = RejectSchedule(userScheduleId);
             if (!logContent.Result)

@@ -38,7 +38,7 @@ public class UserScheduleRepository : BaseRepository, IUserScheduleRepository
     /// </summary>
     /// <param name="userScheduleId">The user schedule identifier.</param>
     /// <returns></returns>
-    public UserSchedule GetUserScheduleById(int userScheduleId)
+    public UserSchedule? GetUserScheduleById(int userScheduleId)
     {
         return _context.UserSchedule.Find(userScheduleId);
     }
