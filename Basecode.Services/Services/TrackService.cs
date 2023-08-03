@@ -82,7 +82,7 @@ public class TrackService : ITrackService
     /// <param name="user">The user.</param>
     /// <param name="newStatus">The new status.</param>
     /// <param name="mailType">Type of the mail.</param>
-    public void UpdateTrackStatusEmail(Application application, User user, string newStatus, string mailType)
+    public void UpdateTrackStatusEmail(Application application, User user, string newStatus, string mailType, string oldStatus = "")
     {
         if (application.Applicant.Id >= 0 && user.Id >= -1 && !mailType.IsNullOrEmpty())
         {
@@ -99,7 +99,7 @@ public class TrackService : ITrackService
                         _emailSendingService.SendApprovalEmail(user, applicantTemp, application.Id, newStatus));
                     break;
                 case "Rejected":
-                    BackgroundJob.Enqueue(() => _emailSendingService.SendRejectedEmail(applicantTemp, newStatus));
+                    BackgroundJob.Enqueue(() => _emailSendingService.SendRejectedEmail(applicantTemp, oldStatus));
                     break;
                 case "Regret":
                     RegretNotification(application.Applicant, application.JobOpening.Title);
@@ -121,6 +121,10 @@ public class TrackService : ITrackService
     {
         try
         {
+            var oldStatus = string.Empty;
+            if (newStatus == "Rejected")
+                oldStatus = application.Status;
+
             application.UpdateTime = DateTime.Now;
             application.JobOpening.UpdatedTime = DateTime.Now;
             application.Status = newStatus;
@@ -131,7 +135,7 @@ public class TrackService : ITrackService
             // or if mailType is not "Approval" and mailType is not null/empty
             if ((newStatus == "For HR Screening" && mailType == "Approval") || (mailType != "Approval" && !string.IsNullOrEmpty(mailType)))
             {
-                UpdateTrackStatusEmail(application, user, newStatus, mailType);
+                UpdateTrackStatusEmail(application, user, newStatus, mailType, oldStatus);
             }
                 
             return application;
@@ -173,6 +177,7 @@ public class TrackService : ITrackService
             return UpdateApplicationStatus(application, user, newStatus, "Approval");
         }
 
+        newStatus = "Rejected";
         //send automated email of regrets
         return UpdateApplicationStatus(application, user, newStatus, "Rejected");
     }
