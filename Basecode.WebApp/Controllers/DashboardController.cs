@@ -392,4 +392,7 @@ public class DashboardController : Controller
             return RedirectToAction("DirectoryView");
         }
     }
+
+    [HttpPost]
+    public IActionResult Update()
 }
