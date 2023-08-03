@@ -4,7 +4,7 @@
 }
 
 <!--Search Feature-->
-<div style="margin-top: 3rem;" class="text-center">
+<div style="margin-top: 5rem;" class="text-center">
     <div style="font-weight: 600" class="display-5">
         Ready to join the <span class="text-danger">Alliance</span> team?
     </div>
@@ -143,12 +143,12 @@
 </div>
 
 <!--Latest Job text-->
-<div style="padding-top: 100px;" class="container">
+<div style="padding-top: 80px;" class="container">
     <div class="row">
         <div style="font-weight: 600" class="col-12 display-5 text-danger text-center">
             Latest Jobs
         </div>
-        <p style="color: gray;" class="text-center">
+        <p style="color: gray;" class="text-center mb-0">
             Exercitation dolore reprehenderit fugi
         </p>
     </div>
@@ -158,11 +158,11 @@
 @if (Model.Count > 0)
 {
     <div class="jobContainer" id="cardContainer">
-        <div class="row col-12 mt-4">
+        <div class="row col-12 mt-0">
             @foreach (var jobOpening in Model)
             {
-                <div class="mt-4 col-lg-4 col-md-4 col-sm-4 col">
-                    <div class="card mb-4 cardForJobs">
+                <div class="mt-0 col-lg-4 col-md-4 col-sm-4 col">
+                    <div class="card mb-2 cardForJobs">
                         <div class="card-body">
                             <div class="card-header">
                                 <img src="~/images/job-icon-dummy.png" alt="Card Image" class="card-image">
@@ -172,15 +172,15 @@
                             </div>
                             <div class="card-header">
                                 <img src="~/images/home-icon.png" alt="Card Image" class="card-image-small">
-                                <p class="card-text">Pariator</p>
-                            </div>
-                            <div class="card-header">
-                                <img src="~/images/location-icon.png" alt="Card Image" class="card-image-small">
                                 <p class="card-text">@jobOpening.Location</p>
                             </div>
                             <div class="card-header">
-                                <img src="~/images/bookmark-icon.png" alt="Card Image" class="card-image-small">
+                                <img src="~/images/location-icon.png" alt="Card Image" class="card-image-small">
                                 <p class="card-text">@jobOpening.WorkSetup</p>
+                            </div>
+                            <div class="card-header">
+                                <img src="~/images/bookmark-icon.png" alt="Card Image" class="card-image-small">
+                                <p class="card-text">@jobOpening.EmploymentType</p>
                             </div>
                         </div>
                     </div>
