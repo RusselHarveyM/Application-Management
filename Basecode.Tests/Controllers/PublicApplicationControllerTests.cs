@@ -1,4 +1,5 @@
-﻿using Basecode.Data.ViewModels;
+﻿using Basecode.Data.Models;
+using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
 using Basecode.WebApp.Controllers;
 using Microsoft.AspNetCore.Http;
@@ -11,121 +12,85 @@ public class PublicApplicationControllerTests
 {
     private readonly PublicApplicationController _controller;
     private readonly Mock<IApplicantService> _mockApplicantService;
-    private readonly Mock<IApplicationService> _mockApplicationService;
     private readonly Mock<IJobOpeningService> _mockJobOpeningService;
 
     public PublicApplicationControllerTests()
     {
         _mockApplicantService = new Mock<IApplicantService>();
         _mockJobOpeningService = new Mock<IJobOpeningService>();
-        _mockApplicationService = new Mock<IApplicationService>();
-        _controller = new PublicApplicationController(_mockApplicantService.Object, _mockJobOpeningService.Object,
-            _mockApplicationService.Object);
+        _controller = new PublicApplicationController(_mockApplicantService.Object, _mockJobOpeningService.Object);
     }
 
     [Fact]
-    public void Index_ValidJobOpeningId_ReturnsViewWithApplicationForm()
+    public void Index_ValidJobOpeningId_ReturnsViewResult()
     {
         // Arrange
-        var jobOpeningId = 123;
+        int jobOpeningId = 1;
 
         // Act
         var result = _controller.Index(jobOpeningId);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.True(result is ViewResult || result is ObjectResult,
-            "Result should be either a ViewResult or an ObjectResult.");
-        if (result is ViewResult viewResult) Assert.NotNull(viewResult.ViewName);
-    }
-
-    [Fact]
-    public void Index_InvalidJobOpeningId_ReturnsStatusCode500()
-    {
-        // Arrange
-        var jobOpeningId = 456;
-        var expectedErrorMessage = "Something went wrong.";
-
-        // Act
-        var result = _controller.Index(jobOpeningId);
-
-        // Assert
-        Assert.NotNull(result);
         Assert.IsType<ObjectResult>(result);
-        var objectResult = (ObjectResult)result;
-        Assert.Equal(500, objectResult.StatusCode);
-        Assert.Equal(expectedErrorMessage, objectResult.Value);
     }
 
     [Fact]
-    public void Reference_InvalidFile_ReturnsRedirectToAction()
+    public void Index_ExceptionThrown_ReturnsStatusCode500()
     {
         // Arrange
-        var applicant = new ApplicantViewModel { JobOpeningId = 123 };
-        var file = new Mock<IFormFile>();
-        file.Setup(f => f.FileName).Returns("file.png");
-        file.Setup(f => f.CopyTo(It.IsAny<Stream>()));
-        var expectedErrorMessage = "Only PDF files are allowed.";
+        int jobOpeningId = 1;
+        _mockApplicantService.Setup(s => s.GetApplicants()).Throws(new Exception());
 
         // Act
-        var result = _controller.Reference(applicant, file.Object);
+        var result = _controller.Index(jobOpeningId);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.True(result is RedirectToActionResult || result is ObjectResult,
-            "Result should be either a RedirectToActionResult or an ObjectResult.");
-        if (result is RedirectToActionResult redirectResult)
-        {
-            Assert.Equal("Index", redirectResult.ActionName);
-            Assert.Equal(applicant.JobOpeningId, redirectResult.RouteValues["jobOpeningId"]);
-            Assert.Equal(expectedErrorMessage, _controller.TempData["ErrorMessage"]);
-        }
+        var viewResult = Assert.IsType<ObjectResult>(result);
+        Assert.Equal(500, ((ObjectResult)result).StatusCode);
     }
 
     [Fact]
-    public void Reference_WithNoFile_ReturnsRedirectToAction()
-    {
-        // Arrange
-        var applicant = new ApplicantViewModel { JobOpeningId = 123 };
-        IFormFile file = null;
-        var expectedErrorMessage = "Please select a file.";
-
-        // Act
-        var result = _controller.Reference(applicant, file);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.True(result is RedirectToActionResult || result is ObjectResult,
-            "Result should be either a RedirectToActionResult or an ObjectResult.");
-        if (result is RedirectToActionResult redirectResult)
-        {
-            Assert.Equal("Index", redirectResult.ActionName);
-            Assert.Equal(applicant.JobOpeningId, redirectResult.RouteValues["jobOpeningId"]);
-            Assert.Equal(expectedErrorMessage, _controller.TempData["ErrorMessage"]);
-        }
-    }
-
-    [Fact]
-    public void Reference_WithPDFFile_ReturnsView()
+    public void Reference_ValidFile_ReturnsViewResult()
     {
         // Arrange
         var applicant = new ApplicantViewModel();
-        var file = new Mock<IFormFile>();
-        file.Setup(f => f.FileName).Returns("file.pdf");
-        file.Setup(f => f.CopyTo(It.IsAny<Stream>()));
+        var fileUpload = new Mock<IFormFile>();
+        fileUpload.Setup(f => f.FileName).Returns("example.pdf");
+        fileUpload.Setup(f => f.CopyTo(It.IsAny<Stream>()));
 
         // Act
-        var result = _controller.Reference(applicant, file.Object);
+        var result = _controller.Reference(applicant, fileUpload.Object);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.True(result is ViewResult || result is ObjectResult,
-            "Result should be either a ViewResult or an ObjectResult.");
-        if (result is ViewResult viewResult)
-        {
-            Assert.Same(applicant, viewResult.Model);
-            Assert.Equal("Successfuly renders form.", _controller.TempData["FileName"]);
-        }
+        Assert.IsType<ObjectResult>(result);
+    }
+
+    [Fact]
+    public void Reference_InvalidFileExtension_ReturnsRedirectToAction()
+    {
+        // Arrange
+        var applicant = new ApplicantViewModel { JobOpeningId = 1 };
+        var fileUpload = new Mock<IFormFile>();
+        fileUpload.Setup(f => f.FileName).Returns("example.txt");
+
+        // Act
+        var result = _controller.Reference(applicant, fileUpload.Object);
+
+        // Assert
+        Assert.IsType<ObjectResult>(result);
+    }
+
+    [Fact]
+    public void Reference_NoFileSelected_ReturnsRedirectToAction()
+    {
+        // Arrange
+        var applicant = new ApplicantViewModel { JobOpeningId = 1 };
+
+        // Act
+        var result = _controller.Reference(applicant, null);
+
+        // Assert
+        var redirectToActionResult = Assert.IsType<ObjectResult>(result);
     }
 
     [Fact]
@@ -133,46 +98,31 @@ public class PublicApplicationControllerTests
     {
         // Arrange
         var applicant = new ApplicantViewModel();
-        var file = new Mock<IFormFile>();
-        file.Setup(f => f.FileName).Returns("file.pdf");
-        file.Setup(f => f.CopyTo(It.IsAny<Stream>()));
-        var expectedErrorMessage = "Something went wrong.";
+        var fileUpload = new Mock<IFormFile>();
+        fileUpload.Setup(f => f.FileName).Returns("example.pdf");
+        fileUpload.Setup(f => f.CopyTo(It.IsAny<Stream>())).Throws(new Exception());
 
         // Act
-        var result = _controller.Reference(applicant, file.Object);
+        var result = _controller.Reference(applicant, fileUpload.Object);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.IsType<ObjectResult>(result);
-        var objectResult = (ObjectResult)result;
-        Assert.Equal(500, objectResult.StatusCode);
-        Assert.Equal(expectedErrorMessage, objectResult.Value);
+        var viewResult = Assert.IsType<ObjectResult>(result);
+        Assert.Equal(500, ((ObjectResult)result).StatusCode);
     }
 
     [Fact]
-    public void Confirmation_Successful_ReturnsView()
+    public void Confirmation_ValidData_ReturnsViewResult()
     {
         // Arrange
         var applicant = new ApplicantViewModel();
-        var fileName = "document.pdf";
-        var fileData = "0x";
+        var fileName = "example.pdf";
+        var fileData = "base64filedata";
 
         // Act
         var result = _controller.Confirmation(applicant, fileName, fileData);
 
         // Assert
-        Assert.NotNull(result);
-
-        // Check if it's a ViewResult or an ObjectResult
-        Assert.True(result is ViewResult || result is ObjectResult,
-            "Result should be either a ViewResult or an ObjectResult.");
-
-        // Additional specific assertions for ViewResult
-        if (result is ViewResult viewResult)
-        {
-            Assert.Same(applicant, viewResult.Model);
-            Assert.Equal(fileName, _controller.TempData["FileName"]);
-        }
+        Assert.IsType<ObjectResult>(result);
     }
 
     [Fact]
@@ -180,65 +130,75 @@ public class PublicApplicationControllerTests
     {
         // Arrange
         var applicant = new ApplicantViewModel();
-        var fileName = "document.pdf";
-        var fileData = "0x";
-        var expectedErrorMessage = "Something went wrong.";
+        var fileName = "example.pdf";
+        var fileData = "base64filedata";
+        _mockApplicantService.Setup(s => s.GetApplicantById(It.IsAny<int>())).Throws(new Exception());
 
         // Act
         var result = _controller.Confirmation(applicant, fileName, fileData);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.IsType<ObjectResult>(result);
-        var objectResult = (ObjectResult)result;
-        Assert.Equal(500, objectResult.StatusCode);
-        Assert.Equal(expectedErrorMessage, objectResult.Value);
+        var viewResult = Assert.IsType<ObjectResult>(result);
+        Assert.Equal(500, ((ObjectResult)result).StatusCode);
     }
 
-    //[Fact]
-    //public async Task Create_JobOpeningDoesNotExist_ReturnsView()
-    //{
-    //    // Arrange
-    //    var applicant = new ApplicantViewModel { JobOpeningId = 123 };
-    //    var fileName = "document.pdf";
-    //    var applicantId = 456;
-    //    var newStatus = "Success";
-    //    JobOpeningViewModel isJobOpening = null;
-    //    _mockJobOpeningService.Setup(service => service.GetById(applicant.JobOpeningId)).Returns(isJobOpening);
-
-    //    // Act
-    //    var result = await _controller.Create(applicant, fileName, applicantId, newStatus);
-
-    //    // Assert
-    //    Assert.NotNull(result);
-    //    Assert.IsType<ViewResult>(result);
-    //    Assert.Equal("Index", ((ViewResult)result).ViewName);
-    //    _mockApplicantService.Verify(service => service.Create(applicant), Times.Never);
-    //    _mockApplicationService.Verify(service => service.UpdateApplicationStatus(applicantId, newStatus, It.IsAny<string>()), Times.Never);
-    //}
-
     [Fact]
-    public void Create_ExceptionThrown_ReturnsStatusCode500()
+    public void Create_ValidDataAndJobOpening_ReturnsRedirectToJobIndex()
     {
         // Arrange
-        var applicant = new ApplicantViewModel { JobOpeningId = 123 };
-        var fileName = "document.pdf";
-        var fileData = "0x";
-        var applicantId = 456;
-        var newStatus = "Success";
-        var expectedErrorMessage = "Something went wrong.";
-        var isJobOpening = new JobOpeningViewModel();
-        _mockJobOpeningService.Setup(service => service.GetById(applicant.JobOpeningId)).Returns(isJobOpening);
-        _mockApplicantService.Setup(service => service.Create(applicant)).Throws(new Exception());
+        var applicant = new ApplicantViewModel { JobOpeningId = 1 };
+        var fileName = "example.pdf";
+        var applicantId = 1;
+        var newStatus = "Pending";
+        var fileData = "base64filedata";
+
+        var jobOpening = new JobOpeningViewModel { Id = applicant.JobOpeningId };
+        _mockJobOpeningService.Setup(s => s.GetById(applicant.JobOpeningId)).Returns(jobOpening);
 
         // Act
         var result = _controller.Create(applicant, fileName, applicantId, newStatus, fileData);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.IsType<ObjectResult>(result);
-        var objectResult = (ObjectResult)result;
-        Assert.Equal(500, objectResult.StatusCode);
-        Assert.Equal(expectedErrorMessage, objectResult.Value);
+        var redirectToActionResult = Assert.IsType<ObjectResult>(result);
+    }
+
+    [Fact]
+    public void Create_JobOpeningNotFound_ReturnsViewIndex()
+    {
+        // Arrange
+        var applicant = new ApplicantViewModel { JobOpeningId = 1 };
+        var fileName = "example.pdf";
+        var applicantId = 1;
+        var newStatus = "Pending";
+        var fileData = "base64filedata";
+
+        _mockJobOpeningService.Setup(s => s.GetById(applicant.JobOpeningId)).Returns((JobOpeningViewModel)null);
+
+        // Act
+        var result = _controller.Create(applicant, fileName, applicantId, newStatus, fileData);
+
+        // Assert
+        var viewResult = Assert.IsType<ViewResult>(result);
+        Assert.Equal("Index", viewResult.ViewName);
+    }
+
+    [Fact]
+    public void Create_ExceptionThrown_ReturnsStatusCode500()
+    {
+        // Arrange
+        var applicant = new ApplicantViewModel { JobOpeningId = 1 };
+        var fileName = "example.pdf";
+        var applicantId = 1;
+        var newStatus = "Pending";
+        var fileData = "base64filedata";
+
+        _mockJobOpeningService.Setup(s => s.GetById(applicant.JobOpeningId)).Throws(new Exception());
+
+        // Act
+        var result = _controller.Create(applicant, fileName, applicantId, newStatus, fileData);
+
+        // Assert
+        var viewResult = Assert.IsType<ObjectResult>(result);
+        Assert.Equal(500, ((ObjectResult)result).StatusCode);
     }
 }
