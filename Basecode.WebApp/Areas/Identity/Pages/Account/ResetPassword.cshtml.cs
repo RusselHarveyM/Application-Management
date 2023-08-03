@@ -34,10 +34,10 @@ public class ResetPasswordModel : PageModel
     [BindProperty]
     public InputModel Input { get; set; }
 
-    public IActionResult OnGet(string code = null)
+    public IActionResult OnGet(string code = null, string email = null)
     {
         _loggerWebApp.Trace("Redirected to ResetPassword");
-        if (code == null)
+        if (code == null || email == null)
         {
             _loggerWebApp.Error("Error code/token");
             return BadRequest("A code must be supplied for password reset.");
@@ -45,7 +45,8 @@ public class ResetPasswordModel : PageModel
 
         Input = new InputModel
         {
-            Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code))
+            Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code)),
+            Email = email
         };
         return Page();
     }
