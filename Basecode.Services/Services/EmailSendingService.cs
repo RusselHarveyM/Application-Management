@@ -381,7 +381,7 @@ public class EmailSendingService : IEmailSendingService
             { "userId", userId.ToString() }
         };
         var token = _tokenHelper.GenerateToken(sendRequestReferenceClaims);
-        var url = $"https://localhost:50100/BackgroundCheck/Form/{token}";
+        var url = $"https://localhost:50341/BackgroundCheck/Form/{token}";
         var templatePath = Path.Combine("wwwroot", "template", "FormalEmail.html");
         var templateContent = File.ReadAllText(templatePath);
         var body = templateContent
@@ -644,7 +644,7 @@ public class EmailSendingService : IEmailSendingService
         var approveToken = _tokenHelper.GenerateToken(approveTokenClaims);
         var rejectToken = _tokenHelper.GenerateToken(rejectTokenClaims);
 
-        var baseUrl = "https://localhost:61952";
+        var baseUrl = "https://localhost:50341";
         var acceptUrl = $"{baseUrl}/CurrentHire/AcceptOffer/{HttpUtility.UrlEncode(approveToken)}";
         var rejectUrl = $"{baseUrl}/CurrentHire/RejectOffer/{HttpUtility.UrlEncode(rejectToken)}";
 
@@ -691,7 +691,7 @@ public class EmailSendingService : IEmailSendingService
         var approveToken = _tokenHelper.GenerateToken(approveTokenClaims);
         var rejectToken = _tokenHelper.GenerateToken(rejectTokenClaims);
 
-        var baseUrl = "https://localhost:61952";
+        var baseUrl = "https://localhost:50341";
         var acceptUrl = $"{baseUrl}/CurrentHire/AcceptOffer/{HttpUtility.UrlEncode(approveToken)}";
         var rejectUrl = $"{baseUrl}/CurrentHire/RejectOffer/{HttpUtility.UrlEncode(rejectToken)}";
 
@@ -739,7 +739,7 @@ public class EmailSendingService : IEmailSendingService
         };
         var approveToken = _tokenHelper.GenerateTokenExpireAfterTwoDays(approveTokenClaims);
 
-        var baseUrl = "https://localhost:61952";
+        var baseUrl = "https://localhost:50341";
         var acceptUrl = $"{baseUrl}/CurrentHire/AcceptOffer/{HttpUtility.UrlEncode(approveToken)}";
 
         var templatePath = Path.Combine("wwwroot", "template", "DecisionEmail.html");
@@ -766,7 +766,7 @@ public class EmailSendingService : IEmailSendingService
         };
         var approveToken = _tokenHelper.GenerateToken(approveTokenClaims);
 
-        var baseUrl = "https://localhost:61952";
+        var baseUrl = "https://localhost:50341";
         var acceptUrl = $"{baseUrl}/CurrentHire/AcceptOffer/{HttpUtility.UrlEncode(approveToken)}";
 
         var templatePath = Path.Combine("wwwroot", "template", "DecisionEmail.html");

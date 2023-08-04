@@ -76,8 +76,19 @@ public interface ICurrentHireService
     /// <returns></returns>
     (LogContent, int) AddCurrentHires(CurrentHire currentHire);
 
+    
+    /// <summary>
+    /// Gets all shortlisted for current hire
+    /// </summary>
+    /// <param name="stage"></param>
+    /// <returns></returns>
     List<CurrentHire> GetShortListedCurrentHire(string stage);
 
 
+    /// <summary>
+    /// Implement logic when offer is accepted.
+    /// </summary>
+    /// <param name="tokenClaims"></param>
+    /// <returns></returns>
     int CurrentHireAcceptOffer(Dictionary<string, string> tokenClaims);
 }

@@ -155,7 +155,7 @@ public class CurrentHireService : ErrorHandling, ICurrentHireService
     /// <summary>
     ///     Handle existing offer
     /// </summary>
-    /// <param name="userOffer"></param>
+    /// <param name="currentHire"></param>
     /// <param name="existingId"></param>
     /// <param name="applicantId"></param>
     /// <param name="successfullyAddedApplicantIds"></param>
@@ -204,7 +204,7 @@ public class CurrentHireService : ErrorHandling, ICurrentHireService
     /// <summary>
     ///     Add useroffers
     /// </summary>
-    /// <param name="userOffer"></param>
+    /// <param name="currentHire"></param>
     /// <returns></returns>
     public (LogContent, int) AddCurrentHires(CurrentHire currentHire)
     {
