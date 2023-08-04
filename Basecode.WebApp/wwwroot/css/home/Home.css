@@ -62,6 +62,12 @@
 
 .cardForJobs {
     border: 1px solid lightgray;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.3s ease;
+    border-radius: 1rem;
 }
 
 .card:hover {

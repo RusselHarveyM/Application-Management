@@ -63,7 +63,7 @@ public class TrackService : ITrackService
 
             var score = jsonObject.GetProperty("Score").GetString();
 
-            if (int.Parse(score.Replace("%", "")) > 60)
+            if (int.Parse(score.Replace("%", "")) >= 50)
                 return UpdateApplicationStatus(application, application.JobOpening, "HR Shortlisted", "GUID",
                     result);
         }
@@ -159,7 +159,7 @@ public class TrackService : ITrackService
 
         if (choice.Equals("approved"))
         {
-            if (_statuses.Contains(status))
+            if (_statuses.Contains(status) && status != _statuses[5])
             {
                 var statusIndex = _statuses.IndexOf(status);
                 newStatus = _statuses[statusIndex + 1];
@@ -174,24 +174,24 @@ public class TrackService : ITrackService
         //send automated email of regrets
         return UpdateApplicationStatus(application, user, newStatus, "Rejected");
     }
-    
-    
+
+
     /// <summary>
     ///     Updates the application status based on the response through email.
     /// </summary>
     /// <param name="application">The application.</param>
     /// <param name="user">The user</param>
     /// <param name="choice">The choice (e.g., approved or rejected).</param>
-    /// <param name="newStatus">The new status.</param>
+    /// <param name="status"></param>
     /// <returns></returns>
     public Application UpdateApplicationStatusByEmailResponseCurrentHires(Application application, User user,
         string choice, string status)
     {
-        var newStatus = "";
+        var newStatus = status;
 
         if (choice.Equals("approved"))
         {
-            if (_statuses.Contains(status))
+            if (_statuses.Contains(status) && !status.Equals(_statuses[10]))
             {
                 var statusIndex = _statuses.IndexOf(status);
                 newStatus = _statuses[statusIndex + 1];
