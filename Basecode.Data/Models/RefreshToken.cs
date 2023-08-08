@@ -1,17 +1,16 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Basecode.Data.Models
+namespace Basecode.Data.Models;
+
+public class RefreshToken
 {
-    public class RefreshToken
-    {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-        public DateTime IssuedUtc { get; set; }
-        public DateTime ExpiresUtc { get; set; }
-        public string Token { get; set; }
-        public string Username { get; set; }
-    }
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
+
+    public DateTime IssuedUtc { get; set; }
+    public DateTime ExpiresUtc { get; set; }
+    public string Token { get; set; }
+    public string Username { get; set; }
 }

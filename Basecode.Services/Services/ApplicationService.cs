@@ -3,120 +3,177 @@ using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
 using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
-namespace Basecode.Services.Services
+namespace Basecode.Services.Services;
+
+public class ApplicationService : ErrorHandling, IApplicationService
 {
-    public class ApplicationService : ErrorHandling, IApplicationService
+    private readonly IMapper _mapper;
+
+    private readonly IApplicationRepository _repository;
+
+    public ApplicationService(IApplicationRepository repository, IMapper mapper)
     {
-        private readonly IApplicationRepository _repository;
-        private readonly IJobOpeningService _jobOpeningService;
-        private readonly IApplicantService _applicantService;
-        private readonly IMapper _mapper;
-        private readonly IEmailService _emailService;
+        _repository = repository;
+        _mapper = mapper;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicationService" /> class.
-        /// </summary>
-        /// <param name="repository">The repository.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="jobOpeningService">The job opening service.</param>
-        /// <param name="applicantService">The applicant service.</param>
-        /// <param name="emailService">The Email Service</param>
-        public ApplicationService(IApplicationRepository repository, IMapper mapper, IJobOpeningService jobOpeningService, IApplicantService applicantService, IEmailService emailService)
-        {
-            _repository = repository;
-            _jobOpeningService = jobOpeningService;
-            _applicantService = applicantService;
-            _mapper = mapper;
-            _emailService = emailService;
-        }
+    /// <summary>
+    ///     Creates the specified application.
+    /// </summary>
+    /// <param name="application">The application.</param>
+    public void Create(Application application)
+    {
+        _repository.CreateApplication(application);
+    }
 
-        /// <summary>
-        /// Creates the specified application.
-        /// </summary>
-        /// <param name="application">The application.</param>
-        public void Create(Application application)
-        {
-            _repository.CreateApplication(application);
-        }
+    /// <summary>
+    ///     Creates the specified application.
+    /// </summary>
+    /// <param name="application">The application.</param>
+    /// <returns></returns>
+    public Guid CreateWithId(Application application)
+    {
+        return _repository.CreateApplication(application);
+    }
 
-        /// <summary>
-        /// Retrieves an application by its ID.
-        /// </summary>
-        /// <param name="id">The ID of the application to retrieve.</param>
-        /// <returns>
-        /// The application with the specified ID, or null if not found.
-        /// </returns>
-        public ApplicationViewModel? GetById(Guid id)
-        {
-            var application = _repository.GetById(id);
+    /// <summary>
+    ///     Retrieves an application by its ID.
+    /// </summary>
+    /// <param name="id">The ID of the application to retrieve.</param>
+    /// <returns>
+    ///     The application with the specified ID, or null if not found.
+    /// </returns>
+    public ApplicationViewModel? GetById(Guid id)
+    {
+        var application = _repository.GetById(id);
 
-            if (application == null)
-            {
-                return null;
-            }
+        if (application == null) return null;
 
-            var job = _jobOpeningService.GetById(application.JobOpeningId);
-            var applicant = _applicantService.GetApplicantById(application.ApplicantId);
+        //var job = _jobOpeningService.GetById(application.JobOpeningId);
+        //var applicant = _applicantService.GetApplicantById(application.ApplicantId);
 
-            var applicationViewModel = _mapper.Map<ApplicationViewModel>(application);
-            applicationViewModel.JobOpeningTitle = job.Title;
-            applicationViewModel.ApplicantName = $"{applicant.Firstname} {applicant.Lastname}";
+        var applicationViewModel = _mapper.Map<ApplicationViewModel>(application);
+        applicationViewModel.JobOpeningTitle = application.JobOpening.Title;
+        applicationViewModel.ApplicantName = $"{application.Applicant.Firstname} {application.Applicant.Lastname}";
 
-            return applicationViewModel;
-        }
+        return applicationViewModel;
+    }
 
-        /// <summary>
-        /// Updates the specified application.
-        /// </summary>
-        /// <param name="application">The application.</param>
-        /// <returns></returns>
-        public LogContent Update(Application application)
-        {
-            var existingApplication = _repository.GetById(application.Id);
 
-            LogContent logContent = new LogContent();
-            logContent = CheckApplication(existingApplication);
+    /// <summary>
+    ///     Gets the application by identifier.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <returns></returns>
+    public Application GetApplicationById(Guid id)
+    {
+        var application = _repository.GetById(id);
 
-            if (logContent.Result == false)
-            {
-                existingApplication.Status = application.Status;
-                existingApplication.UpdateTime = DateTime.Now;
+        if (application == null) return null;
 
-                _repository.UpdateApplication(existingApplication);
-            }
+        return application;
+    }
 
-            return logContent;
-        }
+    /// <summary>
+    /// Get Total Applications
+    /// </summary>
+    /// <returns></returns>
+    public int GetTotalApplications()
+    {
+        return _repository.GetAll().Count();
+    }
 
-        /// <summary>
-        /// Updates the application status of an applicant in the database and notifies the HR and the applicant via email.
-        /// </summary>
-        /// <param name="applicantId">The ID of the applicant.</param>
-        /// <param name="newStatus">The new status to update.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task UpdateApplicationStatus(int applicantId, string newStatus)
-        {
-            // Update applicant status in the database
-            // ongoing!!!
-            newStatus = "Success"; //partial
+    /// <summary>
+    /// Get Total Deployed Applications
+    /// </summary>
+    /// <returns></returns>
+    public int GetDeployed()
+    {
+        return _repository.GetAll().Where(m => m.Status == "Deployed").Count();
+    }
 
-            // Get applicant details from the database
-            Applicant applicant = _applicantService.GetApplicantById(applicantId);
+    /// <summary>
+    /// Get Total Onboarded Applications
+    /// </summary>
+    /// <returns></returns>
+    public int GetOnboarded()
+    {
+        return _repository.GetAll().Where(m => m.Status == "Onboarded").Count();
+    }
 
-            // Notify HR
-            await _emailService.SendEmail("hrautomatesystem@outlook.com", "Applicant Status Update for HR",
-                $"Applicant {applicant.Firstname} (ID: {applicant.Id}) has changeds status to {newStatus}.");
+    /// <summary>
+    ///     Gets the application with complete relations by identifier.
+    /// </summary>
+    /// <param name="applicationId">The application identifier.</param>
+    /// <returns></returns>
+    public Application? GetApplicationWithAllRelationsById(Guid applicationId)
+    {
+        var application = _repository.GetApplicationWithAllRelationsById(applicationId);
+        if (application == null) return null;
+        return application;
+    }
 
-            // Notify the applicant
-            await _emailService.SendEmail(applicant.Email, "Application Status Update for Applicant",
-                $"Dear {applicant.Firstname},\n\nYour application status has been updated to {newStatus}.\n\nThank you.");
-        }
+    /// <summary>
+    ///     Gets the shorlisted applicatons.
+    /// </summary>
+    /// <param name="stage">The stage.</param>
+    /// <returns></returns>
+    public List<Application> GetShorlistedApplicatons(string stage, int jobId)
+    {
+        var data = _repository.GetAll()
+            .Include(a => a.JobOpening)
+            .Include(a => a.Applicant)
+            .Where(m => m.Status == stage)
+            .Where(m => m.JobOpeningId == jobId)
+            .ToList();
+        return data;
+    }
 
+
+    /// <summary>
+    ///     Updates the specified application.
+    /// </summary>
+    /// <param name="application">The application.</param>
+    /// <returns></returns>
+    public LogContent Update(Application application)
+    {
+        var logContent = new LogContent();
+        logContent = CheckApplication(application);
+
+        if (logContent.Result == false) _repository.UpdateApplication(application);
+
+        return logContent;
+    }
+
+    /// <summary>
+    ///     Gets the applications by ids.
+    /// </summary>
+    /// <param name="applicationIds">The application ids.</param>
+    /// <returns></returns>
+    public List<Application> GetApplicationsByIds(List<Guid> applicationIds)
+    {
+        return _repository.GetApplicationsByIds(applicationIds);
+    }
+
+    /// <summary>
+    ///     Gets the application id based on the applicant id.
+    /// </summary>
+    /// <param name="applicantId">The applicant identifier.</param>
+    /// <returns></returns>
+    public Guid GetApplicationIdByApplicantId(int applicantId)
+    {
+        return _repository.GetApplicationIdByApplicantId(applicantId);
+    }
+
+    /// <summary>
+    ///     Gets the application by applicant identifier.
+    /// </summary>
+    /// <param name="applicantId">The applicant identifier.</param>
+    /// <returns></returns>
+    public Application? GetApplicationByApplicantId(int applicantId)
+    {
+        return _repository.GetAll().Where(m => m.ApplicantId == applicantId).SingleOrDefault();
     }
 }

@@ -5,58 +5,85 @@ using Basecode.Data.ViewModels;
 using Basecode.Services.Interfaces;
 using static Basecode.Services.Services.ErrorHandling;
 
-namespace Basecode.Services.Services
+namespace Basecode.Services.Services;
+
+public class CharacterReferenceService : ICharacterReferenceService
 {
-    public class CharacterReferenceService : ICharacterReferenceService
+    private readonly IMapper _mapper;
+    private readonly ICharacterReferenceRepository _repository;
+
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="CharacterReferenceService" /> class.
+    /// </summary>
+    /// <param name="repository">The character reference repository.</param>
+    /// <param name="mapper">The mapper for object mapping.</param>
+    public CharacterReferenceService(ICharacterReferenceRepository repository, IMapper mapper)
     {
-        private readonly ICharacterReferenceRepository _repository;
-        private readonly IMapper _mapper;
+        _repository = repository;
+        _mapper = mapper;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CharacterReferenceService"/> class.
-        /// </summary>
-        /// <param name="repository">The character reference repository.</param>
-        /// <param name="mapper">The mapper for object mapping.</param>
-        public CharacterReferenceService(ICharacterReferenceRepository repository, IMapper mapper)
+    /// <summary>
+    ///     Creates a new character reference for the specified applicant.
+    /// </summary>
+    /// <param name="characterReference">The CharacterReferenceViewModel object containing the character reference data.</param>
+    /// <param name="applicantId">The ID of the associated applicant.</param>
+    /// <returns>A LogContent object representing the result of the operation.</returns>
+    public LogContent Create(CharacterReferenceViewModel characterReference, int applicantId)
+    {
+        var logContent = new LogContent();
+
+        logContent = CheckCharacterReference(characterReference);
+        if (logContent.Result == false)
         {
-            _repository = repository;
-            _mapper = mapper;
+            var characterModel = _mapper.Map<CharacterReference>(characterReference);
+            characterModel.ApplicantId = applicantId;
+            _repository.CreateReference(characterModel);
         }
 
-        /// <summary>
-        /// Creates a new character reference for the specified applicant.
-        /// </summary>
-        /// <param name="characterReference">The CharacterReferenceViewModel object containing the character reference data.</param>
-        /// <param name="applicantId">The ID of the associated applicant.</param>
-        /// <returns>A LogContent object representing the result of the operation.</returns>
-        public LogContent Create(CharacterReferenceViewModel characterReference, int applicantId)
-        {
-            LogContent logContent = new LogContent();
+        return logContent;
+    }
 
-            logContent = CheckCharacterReference(characterReference);
-            if (logContent.Result == false)
+    /// <summary>
+    ///     Retrieves a list of character references associated with the specified applicant ID.
+    /// </summary>
+    /// <param name="applicantId">The unique identifier of the applicant whose character references are to be retrieved.</param>
+    /// <returns>A list of CharacterReference objects representing the character references related to the specified applicant.</returns>
+    public List<CharacterReference> GetReferencesByApplicantId(int applicantId)
+    {
+        var data = _repository.GetAll()
+            .Where(m => m.ApplicantId == applicantId)
+            .Select(m => new CharacterReference
             {
-                var characterModel = _mapper.Map<CharacterReference>(characterReference);
-                characterModel.ApplicantId = applicantId;
-                _repository.CreateReference(characterModel);
-            }
+                Id = m.Id,
+                Name = m.Name,
+                Address = m.Address,
+                Email = m.Email,
+                ApplicantId = m.ApplicantId,
+                Applicant = m.Applicant
+            }).ToList();
 
-            return logContent;
-        }
+        return data;
+    }
 
-        public List<CharacterReference> GetReferencesByApplicantId(int applicantId) 
-        {
-            var data = _repository.GetAll()
-                .Where(m => m.ApplicantId == applicantId)
-                .Select(m => new CharacterReference
-                {
-                    Id = m.Id,
-                    Name = m.Name,
-                    Address = m.Address,
-                    Email = m.Email
-                }).ToList();
+    /// <summary>
+    ///     Gets the character reference by identifier.
+    /// </summary>
+    /// <param name="characterReferenceId">The character reference identifier.</param>
+    /// <returns></returns>
+    public CharacterReference GetCharacterReferenceById(int characterReferenceId)
+    {
+        return _repository.GetCharacterReferenceById(characterReferenceId) ?? throw new Exception("No data found");
+    }
 
-            return data;
-        }
+    /// <summary>
+    ///     Gets the character reference applicant identifier.
+    /// </summary>
+    /// <param name="characterReferenceId">The character reference identifier.</param>
+    /// <returns></returns>
+    public int GetApplicantIdByCharacterReferenceId(int characterReferenceId)
+    {
+        return _repository.GetAll().Where(m => m.Id == characterReferenceId).Select(m => m.ApplicantId)
+            .SingleOrDefault();
     }
 }

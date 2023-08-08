@@ -21,7 +21,7 @@ eyeslash.addEventListener('click', toggleVisibility);
 
 // Add a click event listener to the eye element
 eye.addEventListener('click', toggleVisibility);
-    
+
 
 function onClickSubmitPassField() {
     password.type = password.type === 'password' ? 'password' : 'password';

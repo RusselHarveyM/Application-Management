@@ -1,0 +1,68 @@
+﻿@model Basecode.Data.ViewModels.AssignUsersViewModel
+
+<link rel="stylesheet" href="~/css/dashboard/assign.css" />
+
+<div class="modal fade" id="assignUsersModal" tabindex="-1" aria-labelledby="assignUsersModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header mx-4 border-bottom border-2">
+                <h1 class="modal-title fs-3" id="assignUsersModalLabel">@Model.JobOpening.Title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body px-5 pt-4"> 
+                <div class="container">
+                    <form id="assignUsersForm">
+                        <div class="row justify-content-center mb-3">
+                            <div class="col-12">
+                                <table class="table table-responsive">
+                                    <thead>
+                                        <tr>
+                                            <th>NAME</th>
+                                            <th>EMAIL</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="usersList">
+                                        @foreach (var user in Model.Users)
+                                        {
+                                            if (user.IsLinkedToJobOpening)
+                                            {
+                                                <tr>
+                                                    <td>@user.Fullname</td>
+                                                    <td>@user.Email</td>
+                                                    <td data-user-id="@user.AspId">
+                                                        <button class="remove-button btn-close"></button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center mt-5">
+                            <div class="col-md-8">
+                                <div class="input-group">
+                                    <select id="userDropdown" class="form-select">
+                                        <option></option> <!-- Placeholder -->
+                                        <!-- Users will be dynamically added here -->
+                                    </select>
+                                    <button class="btn btn-outline-primary" id="confirmButton" disabled><i class="fa-solid fa-user-plus"></i></button>
+                                </div>
+                                <p class="text-center mt-2">Assigned Users: <span id="totalAssignedUsers"></span></p>
+                            </div>
+                        </div>
+                        <input type="hidden" id="userData" value='@Html.Raw(Json.Serialize(Model.Users))' />
+                        <input type="hidden" id="hiddenJobOpeningId" value="@Model.JobOpening.Id" />
+                    </form>
+                </div>  
+            </div>
+            <div class="modal-footer justify-content-between border-0 mx-4 mb-3">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><i class="fa-regular fa-circle-xmark"></i>&nbsp;CANCEL</button>
+                <button type="button" class="btn btn-view" id="saveChangesButton"><i class="fa-solid fa-floppy-disk"></i>&nbsp;&nbsp;SAVE CHANGES</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/dashboard/assign.js"></script>

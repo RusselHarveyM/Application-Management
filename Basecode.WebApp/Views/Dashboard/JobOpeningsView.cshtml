@@ -1,0 +1,160 @@
+﻿@model Basecode.Data.ViewModels.ApplicantDirectoryViewModel
+
+@{
+    Layout = "/Views/Shared/_Admin.cshtml";
+}
+
+<style>
+    .nav-tabs .nav-link.active {
+        color: #EC2224;
+    }
+
+    .nav-tabs .nav-link:not(.active) {
+        color: black;
+    }
+
+    /* Add custom CSS for pagination */
+    .pagination .page-item .page-link {
+        color: #EC2224; /* Text color for the default button */
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #EC2224; /* Red color for the active page button */
+        border-color: #EC2224;
+        color: #fff;
+    }
+
+    tbody, td, tfoot, th, thead, tr {
+        border-color: inherit;
+        border: none !important;
+    }
+
+    .table th {
+        line-height: 40px;
+        color: #565d6dff;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    #colForApplicant {
+        flex: 1 0 0%;
+        border: 2px solid rgba(0, 0, 0, 0.03);
+        border-radius: 10px;
+        padding-right: 12px;
+        padding-left: 12px;
+    }
+</style>
+
+<div class="container">
+    <div class="container d-flex flex-column align-content-start justify-content-start">
+        <div class="container d-flex flex-row justify-content-between align-items-center mb-2">
+            <ul class="nav nav-tabs" id="directoryTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="applicants-tab" data-bs-toggle="tab" data-bs-target="#applicants-tab-pane" type="button" role="tab" aria-controls="applicants-tab-pane" aria-selected="true">APPLICANTS</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="shortlists-tab" data-bs-toggle="tab" data-bs-target="#shortlists-tab-pane" type="button" role="tab" aria-controls="shortlists-tab-pane" aria-selected="false">SHORTLISTS</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="exams-tab" data-bs-toggle="tab" data-bs-target="#exams-tab-pane" type="button" role="tab" aria-controls="exams-tab-pane" aria-selected="false">EXAMS</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="confirmed-tab" data-bs-toggle="tab" data-bs-target="#confirmed-tab-pane" type="button" role="tab" aria-controls="confirmed-tab-pane" aria-selected="false">SIGNED JOB OFFER</button>
+                </li>
+            </ul>
+            <a id="backButton" class="btn" style="background-color: #EC2224; color: white;" onclick="goBack2()"><i class="fa-solid fa-arrow-left"></i>&nbsp;&nbsp;Back</a>
+        </div>
+        <div class="tab-content" id="directoryTabContent">
+            <div class="tab-pane fade show active" id="applicants-tab-pane" role="tabpanel" aria-labelledby="applicants-tab" tabindex="0">
+                <div class="container d-flex flex-row align-content-center justify-content-start">
+                    <div class="col" id="colForApplicant">
+                        <table class="table table-striped text-center align-middle mt-2 overflow-hidden" style="border-radius: 10px;--bs-table-striped-bg: rgba(0, 0, 0, 0.03);">
+                            <tr>
+                                <th>NAME</th>
+                                <th>EMAIL</th>
+                                <th>STATUS</th>
+                                <th></th>
+                            </tr>
+                            @foreach (var applicant in Model.Applicants)
+                            {
+                                <tr>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(applicant.Middlename))
+                                        {
+                                            @Html.Raw($"{applicant.Firstname} {applicant.Middlename} {applicant.Lastname}")
+                                        }
+                                        else
+                                        {
+                                            @Html.Raw($"{applicant.Firstname} {applicant.Lastname}")
+                                        }
+                                    </td>
+                                    <td>@(applicant.Email)</td>
+                                    <td>@(applicant.Application.Status)</td>
+                                    <td>
+                                        <a asp-controller="Dashboard" asp-action="DirectoryViewDetails" asp-route-applicantId="@applicant.Id" class="btn" style="background-color: #EC2224; color: white;">
+                                            <i class="fa-solid fa-circle-info"></i>&nbsp;&nbsp;View Details
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                @for (var i = 1; i <= Math.Ceiling((double)Model.Applicants.Count / 10); i++)
+                                {
+                                    <li class="page-item @(i == 1 ? "active" : "")">
+                                        <a class="page-link" href="#applicants-tab-pane" onclick="showPage(@i)">@i</a>
+                                    </li>
+                                }
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="shortlists-tab-pane" role="tabpanel" aria-labelledby="shortlists-tab" tabindex="0">
+                @Html.Partial("~/Views/Dashboard/ShortListView.cshtml", Model.Shortlists)
+            </div>
+            <div class="tab-pane fade" id="exams-tab-pane" role="tabpanel" aria-labelledby="exams-tab" tabindex="0">
+                @Html.Partial("~/Views/Dashboard/_ExamsView.cshtml", Model.ApplicantExams)
+            </div>
+            <div class="tab-pane fade" id="confirmed-tab-pane" role="tabpanel" aria-labelledby="confirmed-tab" tabindex="0">
+                @Html.Partial("~/Views/Dashboard/ConfirmedView.cshtml", Model.SignedApplicants)
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // JavaScript function to show the specific page in the table
+    function showPage(pageNumber) {
+        var rows = document.querySelectorAll("#applicants-tab-pane .table tbody tr");
+        var itemsPerPage = 11;
+        var currentScroll = window.scrollY; // Get the current scroll position
+
+        for (var i = 1; i < rows.length; i++) { // Start from index 1 to skip the header row
+            if (i >= (pageNumber - 1) * itemsPerPage && i < pageNumber * itemsPerPage) {
+                rows[i].style.display = "table-row";
+            } else {
+                rows[i].style.display = "none";
+            }
+        }
+
+        // Remove the 'active' class from all page items
+        var pageItems = document.querySelectorAll(".pagination .page-item");
+        for (var j = 0; j < pageItems.length; j++) {
+            pageItems[j].classList.remove("active");
+        }
+
+        // Add the 'active' class to the selected page item
+        var currentPageItem = document.querySelector(
+            ".pagination .page-item:nth-child(" + pageNumber + ")"
+        );
+        currentPageItem.classList.add("active");
+
+        // Restore the previous scroll position after loading the new page content
+        window.scroll(0, currentScroll);
+    }
+
+    // Show the first page by default
+    showPage(1);
+</script>

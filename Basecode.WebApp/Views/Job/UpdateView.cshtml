@@ -49,7 +49,6 @@
     }
 
     .publish-btn {
-        background-color: #f44336;
         color: white;
     }
 
@@ -74,16 +73,26 @@
         transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
     }
 
-    .head-title {
+  .head-title {
         margin-bottom: 0.5rem;
+        font-size: 20px;
     }
 
     option {
         font-size: 0.7rem;
+        font-size: 14px;
     }
 
     label {
-        font-size: 14px;
+        font-size: 17px;
+    }
+
+    .custom-control {
+        width: 100%;
+        border: 1px solid black;
+        padding: 10px 10px;
+        margin: 5px 0;
+        box-sizing: border-box;
     }
 
     .side-double {
@@ -104,11 +113,11 @@
 
 <div class="form-container">
     <form asp-controller="Job" asp-action="Update" method="post">
-        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Id"/>
 
         <div class="form-group">
             <label asp-for="Title">Title</label>
-            <input type="text" asp-for="Title" class="form-control" />
+            <input type="text" asp-for="Title" class="form-control"/>
             <span asp-validation-for="Title" class="text-danger"></span>
 
         </div>
@@ -125,7 +134,7 @@
             </div>
             <div class="d-flex flex-column">
                 <label asp-for="Location">Job Location</label>
-                <input type="text" asp-for="Location" class="custom-control" required />
+                <input type="text" asp-for="Location" class="custom-control" required/>
                 <span asp-validation-for="Location" class="text-danger"></span>
             </div>
         </div>
@@ -142,19 +151,33 @@
             </div>
         </div>
 
+        <div class="form-group side-double">
+            <div class="d-flex flex-column">
+                <label asp-for="Tag">Tag</label>
+                <select name="Tag" asp-for="Tag" class="custom-control" required>
+                    <option value="">Select a Tag</option>
+                    <option value="Technical">Technical</option>
+                    <option value="Hr">Hr</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Marketing">Marketing</option>
+                </select>
+                <span asp-validation-for="Tag" class="text-danger"></span>
+            </div>
+        </div>
+
         <div class="quali-res">
             <div class="mb-2">
                 <label asp-for="Qualifications">Qualifications</label>
-                <button id="addQualificationBtn" type="button" class="btn btn-primary ms-3">+</button>
+                <button style="margin-left:29px; border:none; background-color: #DA2C43" id="addQualificationBtn" type="button" class="btn btn-primary ms-3">+</button>
             </div>
             <span asp-validation-for="Qualifications" class="text-danger"></span>
             <div id="qualifications-list">
                 @if (Model.Qualifications != null)
                 {
-                    for (int i = 0; i < Model.Qualifications.Count; i++)
+                    for (var i = 0; i < Model.Qualifications.Count; i++)
                     {
                         <div class="input-container d-flex align-items-center mb-2 ">
-                            <input type="text" asp-for="Qualifications[i].Description" class="custom-control qualification-input me-2" />
+                            <input type="text" asp-for="Qualifications[i].Description" class="custom-control qualification-input me-2"/>
                             <button type="button" class="btn btn-danger delete-btn">-</button>
                         </div>
                     }
@@ -165,16 +188,16 @@
         <div class="quali-res">
             <div class="mb-2">
                 <label asp-for="Responsibilities">Responsibilities</label>
-                <button id="addResponsibilityBtn" type="button" class="btn btn-primary ms-3">+</button>
+                <button style="background-color: #DA2C43; border:none" id="addResponsibilityBtn" type="button" class="btn btn-primary ms-3">+</button>
             </div>
             <span asp-validation-for="Responsibilities" class="text-danger"></span>
             <div id="responsibilities-list">
                 @if (Model.Responsibilities != null)
                 {
-                    for (int i = 0; i < Model.Responsibilities.Count; i++)
+                    for (var i = 0; i < Model.Responsibilities.Count; i++)
                     {
                         <div class="input-container d-flex align-items-center mb-2 ">
-                            <input type="text" asp-for="Responsibilities[i].Description" class="custom-control responsibility-input me-2" />
+                            <input type="text" asp-for="Responsibilities[i].Description" class="custom-control responsibility-input me-2"/>
                             <button type="button" class="btn btn-danger delete-btn">-</button>
                         </div>
                     }
@@ -186,7 +209,7 @@
             <a asp-action="Index">
                 <button type="button" asp-action="Index" class="btn btn-secondary">Back to List</button>
             </a>
-            <button type="submit" class="btn btn-primary">Update</button>
+            <button type="submit" style="background-color: #DA2C43" class="btn btn-primary">Update</button>
         </div>
     </form>
 </div>

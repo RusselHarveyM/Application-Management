@@ -1,0 +1,206 @@
+﻿@model Basecode.Data.ViewModels.ApplicantDetailsViewModel
+
+@{
+    Layout = "/Views/Shared/_Admin.cshtml";
+}
+
+<style>
+    .nav-tabs .nav-link.active {
+        color: #EC2224;
+    }
+
+    .nav-tabs .nav-link:not(.active) {
+        color: black;
+    }
+</style>
+
+
+<div class="container d-flex flex-column justify-content-center align-items-center">
+    <div class="container d-flex flex-row justify-content-between align-items-center">
+        <ul class="nav nav-tabs" id="detailsTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal-tab-pane" type="button" role="tab" aria-controls="personal-tab-pane" aria-selected="true">PERSONAL INFORMATION</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="reference-tab" data-bs-toggle="tab" data-bs-target="#reference-tab-pane" type="button" role="tab" aria-controls="reference-tab-pane" aria-selected="false">CHARACTER REFERENCES</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="document-tab" data-bs-toggle="tab" data-bs-target="#document-tab-pane" type="button" role="tab" aria-controls="document-tab-pane" aria-selected="false">DOCUMENTS</button>
+            </li>
+        </ul>
+        <a id="backButton" class="btn" style="background-color: #EC2224; color: white;" onclick="goBack2()"><i class="fa-solid fa-arrow-left"></i>&nbsp;&nbsp;Back</a>
+    </div>
+    <div class="tab-content" id="detailsTabContent">
+        <div class="tab-pane fade show active" id="personal-tab-pane" role="tabpanel" aria-labelledby="personal-tab" tabindex="0">
+            <div class="container d-flex flex-column align-items-center justify-content-center mb-2" style="width: 800px">
+                <div class="container">
+                    <div class="d-flex flex-row align-items-center justify-content-center text-end mb-2 mt-4 border-bottom">
+                        <div class="col-sm-2">
+                            <h5 class="mb-2 me-3" style="color: #F58980;">
+                                STATUS
+                            </h5>
+                        </div>
+                        <div class="col-sm-10">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <div class="col-sm-8 text-start">
+                                    <h4 class="mb-2 me-1">@Model.Status</h4>
+                                </div>
+                                <div class="col-sm-4 text-end">
+                                    <p class="mb-2 text-opacity-50" style="color: #72777D;">@Model.UpdateDate</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row align-items-center justify-content-center text-end mb-4 mt-4">
+                        <div class="col-sm-2">
+                            <p class="mb-0">Name</p>
+                        </div>
+                        <div class="col-sm-10">
+                            @if (!string.IsNullOrEmpty(Model.Applicant.Middlename))
+                            {
+                                <input type="text" class="form-control border border-0" style="background-color: #F3F4F6; color: #72777D;" value="@($"{Model.Applicant.Firstname} {Model.Applicant.Middlename} {Model.Applicant.Lastname}")" readonly>
+                            }
+                            else
+                            {
+                                <input type="text" class="form-control border border-0" style="background-color: #F3F4F6; color: #72777D;" value="@($"{Model.Applicant.Firstname} {Model.Applicant.Lastname}")" readonly>
+                            }
+                        </div>
+                    </div>
+                    <div class="row align-items-center justify-content-center text-end mb-4">
+                        <div class="col-sm-2">
+                            <p class="mb-0">Birthdate</p>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control border border-0" style="background-color: #FEF2F1; color: #F58980;" value="@Model.Applicant.Birthdate.ToString("dd-MM-yyyy")" readonly>
+                        </div>
+                    </div>
+                    <div class="row align-items-center justify-content-center text-end mb-4">
+                        <div class="col-sm-2">
+                            <p class="mb-0">Age</p>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control border border-0" style="background-color: #F3F4F6; color: #72777D;" value="@Model.Applicant.Age" readonly>
+                        </div>
+                    </div>
+                    <div class="row align-items-center justify-content-center text-end mb-4">
+                        <div class="col-sm-2">
+                            <p class="mb-0">Gender</p>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control border border-0" style="background-color: #FEF2F1; color: #F58980;" value="@Model.Applicant.Gender" readonly>
+                        </div>
+                    </div>
+                    <div class="row align-items-center justify-content-center text-end mb-4">
+                        <div class="col-sm-2">
+                            <p class="mb-0">Nationality</p>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control border border-0" style="background-color: #F3F4F6; color: #72777D;" value="@Model.Applicant.Nationality" readonly>
+                        </div>
+                    </div>
+                    <div class="row align-items-center justify-content-center text-end mb-4">
+                        <div class="col-sm-2">
+                            <p class="mb-0">Address</p>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control border border-0" style="background-color: #FEF2F1; color: #F58980;" value="@Model.Applicant.Street, @Model.Applicant.City, @Model.Applicant.Province @Model.Applicant.Zip" readonly>
+                        </div>
+                    </div>
+                    <div class="row align-items-center justify-content-center text-end mb-4">
+                        <div class="col-sm-2">
+                            <p class="mb-0">Phone</p>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control border border-0" style="background-color: #F3F4F6; color: #72777D;" value="@Model.Applicant.Phone" readonly>
+                        </div>
+                    </div>
+                    <div class="row align-items-center justify-content-center text-end mb-4">
+                        <div class="col-sm-2">
+                            <p class="mb-0">Email</p>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control border border-0" style="background-color: #FEF2F1; color: #F58980;" value="@Model.Applicant.Email" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="reference-tab-pane" role="tabpanel" aria-labelledby="reference-tab" tabindex="0">
+            <div class="container d-flex flex-column align-items-center justify-content-center mt-4 gap-4">
+                @foreach (var reference in Model.CharacterReferences)
+                {
+                    <div class="card" style="width: 800px">
+                        <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                            <div class="container">
+                                <div class="row align-items-center justify-content-center text-end mb-4 mt-4">
+                                    <div class="col-sm-2">
+                                        <p class="mb-0">Name</p>
+                                    </div>
+                                    <div class="col-sm-10">
+                                        <div class="d-flex column-gap-2">
+                                            <input type="text" class="form-control border border-0" style="background-color: #F3F4F6; color: #72777D;" value="@reference.Name" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row align-items-center justify-content-center text-end mb-4">
+                                    <div class="col-sm-2">
+                                        <p class="mb-0">Address</p>
+                                    </div>
+                                    <div class="col-sm-10">
+                                        <div class="d-flex column-gap-2">
+                                            <input type="text" class="form-control border border-0" style="background-color: #FEF2F1; color: #F58980;" value="@reference.Address" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row align-items-center justify-content-center text-end mb-4">
+                                    <div class="col-sm-2">
+                                        <p class="mb-0">Email</p>
+                                    </div>
+                                    <div class="col-sm-10">
+                                        <div class="d-flex column-gap-2">
+                                            <input type="text" class="form-control border border-0" style="background-color: #F3F4F6; color: #72777D;" value="@reference.Email" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @* @if (!Model.BackgroundCheck.Any(bg => bg != null && bg.CharacterReferenceId == reference.Id)) *@
+                            @* { *@
+                            @*     <a asp-controller="Dashboard" asp-action="RequestBackgroundCheck" asp-route-characterReferenceId="@reference.Id" asp-route-applicantId="@reference.ApplicantId" class="btn" style="background-color: #EC2224; color: white;">Request Background Check</a> *@
+                            @* } *@
+                            @if (Model.Status == "Undergoing Background Check")
+                            {
+                                <a asp-controller="Dashboard" asp-action="RequestBackgroundCheck" asp-route-characterReferenceId="@reference.Id" asp-route-applicantId="@reference.ApplicantId" class="btn" style="background-color: #EC2224; color: white;">Request Background Check</a>
+                            }
+                            else
+                            {
+                                <a disabled class="btn" style="background-color: #e8585a; color: white;">Request Background Check</a>
+                            }
+
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="tab-pane fade" id="document-tab-pane" role="tabpanel" aria-labelledby="document-tab" tabindex="0">
+            <div class="container d-flex flex-column align-items-center justify-content-center mt-5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="#EC2224" class="bi bi-file-earmark-person mb-4" viewBox="0 0 16 16">
+                    <path d="M11 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                    <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2v9.255S12 12 8 12s-5 1.755-5 1.755V2a1 1 0 0 1 1-1h5.5v2z"/>
+                </svg>
+                <button type="button" id="downloadResumeButton" class="btn" style="background-color: #EC2224; color: white;">Download Resume</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('downloadResumeButton').addEventListener('click', function () {
+        var applicantId = @Model.Applicant.Id;
+        var downloadUrl = '/Dashboard/DownloadResume?applicantId=' + applicantId;
+
+        var link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = '@($"{Model.Applicant.Firstname}_{Model.Applicant.Lastname}_Resume.pdf")';
+        link.click();
+    });
+</script>

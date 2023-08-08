@@ -1,0 +1,128 @@
+﻿@model Basecode.Data.ViewModels.ApplicantDirectoryViewModel
+
+@{
+    Layout = "/Views/Shared/_Admin.cshtml";
+}
+
+<style>
+    tbody, td, tfoot, th, thead, tr {
+        border-color: inherit;
+        border: none !important;
+    }
+
+    /* Add custom CSS for pagination */
+    .pagination .page-item .page-link {
+        color: #EC2224; /* Text color for the default button */
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #EC2224; /* Red color for the active page button */
+        border-color: #EC2224;
+        color: #fff;
+    }
+
+    th {
+        line-height: 40px;
+        color: #565d6dff;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .col {
+        flex: 1 0 0%;
+        border: 2px solid rgba(0, 0, 0, 0.03);
+        border-radius: 10px;
+    }
+</style>
+
+<div class="container">
+    <!-- Table -->
+    <div class="tab-content" id="directoryTabContent">
+        <div class="tab-pane fade show active" id="jobOpening-tab-pane" role="tabpanel" aria-labelledby="jobOpening-tab" tabindex="0">
+            <div class="row">
+                <h3>Job Openings</h3>
+                <div class="col">
+                    <table class="table table-striped text-center align-middle mt-2 overflow-hidden" style="border-radius: 10px;--bs-table-striped-bg: rgba(0, 0, 0, 0.03);">
+                        <!-- Table header -->
+                        <tr>
+                            <th>ID</th>
+                            <th>NAME</th>
+                            <th>APPLICATIONS</th>
+                            <th>ASSIGNED</th>
+                            <th></th>
+                        </tr>
+                        <!-- Add the table rows -->
+                        @foreach (var jobOpening in Model.JobOpenings)
+                        {
+                            <tr>
+                                <td>@jobOpening.Id</td>
+                                <td>@jobOpening.Title</td>
+                                <td>@jobOpening.Applications.Count</td>
+                                @if (jobOpening.usersId.Count > 0)
+                                {
+                                    <td>@jobOpening.usersId.Count</td>
+                                }
+                                else
+                                {
+                                    <td>1</td>
+                                }
+                                <td>
+                                    <a asp-controller="Dashboard" asp-action="JobOpeningsView" asp-route-jobId="@jobOpening.Id" class="btn" style="background-color: #EC2224; color: white;">
+                                        <i class="fa-regular fa-eye"></i>&nbsp;&nbsp;View
+                                    </a>
+                                </td>
+
+                            </tr>
+                        }
+                    </table>
+                    <!-- Pagination -->
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            @for (var i = 1; i <= Math.Ceiling((double)Model.JobOpenings.Count / 10); i++)
+                            {
+                                <li class="page-item @(i == 1 ? "active" : "")">
+                                    <a class="page-link" href="#jobOpening-tab-pane" onclick="showPage(@i);">@i</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // JavaScript function to show the specific page in the table
+    function showPage(pageNumber) {
+        var rows = document.querySelectorAll("#jobOpening-tab-pane .table tbody tr");
+        var itemsPerPage = 11;
+        var currentScroll = window.scrollY; // Get the current scroll position
+
+        for (var i = 1; i < rows.length; i++) { // Start from index 1 to skip the header row
+            if (i >= (pageNumber - 1) * itemsPerPage && i < pageNumber * itemsPerPage) {
+                rows[i].style.display = "table-row";
+            } else {
+                rows[i].style.display = "none";
+            }
+        }
+
+        // Remove the 'active' class from all page items
+        var pageItems = document.querySelectorAll(".pagination .page-item");
+        for (var j = 0; j < pageItems.length; j++) {
+            pageItems[j].classList.remove("active");
+        }
+
+        // Add the 'active' class to the selected page item
+        var currentPageItem = document.querySelector(
+            ".pagination .page-item:nth-child(" + pageNumber + ")"
+        );
+        currentPageItem.classList.add("active");
+
+        // Restore the previous scroll position after loading the new page content
+        window.scroll(0, currentScroll);
+    }
+
+    // Show the first page by default
+    showPage(1);
+</script>

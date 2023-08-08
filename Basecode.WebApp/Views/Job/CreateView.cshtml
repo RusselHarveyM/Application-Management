@@ -1,6 +1,5 @@
 @model Basecode.Data.ViewModels.JobOpeningViewModel
 
-
 <style>
     .form-container {
         max-width: 500px;
@@ -73,16 +72,26 @@
         transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
     }
 
-    .head-title {
+   .head-title {
         margin-bottom: 0.5rem;
+        font-size: 20px;
     }
 
     option {
         font-size: 0.7rem;
+        font-size: 14px;
     }
 
     label {
-        font-size: 14px;
+        font-size: 17px;
+    }
+
+    .custom-control {
+        width: 100%;
+        border: 1px solid black;
+        padding: 10px 10px;
+        margin: 5px 0;
+        box-sizing: border-box;
     }
 
     .side-double {
@@ -106,15 +115,15 @@
         <div class="col-md-8">
             <h2 class="form-title">Add New Job Opening</h2>
             <div class="form-container">
-                <h5 class="head-title">Job Information</h5>
+                <h5 class="head-title mb-3">Job Information</h5>
 
                 <form asp-controller="Job" asp-action="Create" method="post">
-                    <div class="form-group">
+                    <div class="form-group mb-3">
                         <label asp-for="Title">Job Title</label>
-                        <input type="text" asp-for="Title" class="custom-control" placeholder = "Software Developer" required />
+                        <input type="text" asp-for="Title" class="custom-control" placeholder="Software Developer" required/>
                         <span asp-validation-for="Title" class="text-danger"></span>
                     </div>
-                    <div class="form-group side-double">
+                    <div class="form-group side-double mb-2">
                         <div class="d-flex flex-column">
                             <label asp-for="EmploymentType">Employment Type</label>
                             <select name="EmploymentType" asp-for="EmploymentType" class="custom-control" required>
@@ -127,12 +136,17 @@
                         </div>
                         <div class="d-flex flex-column">
                             <label asp-for="Location">Job Location</label>
-                            <input type="text" asp-for="Location" class="custom-control" required/>
+                            <select name="Location" asp-for="Location" class="custom-control" required>
+                                <option value="">Select a location</option>
+                                <option value="Cebu">Cebu</option>
+                                <option value="Manila">Manila</option>
+                                <option value="Tokyo">Tokyo</option>
+                            </select>
                             <span asp-validation-for="Location" class="text-danger"></span>
                         </div>
                     </div>
 
-                    <div class="form-group side-double">
+                    <div class="form-group side-double mb-2">
                         <div class="d-flex flex-column">
                             <label asp-for="WorkSetup">Work Setup</label>
                             <select name="WorkSetup" asp-for="WorkSetup" class="custom-control" required>
@@ -145,18 +159,32 @@
                         </div>
                     </div>
 
+                    <div class="form-group side-double">
+                        <div class="d-flex flex-column">
+                            <label asp-for="Tag">Tag</label>
+                            <select name="Tag" asp-for="Tag" class="custom-control" required>
+                                <option value="">Select a tag</option>
+                                <option value="Technical">Technical</option>
+                                <option value="Hr">Hr</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Marketing">Marketing</option>
+                            </select>
+                            <span asp-validation-for="Tag" class="text-danger"></span>
+                        </div>
+                    </div>
+
                     <div class="quali-res">
-                        <div class=" mb-2">
-                            <label asp-for="Qualifications">Qualifications</label>
-                            <button id="addQualificationBtn" type="button" class="btn btn-primary ms-3">+</button>
+                        <div class="mb-2">
+                            <label style="margin-right: 13px;" asp-for="Qualifications">Qualifications</label>
+                            <button style="border:none; background-color: #DA2C43;" id="addQualificationBtn" type="button" class="btn btn-primary ms-3">+</button>
                         </div>
                         <span asp-validation-for="Qualifications" class="text-danger"></span>
                         <div id="qualifications-list">
                             @if (Model.Qualifications != null)
                             {
-                                for (int i = 0; i < Model.Qualifications.Count; i++)
+                                for (var i = 0; i < Model.Qualifications.Count; i++)
                                 {
-                                    <input type="text" asp-for="Qualifications[i].Description" class="custom-control qualification-input" />
+                                    <input type="text" asp-for="Qualifications[i].Description" class="custom-control qualification-input"/>
                                 }
                             }
                         </div>
@@ -165,13 +193,13 @@
                     <div class="quali-res">
                         <div class="mb-2">
                             <label asp-for="Responsibilities">Responsibilities</label>
-                            <button id="addResponsibilityBtn" type="button" class="btn btn-primary ms-3">+</button>
+                            <button style="background-color: #DA2C43; border:none" id="addResponsibilityBtn" type="button" class="btn btn-primary ms-3">+</button>
                         </div>
                         <span asp-validation-for="Responsibilities" class="text-danger"></span>
                         <div id="responsibilities-list">
                             @if (Model.Responsibilities != null)
                             {
-                                for (int i = 0; i < Model.Responsibilities.Count; i++)
+                                for (var i = 0; i < Model.Responsibilities.Count; i++)
                                 {
                                     <input type="text" asp-for="Responsibilities[i].Description" class="custom-control responsibility-input"/>
                                 }
@@ -182,9 +210,9 @@
                         <a asp-action="Index">
                             <button type="button" asp-action="Index" class="btn btn-secondary">Cancel</button>
                         </a>
-                        <button type="submit" class="btn publish-btn">Create</button>
+                        <button type="submit" style="background-color: #DA2C43" class="btn publish-btn">Create</button>
                     </div>
-                   
+
                 </form>
             </div>
         </div>
@@ -231,4 +259,3 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
-

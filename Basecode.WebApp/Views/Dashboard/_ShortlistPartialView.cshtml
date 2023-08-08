@@ -1,0 +1,72 @@
+﻿@model List<Basecode.Data.Models.Application>
+
+<script src="~/js/dashboard/index.js"></script>
+
+<style>
+    tbody, td, tfoot, th, thead, tr {
+        border-color: inherit;
+        border: none !important;
+    }
+    
+     th {
+            line-height: 40px;
+            color: #565d6dff;
+            font-size:  14px;
+            font-weight: 500;
+        }
+        
+        tbody{
+            text-align: center;
+        }
+    
+    .col{
+        flex: 1 0 0;
+        border: 2px solid rgba(0, 0, 0, 0.03);
+        border-radius: 10px;
+        }
+</style>
+
+
+<!-- Table -->
+<div class="row">
+    <div class="col">
+        <table class="table table-striped text-center align-middle mt-2 overflow-hidden" style="border-radius: 10px;--bs-table-striped-bg: rgba(0, 0, 0, 0.03);">
+            <!-- Table header -->
+            <tr>
+                <th>ID</th>
+                <th>JOB OPENING</th>
+                <th>NAME</th>
+                <th>EMAIL</th>
+                <th></th>
+            </tr>
+            <!-- Add the table rows -->
+            @foreach (var application in Model)
+            {
+                <tr>
+                    <td>@application.JobOpeningId</td>
+                    <td>@application.JobOpening.Title</td>
+                    <td>@application.Applicant.Firstname</td>
+                    <td>@application.Applicant.Email</td>
+                    <td>
+                        @if (application.Status.Equals("Technical Shortlisted"))
+                        {
+                            <a class="btn btn-view" role="button" asp-action="CheckBackground" asp-route-appId="@application.Id">
+                                <i class="fa-solid fa-magnifying-glass"></i>&nbsp;&nbsp;Check
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-view" role="button" onclick="showShortlistViewModal('@application.ApplicantId')">
+                                <i class="fa-regular fa-eye"></i>&nbsp;&nbsp;View
+                            </a>
+                        }
+                    </td>
+
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+
+
+<div id="showShortlistViewModalContainer"></div>

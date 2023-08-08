@@ -1,20 +1,27 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Library</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="12.0.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="NLog" Version="5.2.2" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="12.0.1" />
+        <PackageReference Include="Google.Apis.Forms.v1" Version="1.61.0.2807" />
+        <PackageReference Include="Hangfire" Version="1.8.3" />
+        <PackageReference Include="iTextSharp" Version="5.5.13.3" />
+        <PackageReference Include="Microsoft.Graph" Version="5.19.0" />
+        <PackageReference Include="Microsoft.Identity.Client" Version="4.55.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="NLog" Version="5.2.2" />
+        <PackageReference Include="RestSharp" Version="110.2.1-alpha.0.10" />
+        <PackageReference Include="System.Text.Json" Version="7.0.3" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Basecode.Data\Basecode.Data.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Basecode.Data\Basecode.Data.csproj" />
+    </ItemGroup>
 
 </Project>

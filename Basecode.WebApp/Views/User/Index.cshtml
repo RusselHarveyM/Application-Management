@@ -1,25 +1,38 @@
-﻿@using Basecode.Data.ViewModels
-@model List<UserViewModel>
+﻿@model List<Basecode.Data.ViewModels.UserViewModel>
 
 @{
     Layout = "/Views/Shared/_Admin.cshtml";
 }
 
-@*Add font awesome for this page*@
-<script src="https://kit.fontawesome.com/d1f67a892f.js" crossorigin="anonymous"></script>
 @*Add stylesheet for the User List*@
-<link rel="stylesheet" href="~/css/user/UserList.css" />
+<link rel="stylesheet" href="~/css/user/UserList.css"/>
 @*Add stylesheet for the modals*@
-<link rel="stylesheet" href="~/css/user/UserModal.css" />
+<link rel="stylesheet" href="~/css/user/UserModal.css"/>
 @*Add external JavaScript file*@
 <script src="~/js/user/index.js"></script>
 
-<div class="container-fluid d-flex justify-content-center mt-5">
-    <h1>Users List</h1>
-</div>
+<style>
+    tbody, td, tfoot, th, thead, tr {
+        border-color: inherit;
+        border: none !important;
+    }
+
+    .table th {
+        line-height: 40px;
+        color: #565d6dff;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    #colForUsers {
+        flex: 1 0 0%;
+        border: 2px solid rgba(0, 0, 0, 0.03);
+        border-radius: 10px;
+    }
+</style>
 
 <div class="container mt-5">
-    <div class="row">
+    <div class="row mb-2">
         @*Search filter*@
         <div class="col-2">
             <form>
@@ -37,6 +50,7 @@
         <div class="col">
             <a class="btn btn-primary" role="button">All</a>
             <a class="btn btn-primary" role="button">Human Resources</a>
+            <a class="btn btn-primary" role="button">Technical</a>
             <a class="btn btn-primary" role="button">Deployment Team</a>
         </div>
 
@@ -48,16 +62,14 @@
 
     @*Table*@
     <div class="row">
-        <div class="col">
-            <table class="table table-striped text-center align-middle mt-2 overflow-hidden">
+        <div class="col" id="colForUsers">
+            <table class="table table-striped text-center align-middle mt-2 overflow-hidden" style="border-radius: 10px;--bs-table-striped-bg: rgba(0, 0, 0, 0.03);">
                 @*Table header*@
                 <tr>
-                    <th>User ID</th>
-                    <th>Role</th>
-                    <th>Full Name</th>
-                    <th>Username</th>
-                    <th>Email Address</th>
-                    <th></th>
+                    <th>USERNAME</th>
+                    <th>ROLE</th>
+                    <th>FULL NAME</th>
+                    <th>EMAIL ADDRESS</th>
                     <th></th>
                 </tr>
 
@@ -67,14 +79,15 @@
                     @foreach (var user in Model)
                     {
                         <tr>
-                            <td>@user.Id</td>
+                            <td>@user.Username</td>
                             <td>@user.Role</td>
                             <td>@user.Fullname</td>
-                            <td>@user.Username</td>
                             <td>@user.Email</td>
-                            <td><a class="btn btn-edit" role="button" onclick="showEditModal(@user.Id)"><i class="fa-regular fa-pen-to-square icon-white"></i> EDIT</a></td>
-                            <td><a class="btn btn-delete" role="button" onclick="showDeleteModal(@user.Id)"><i class="fa-solid fa-trash-can icon-white"></i> DELETE</a></td>
-                        </tr>
+                            <td>
+                                <a style="width: 100px;" class="btn btn-edit" role="button" onclick="showEditModal(@user.Id)"><i class="fa-regular fa-pen-to-square icon-white"></i> EDIT</a>
+                                <a style="width: 100px;" class="btn btn-delete" role="button" onclick="showDeleteModal(@user.Id)"><i class="fa-solid fa-trash-can icon-white"></i> DELETE</a>
+                            </td>
+                        </tr>        
                     }
                 }
                 else

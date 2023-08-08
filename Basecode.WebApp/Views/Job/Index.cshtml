@@ -1,11 +1,11 @@
-﻿@using Basecode.Data.ViewModels;
-@model List<JobOpeningViewModel>
+﻿@model List<Basecode.Data.ViewModels.JobOpeningViewModel>
 
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
 }
+
 <style>
     .card {
         border: 1px solid lightgray;
@@ -14,6 +14,7 @@
         flex-direction: column;
         justify-content: space-between;
         transition: all 0.3s ease;
+        border-radius: 1rem;
     }
 
         .card:hover {
@@ -27,7 +28,7 @@
         gap: 20px;
     }
     .view-button {
-        background-color: red;
+        background-color: #DA2C43;
         color: white;
         border: none;
         padding: 10px 20px;
@@ -94,7 +95,7 @@
 
     #searchJob {
         width: fit-content;
-        padding-right: 20px;
+        padding-right: 12px;
         border-right: solid 2px #F3F4F6FF;
     }
 
@@ -135,65 +136,72 @@
     }
 </style>
 
-<div class="jobContainer">
-    <h1>Search <span style="color: red;">Jobs</span>
+<div class="jobContainer" id="cardContainer">
+    <h1>
+        Search <span style="color: red;">Jobs</span>
         @*Admin View*@
-        <a asp-action="CreateView">
-        <button class="view-button">Add Job</button>
-        </a>
+        <partial name="_LoginPartialJobIndex"/>
     </h1>
     <div class="searchFilter">
-        <div id="searchJob">
-            <input type="text" placeholder="Enter keywords">
+        <div class="d-flex flex-row gap-2" id="searchJob">
+            <input style="width: 230px;" type="text" id="keywordInput" placeholder="Enter keywords" oninput="filterJobOpenings()">
+            <select name="tag" onchange="filterJobOpenings()">
+                <option value="">All Tags</option>
+                <option value="Technical">Technical</option>
+                <option value="Hr">Hr</option>
+                <option value="Finance">Finance</option>
+                <option value="Marketing">Marketing</option>
+                <!-- Add more options for different tags as needed -->
+            </select>
         </div>
-        <select name="location">
+        <select name="location" onchange="filterJobOpenings()">
             <option value="">All Locations</option>
-            <option value="location1">Location 1</option>
-            <option value="location2">Location 2</option>
-            <option value="location3">Location 3</option>
+            <option value="Cebu">Cebu</option>
+            <option value="Manila">Manila</option>
+            <option value="Tokyo">Tokyo</option>
         </select>
-        <select name="jobType">
+        <select name="jobType" onchange="filterJobOpenings()">
             <option value="">All Job Types</option>
-            <option value="type1">Type 1</option>
-            <option value="type2">Type 2</option>
-            <option value="type3">Type 3</option>
+            <option value="Full-time">Full-time</option>
+            <option value="Part-time">Part-time</option>
+            <option value="Contract">Contract</option>
         </select>
     </div>
 
-     @if (Model.Count > 0)
+    @if (Model.Count > 0)
     {
-    <div class="row mt-4">
-        @foreach (var jobOpening in Model)
-        {
-            <div class="col-sm-4">
-                <a href="@Url.Action("JobView", "Job", new { id = jobOpening.Id })" style="text-decoration:none;">
+        <div class="row mt-4">
+            @foreach (var jobOpening in Model)
+            {
+                <div class="col-sm-4" data-tag="@jobOpening.Tag">
+                    <a href="@Url.Action("JobView", "Job", new { id = jobOpening.Id })" style="text-decoration:none;">
 
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <div class="card-header">
-                                <img src="~/images/job-icon-dummy02.png" alt="Card Image" class="card-image">
-                                <h5 class="card-title">@jobOpening.Title</h5>
-                            </div>
-                            <div class="card-header">
-                                <img src="~/images/home-icon.png" alt="Card Image" class="card-image-small">
-                                <p class="card-text">Location: @jobOpening.Location</p>
-                            </div>
-                            <div class="card-header">
-                                <img src="~/images/location-icon.png" alt="Card Image" class="card-image-small">
-                                <p class="card-text">Job Type: @jobOpening.EmploymentType</p>
-                            </div>
-                            <div class="card-header">
-                                <img src="~/images/bookmark-icon.png" alt="Card Image" class="card-image-small">
-                                <p class="card-text">Work Setup: @jobOpening.WorkSetup</p>
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <div class="card-header">
+                                    <img src="~/images/job-icon-dummy02.png" alt="Card Image" class="card-image">
+                                    <h5 class="card-title">@jobOpening.Title</h5>
+                                </div>
+                                <div class="card-header">
+                                    <img src="~/images/home-icon.png" alt="Card Image" class="card-image-small">
+                                    <p class="card-text location-text">Location: @jobOpening.Location</p>
+                                </div>
+                                <div class="card-header">
+                                    <img src="~/images/location-icon.png" alt="Card Image" class="card-image-small">
+                                    <p class="card-text">Work Setup: @jobOpening.WorkSetup</p>
+                                </div>
+                                <div class="card-header">
+                                    <img src="~/images/bookmark-icon.png" alt="Card Image" class="card-image-small">
+                                    <p class="card-text job-type-text">Job Type: @jobOpening.EmploymentType</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </a>
+                    </a>
 
-            </div>
-        }
+                </div>
+            }
 
-    </div>
+        </div>
     }
     else
     {
@@ -201,3 +209,46 @@
     }
 </div>
 
+<script>
+    function filterJobOpenings() {
+        var input, tagSelect, locationSelect, jobTypeSelect, filter, selectedTag, selectedLocation, selectedJobType, 
+            cardContainer, cards, card, i, txtValue, jobTag, jobLocation, jobType;
+        input = document.getElementById("keywordInput");
+        tagSelect = document.querySelector("select[name='tag']"); // Select the tag dropdown
+        locationSelect = document.querySelector("select[name='location']"); // Select the location dropdown
+        jobTypeSelect = document.querySelector("select[name='jobType']"); // Select the job type dropdown
+        filter = input.value.toUpperCase();
+        selectedTag = tagSelect.value.toUpperCase();
+        selectedLocation = locationSelect.value.toUpperCase();
+        selectedJobType = jobTypeSelect.value.toUpperCase();
+        cardContainer = document.getElementById("cardContainer");
+        cards = cardContainer.getElementsByClassName("col-sm-4");
+
+        for (i = 0; i < cards.length; i++) {
+            card = cards[i];
+            txtValue = card.querySelector(".card-title").textContent;
+            jobTag = card.getAttribute("data-tag").toUpperCase(); // Get job opening tag
+            jobLocation = card.querySelector(".card-text.location-text").textContent.toUpperCase(); // Get job opening location
+            jobType = card.querySelector(".card-text.job-type-text").textContent.toUpperCase(); // Get job opening employment type
+
+            if (
+                (selectedTag === "" || jobTag === selectedTag) && 
+                txtValue.toUpperCase().indexOf(filter) > -1 &&
+                (selectedLocation === "" || jobLocation.indexOf(selectedLocation) > -1) &&
+                (selectedJobType === "" || jobType.indexOf(selectedJobType) > -1)
+            ) {
+                card.style.display = "";
+            } else {
+                card.style.display = "none";
+            }
+        }
+
+        // Update the URL with the selected tag, location, and job type
+        var currentURL = new URL(window.location.href);
+        currentURL.searchParams.set('tag', selectedTag.toLowerCase());
+        currentURL.searchParams.set('location', selectedLocation.toLowerCase());
+        currentURL.searchParams.set('jobType', selectedJobType.toLowerCase());
+        window.history.replaceState({}, document.title, currentURL);
+    }
+
+</script>

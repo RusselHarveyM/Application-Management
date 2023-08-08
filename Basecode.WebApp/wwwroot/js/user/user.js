@@ -1,7 +1,7 @@
 ﻿$('.modal').on('shown.bs.modal', function () {
     var modal = $(this); // Get the modal element that has just been shown
-    var form = modal.find('form'); 
-    var formId = '#' + form.attr('id'); 
+    var form = modal.find('form');
+    var formId = '#' + form.attr('id');
 
     $(formId).submit(function (e) {
         e.preventDefault();
@@ -12,7 +12,7 @@
             url: form.attr('action'),
             type: 'POST',
             data: form.serialize(),
-            success: () => window.location.reload(), 
+            success: () => window.location.reload(),
             error: function (response) {
                 if (response.status === 400) {
                     var errors = response.responseJSON.value;
@@ -24,8 +24,7 @@
                         }
                         $('#' + key + 'Error').text(value);
                     });
-                }
-                else {
+                } else {
                     console.log("Something went wrong.");
                 }
             }
@@ -37,3 +36,4 @@
 $('.modal').on('hidden.bs.modal', function () {
     $(this).parent().empty();
 });
+

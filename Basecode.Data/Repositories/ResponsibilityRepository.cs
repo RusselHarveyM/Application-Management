@@ -1,48 +1,42 @@
 ﻿using Basecode.Data.Interfaces;
 using Basecode.Data.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Basecode.Data.Repositories
+namespace Basecode.Data.Repositories;
+
+public class ResponsibilityRepository : BaseRepository, IResponsibilityRepository
 {
-    public class ResponsibilityRepository: BaseRepository, IResponsibilityRepository
+    private readonly BasecodeContext _context;
+
+    public ResponsibilityRepository(IUnitOfWork unitOfWork, BasecodeContext context) : base(unitOfWork)
     {
-        private readonly BasecodeContext _context;
+        _context = context;
+    }
 
-        public ResponsibilityRepository(IUnitOfWork unitOfWork, BasecodeContext context) : base(unitOfWork)
-        {
-            _context = context;
-        }
+    public IQueryable<Responsibility> GetAll()
+    {
+        return GetDbSet<Responsibility>();
+    }
 
-        public IQueryable<Responsibility> GetAll()
-        {
-            return this.GetDbSet<Responsibility>();
-        }
+    public void AddResponsibility(Responsibility responsibility)
+    {
+        _context.Responsibility.Add(responsibility);
+        _context.SaveChanges();
+    }
 
-        public void AddResponsibility(Responsibility responsibility)
-        {
-            _context.Responsibility.Add(responsibility);
-            _context.SaveChanges();
-        }
+    public Responsibility GetResponsibilityById(int id)
+    {
+        return _context.Responsibility.Find(id);
+    }
 
-        public Responsibility GetResponsibilityById(int id)
-        {
-            return _context.Responsibility.Find(id);
-        }
+    public void UpdateResponsibility(Responsibility responsibility)
+    {
+        _context.Responsibility.Update(responsibility);
+        _context.SaveChanges();
+    }
 
-        public void UpdateResponsibility(Responsibility responsibility)
-        {
-            _context.Responsibility.Update(responsibility);
-            _context.SaveChanges();
-        }
-
-        public void DeleteResponsibility(Responsibility responsibility)
-        {
-            _context.Responsibility.Remove(responsibility);
-            _context.SaveChanges();
-        }
+    public void DeleteResponsibility(Responsibility responsibility)
+    {
+        _context.Responsibility.Remove(responsibility);
+        _context.SaveChanges();
     }
 }

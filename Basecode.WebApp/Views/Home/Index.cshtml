@@ -1,14 +1,13 @@
-﻿@using Basecode.Data.ViewModels;
-@model List<JobOpeningViewModel>
+﻿@model List<Basecode.Data.ViewModels.JobOpeningViewModel>
 @{
     ViewData["Title"] = "Home Page";
 }
 
 <!--Search Feature-->
-<div style="margin-top: 3rem;" class="text-center">
-    <div style="font-weight: 600"  class="display-5">
+<div style="margin-top: 5rem;" class="text-center">
+    <div style="font-weight: 600" class="display-5">
         Ready to join the <span class="text-danger">Alliance</span> team?
-    </div> 
+    </div>
     <div style="margin-top: 2rem;">
         <form actions="">
             <div class="form-group row">
@@ -16,109 +15,176 @@
                 </div>
                 <div class="col-md-7">
                     <input type="text" class="form-control" id="search" name="search" placeholder="&#xF002; Search for jobs..." style="font-family:Arial, FontAwesome; color: gray;"/>
-                </div>                  
+                </div>
                 <div class="col-md-1">
                     <button type="submit" class="btn btn-danger">Search</button>
                 </div>
                 <div class="col-md-3">
                 </div>
-            </div> 
+            </div>
         </form>
     </div>
 </div>
 
 <!--Multiple Carousel-->
 <div id="carouselExampleControls" class="carousel" data-ride="carousel">
-    <div class="carousel-inner">
-        <div class="carousel-item ">
-                <div class="card">
-                <div class="img-wrapper">
-                        <img style="width: 200px; height: 200px;"  src="images/home/FinanceImage.png" alt="Card image cap">
-                </div>
-            </div>
-        </div>
-        <div class="carousel-item">
-            <div class="card">
-                <div class="img-wrapper">
-                    <img style="width: 200px; height: 200px;" src="images/home/HumanResourceImage.png" alt="Card image cap">
-                </div>
-            </div>
-        </div>
-        <div class="carousel-item">
-            <div class="card">
-                <div class="img-wrapper">
-                    <img style="width: 200px; height: 200px;" src="images/home/MarketingImage.png" alt="Card image cap">
-                </div>
-            </div>
-        </div>
-        <div class="carousel-item">
-            <div class="card">
-                <div class="img-wrapper">
-                    <img style="width: 200px; height: 200px;" src="images/home/TechnicalImage.png" alt="Card image cap">
-                </div>
-            </div>
-        </div>
-        <div class="carousel-item">
-            <div class="card">
-                <div class="img-wrapper">
-                    <img style="width: 200px; height: 200px;" src="images/home/MarketingImage.png" alt="Card image cap">
-                </div>
-            </div>
-        </div>
-    </div>
     <div>
-        <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
-            <img style="padding-right: 100px;" src="images/home/CarouselRightIcon.png" alt="Carousel Right Icon" />
+        <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev" onclick="preventDefaultLink(event)">
+            <img src="images/home/CarouselRightIcon.png" alt="Carousel Right Icon"/>
         </a>
     </div>
+    <div class="carousel-inner">
+        @for (var i = 0; i < 99; i++)
+        {
+            <div class="carousel-item active">
+                <div class="card">
+                    <div class="img-wrapper">
+                        <div class="container d-flex flex-column align-items-center justify-content-center gap-2" style="width: 200px; height: 200px; background-color: #fef2f1; border-radius: 10px;">
+                            <div class="container d-flex flex-column align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px; background-color: #EC2224;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#fef2f1" class="bi bi-currency-dollar" viewBox="0 0 16 16">
+                                    <path d="M4 10.781c.148 1.667 1.513 2.85 3.591 3.003V15h1.043v-1.216c2.27-.179 3.678-1.438 3.678-3.3 0-1.59-.947-2.51-2.956-3.028l-.722-.187V3.467c1.122.11 1.879.714 2.07 1.616h1.47c-.166-1.6-1.54-2.748-3.54-2.875V1H7.591v1.233c-1.939.23-3.27 1.472-3.27 3.156 0 1.454.966 2.483 2.661 2.917l.61.162v4.031c-1.149-.17-1.94-.8-2.131-1.718H4zm3.391-3.836c-1.043-.263-1.6-.825-1.6-1.616 0-.944.704-1.641 1.8-1.828v3.495l-.2-.05zm1.591 1.872c1.287.323 1.852.859 1.852 1.769 0 1.097-.826 1.828-2.2 1.939V8.73l.348.086z"/>
+                                </svg>
+                            </div>
+                            <h5 class="mb-0">Finance</h5>
+                            @{
+                                var financeCount = 0;
+                                foreach (var jobOpening in Model)
+                                {
+                                    if (jobOpening.Tag.Contains("Finance"))
+                                    {
+                                        financeCount++;
+                                    }
+                                }
+                            }
+                            <p class="mb-0">@financeCount jobs</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="card">
+                    <div class="img-wrapper">
+                        <div class="container d-flex flex-column align-items-center justify-content-center gap-2" style="width: 200px; height: 200px; background-color: #F3F4F6; border-radius: 10px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="#72777D" class="bi bi-person-circle" viewBox="0 0 16 16">
+                                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                                <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                            </svg>
+                            <h5 class="mb-0">Human Resources</h5>
+                            @{
+                                var hrCount = 0;
+                                foreach (var jobOpening in Model)
+                                {
+                                    if (jobOpening.Tag.Contains("Hr"))
+                                    {
+                                        hrCount++;
+                                    }
+                                }
+                            }
+                            <p class="mb-0">@hrCount jobs</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="card">
+                    <div class="img-wrapper">
+                        <div class="container d-flex flex-column align-items-center justify-content-center gap-2" style="width: 200px; height: 200px; background-color: #fef2f1; border-radius: 10px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="#EC2224" class="bi bi-pie-chart-fill" viewBox="0 0 16 16">
+                                <path d="M15.985 8.5H8.207l-5.5 5.5a8 8 0 0 0 13.277-5.5zM2 13.292A8 8 0 0 1 7.5.015v7.778l-5.5 5.5zM8.5.015V7.5h7.485A8.001 8.001 0 0 0 8.5.015z"/>
+                            </svg>
+                            <h5 class="mb-0">Marketing</h5>
+                            @{
+                                var marketingCount = 0;
+                                foreach (var jobOpening in Model)
+                                {
+                                    if (jobOpening.Tag.Contains("Marketing"))
+                                    {
+                                        marketingCount++;
+                                    }
+                                }
+                            }
+                            <p class="mb-0">@marketingCount jobs</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="card">
+                    <div class="img-wrapper">
+                        <div class="container d-flex flex-column align-items-center justify-content-center gap-2" style="width: 200px; height: 200px; background-color: #F3F4F6; border-radius: 10px;">
+                            <div class="container d-flex flex-column align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px; background-color: #72777D;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#F3F4F6" class="bi bi-code-slash" viewBox="0 0 16 16">
+                                    <path d="M10.478 1.647a.5.5 0 1 0-.956-.294l-4 13a.5.5 0 0 0 .956.294l4-13zM4.854 4.146a.5.5 0 0 1 0 .708L1.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0zm6.292 0a.5.5 0 0 0 0 .708L14.293 8l-3.147 3.146a.5.5 0 0 0 .708.708l3.5-3.5a.5.5 0 0 0 0-.708l-3.5-3.5a.5.5 0 0 0-.708 0z"/>
+                                </svg>
+                            </div>
+                            <h5 class="mb-0">Technical</h5>
+                            @{
+                                var technicalCount = 0;
+                                foreach (var jobOpening in Model)
+                                {
+                                    if (jobOpening.Tag.Contains("Technical"))
+                                    {
+                                        technicalCount++;
+                                    }
+                                }
+                            }
+                            <p class="mb-0">@technicalCount jobs</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
     <div>
-        <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-        <img style="padding-left: 100px;" src="images/home/CarouselLeftIcon.png" alt="Carousel Left Icon"/>
+        <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next" onclick="preventDefaultLink(event)">
+            <img src="images/home/CarouselLeftIcon.png" alt="Carousel Left Icon"/>
         </a>
     </div>
 </div>
 
 <!--Latest Job text-->
-<div style="padding-top: 100px;" class="container">
-<div class="row">
-    <div style="font-weight: 600" class="col-12 display-5 text-danger text-center">
-        Latest Jobs
+<div style="padding-top: 80px;" class="container">
+    <div class="row">
+        <div style="font-weight: 600" class="col-12 display-5 text-danger text-center">
+            Latest Jobs
+        </div>
+        <p style="color: gray;" class="text-center mb-0">
+            Exercitation dolore reprehenderit fugi
+        </p>
     </div>
-    <p style="color: gray;" class="text-center">
-        Exercitation dolore reprehenderit fugi
-    </p>
-</div>
 </div>
 
 <!--Latest Job cards-->
 @if (Model.Count > 0)
 {
     <div class="jobContainer" id="cardContainer">
-        <div class="row col-12 mt-4">
+        <div class="row col-12 mt-0">
             @foreach (var jobOpening in Model)
             {
-            <div class="mt-4 col-lg-4 col-md-4 col-sm-4 col">
-                <div class="card mb-4 cardForJobs">
-                    <div class="card-body">
+                <div class="mt-0 col-lg-4 col-md-4 col-sm-4 col">
+                    <div class="cardJob mb-2 cardForJobs">
+                        <div class="card-body">
                             <div class="card-header">
                                 <img src="~/images/job-icon-dummy.png" alt="Card Image" class="card-image">
-                                <h5 class="card-title">@jobOpening.Title<br><span class="fw-light">₱30K - ₱60K</span></h5>
+                                <h5 class="card-title">
+                                    @jobOpening.Title<br><span class="fw-light">₱30K - ₱60K</span>
+                                </h5>
                             </div>
                             <div class="card-header">
                                 <img src="~/images/home-icon.png" alt="Card Image" class="card-image-small">
-                                <p class="card-text">Pariator</p>
+                                <p class="card-text">Location: @jobOpening.Location</p>
                             </div>
                             <div class="card-header">
                                 <img src="~/images/location-icon.png" alt="Card Image" class="card-image-small">
-                                <p class="card-text">@jobOpening.Location</p>
+                                <p class="card-text">Work Setup: @jobOpening.WorkSetup</p>
                             </div>
                             <div class="card-header">
                                 <img src="~/images/bookmark-icon.png" alt="Card Image" class="card-image-small">
-                                <p class="card-text">@jobOpening.WorkSetup</p>
+                                <p class="card-text">Job Type: @jobOpening.EmploymentType</p>
                             </div>
+                        </div>
                     </div>
                 </div>
-            </div>
             }
         </div>
     </div>
@@ -135,11 +201,8 @@ else
     </div>
 </div>
 
- <!--Return Top feature-->
-<div style="margin-bottom: 2rem;" class="row col-12">
-    <div class="col-lg-11 col-md-11 col-sm-11">
-    </div>
-    <div style="text-align: right;" class="col-lg-1 col-md-1 col-sm-1 col">
-        <img src="images/home/GoUp.png" width="40" onclick="goToTop()" alt="Go to top" id="topButton"/>
-    </div>
-</div>
+<script>
+    function preventDefaultLink(event) {
+        event.preventDefault();
+    }
+</script>

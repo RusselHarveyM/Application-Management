@@ -1,0 +1,38 @@
+﻿@using System.Text.Json
+@model Basecode.Data.Models.Application
+
+@{
+    var jsonDocument = JsonDocument.Parse(Model.Result);
+    var jsonObject = jsonDocument.RootElement;
+    var score = jsonObject.GetProperty("Score").GetString();
+    var explanation = jsonObject.GetProperty("Explanation").GetString();
+}
+
+<!-- Modal -->
+<div class="modal fade" id="viewApplicationModal" tabindex="-1" aria-labelledby="viewApplicationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header pb-5">
+                <div class="d-flex flex-column gap-3">
+                    <h1 class="modal-title fs-3" style="color:red" id="viewApplicationModalLabel">@Model.JobOpening.Title</h1>
+                    <h5>ID: <i style="font-weight:300; font-size:0.9rem;">@Model.JobOpening.Id</i></h5>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="d-flex flex-column p-5">
+                <h4>Shortlist Information</h4>
+                <div class="d-flex flex-column me-4">
+                    <p>Score: @score</p>
+                    <div class="d-flex flex-column">
+                        <p>Explanation:</p>
+                        <p>@explanation</p>
+                    </div>
+                </div>
+
+            </div>
+            <a href="@Url.Action("ViewDetailsUpdate", "Dashboard", new { appId = Model.Id, status = "For HR Screening" })" class="btn btn-danger" style="text-decoration:none; text-align:center; padding: 1.4rem; cursor:pointer">
+                SCREEN APPLICANT
+            </a>
+        </div>
+    </div>
+</div>

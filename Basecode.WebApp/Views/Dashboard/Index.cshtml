@@ -1,100 +1,95 @@
-﻿@{
+﻿@model Basecode.Data.ViewModels.DashboardViewModel
+
+@{
     Layout = "/Views/Shared/_Admin.cshtml";
 
-    // Dummy data
-    var users = new List<dynamic>
-    {
-        new { UserId = 0, Name = "Henry Ca", Job = "Software Developer", Position = "Front-End", Date = "25/11/2023", Status = "HR-Interview" },
-        new { UserId = 1, Name = "Johaanne Si", Job = "Software Developer", Position = "Back-End", Date = "25/11/2023", Status = "HR-Interview" },
-        new { UserId = 2, Name = "Mark Anthon", Job = "Software Developer", Position = "Full-Stack", Date = "25/11/2023", Status = "Onboard" },
-        new { UserId = 3, Name = "Marizza Izza", Job = "Software Developer", Position = "Dev-Ops", Date = "25/11/2023", Status = "HR-Interview" },
-        new { UserId = 4, Name = "Marizza Ezza", Job = "Software Developer", Position = "Dev-Ops", Date = "25/11/2023", Status = "HR-Interview" },
-        new { UserId = 5, Name = "Marizza Ozza", Job = "Software Developer", Position = "Dev-Ops", Date = "25/11/2023", Status = "HR-Interview" },
-        new { UserId = 6, Name = "Marizza Uzza", Job = "Software Developer", Position = "Dev-Ops", Date = "25/11/2023", Status = "HR-Interview" },
-        new { UserId = 7, Name = "Marizza Azza", Job = "Software Developer", Position = "Dev-Ops", Date = "25/11/2023", Status = "HR-Interview" }
-    };
-
     // Variables for dashboard statistics
-    var onboard = 26;
-    var deployed = 73;
-    var totalApplication = 229;
-
-    // Helper method to determine the status color
-    string GetStatusColor(string status)
-    {
-        switch (status)
-        {
-            case "HR-Interview":
-                return "#EF9834FF"; // Orange
-            case "Onboard":
-                return "#00FF00"; // Green
-            case "Deployed":
-                return "#0000FF"; // Blue
-            default:
-                return "#000000"; // Black (fallback color)
-        }
-    }
+    var onboard = Model.Onboarded;
+    var deployed = Model.Deployed;
+    var totalApplication = Model.TotalApplications;
 }
+
+<style>
+    tbody, td, tfoot, th, thead, tr {
+        border-color: inherit;
+        border: none !important;
+    }
+    
+    th {
+        line-height: 40px;
+        color: #565d6dff;
+        font-size:  14px;
+        font-weight: 500;
+    }
+    
+    .col{
+        flex: 1 0 0%;
+        border: 2px solid rgba(0, 0, 0, 0.03);
+        border-radius: 10px;
+        }
+</style>
+@*Add external JavaScript file*@
+<script src="~/js/dashboard/index.js"></script>
 
 <h2 class="mb-4" style="color: #171A1FFF;">Dashboard</h2>
 
-<div class="card d-flex shadow-sm p-3 mb-5 bg-body-tertiary rounded" style="border: none;">
+<div class="card d-flex shadow-sm p-3 mb-5 bg-body-tertiary rounded" style="border: none; border-radius: 1.4rem !important;">
     <div class="d-flex flex-row align-items-center">
-        <img src="~/images/dashboard-icon.png" alt="dashboard icon" style="width:24px; height:24px; fill: #6F7787FF;" />
+        <img src="~/images/dashboard-icon.png" alt="dashboard icon" style="width:24px; height:24px; fill: #6F7787FF;"/>
         <h4 class="ms-4 mt-2 text-overview">Overview</h4>
     </div>
     <div class="card-body justify-content-around d-flex flex-row">
-        <div class="card card-custom1 align-items-center justify-content-center d-flex flex-col pt-2" style="border: none;">
+        <div class="card card-custom1 align-items-center justify-content-center d-flex flex-col pt-2" style="border: none; border-radius: 1.2rem;">
             <h6 class="custom-text-report">Onboard</h6>
             <h1>@onboard</h1>
         </div>
-        <div class="card card-custom1 align-items-center justify-content-center d-flex flex-col pt-2" style="border: none;">
+        <div class="card card-custom1 align-items-center justify-content-center d-flex flex-col pt-2" style="border: none; border-radius: 1.2rem;">
             <h6 class="custom-text-report">Deployed</h6>
             <h1>@deployed</h1>
         </div>
-        <div class="card card-custom1 align-items-center justify-content-center d-flex flex-col pt-2" style="border: none;">
+        <div class="card card-custom1 align-items-center justify-content-center d-flex flex-col pt-2" style="border: none; border-radius: 1.2rem;">
             <h6 class="custom-text-report">Total Applicants</h6>
             <h1>@totalApplication</h1>
         </div>
     </div>
 </div>
 
-<div class="card d-flex shadow-sm p-3 mb-5 bg-body-tertiary rounded" style="border: none;">
-    <div class="d-flex flex-row align-items-center">
-        <img src="~/images/file-con.png" alt="file icon" style="width:24px; height:24px; fill: #6F7787FF;" />
+<div class="card d-flex shadow-sm p-3 mb-2 bg-body-tertiary rounded" style="border: none; border-radius: 1.4rem !important;">
+    <div class="d-flex flex-row align-items-center pb-4">
+        <img src="~/images/file-con.png" alt="file icon" style="width:24px; height:24px; fill: #6F7787FF;"/>
         <h4 class="ms-4 mt-2 text-overview">Detailed Report</h4>
     </div>
     <!-- Table -->
     <div class="row">
         <div class="col">
-            <table class="table table-striped text-center align-middle mt-2 overflow-hidden">
-                <thead>
-                    <!-- Table header -->
+            <table class="table table-striped text-center align-middle mt-2 overflow-hidden" style="
+                                                                                                        border-radius: 10px;--bs-table-striped-bg: rgba(0, 0, 0, 0.03);">
+                <!-- Table header -->
+                <tr>
+                    <th>JOB TITLE</th>
+                    <th>EMPLOYMENT TYPE</th>
+                    <th>WORK SETUP</th>
+                    <th>LOCATION</th>
+                    <th>NO. OF APPLICANTS</th>
+                    <th></th>
+                </tr>
+                <!-- Add the table rows -->
+                @foreach (var job in Model.JobOpenings)
+                {
                     <tr>
-                        <th>User ID</th>
-                        <th>Name</th>
-                        <th>Job</th>
-                        <th>Position</th>
-                        <th>Date</th>
-                        <th>Status</th>
+                        <td>@job.Title</td>
+                        <td>@job.EmploymentType</td>
+                        <td>@job.WorkSetup</td>
+                        <td>@job.Location</td>
+                        <td>@job.Applications.Count</td>
+                        <td>
+                            <a class="btn btn-view" role="button" onclick="showAssignUsersModal(@job.Id)"><i class="fa-solid fa-people-arrows"></i>&nbsp;&nbsp;ASSIGN</a>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    <!-- Add the table rows -->
-                    @foreach (var user in users)
-                    {
-                        <tr>
-                            <td>@user.UserId</td>
-                            <td>@user.Name</td>
-                            <td>@user.Job</td>
-                            <td>@user.Position</td>
-                            <td>@user.Date</td>
-                            <td style="color: @GetStatusColor(user.Status);">@user.Status</td>
-                        </tr>
-                    }
-                </tbody>
+                }
             </table>
         </div>
     </div>
 </div>
 
+<div id="assignUsersModalContainer"></div>

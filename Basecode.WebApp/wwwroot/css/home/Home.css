@@ -1,4 +1,4 @@
-﻿.latestJobImage{
+﻿.latestJobImage {
     padding: 1em;
     width: 350px;
 }
@@ -13,7 +13,7 @@
     max-height: 100%;
 }
 
-@media screen and (min-width:100px) {
+@media screen and (min-width: 100px) {
     .carousel-inner {
         display: flex;
     }
@@ -29,14 +29,14 @@
     }
 }
 
-@media screen and (min-width:576px) {
+@media screen and (min-width: 576px) {
     .carousel-inner {
         display: flex;
     }
 
     .carousel-item {
         display: block;
-        flex: 0 0 calc(100%/4);
+        flex: 0 0 calc(100% / 4);
         margin-right: 1.5%;
     }
 
@@ -62,6 +62,12 @@
 
 .cardForJobs {
     border: 1px solid lightgray;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.3s ease;
+    border-radius: 1rem;
 }
 
 .card:hover {
